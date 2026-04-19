@@ -13,7 +13,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import MapView, { Marker } from 'react-native-maps';
 
 export default function CreateLocation() {
-  const userLocation = useUserLocation();
+  const { location: userLocation } = useUserLocation();
   const [marker, setMarker] = useState<any>(null);
   const [name, setName] = useState('Nueva Ubicación');
 

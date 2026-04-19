@@ -17,5 +17,20 @@ export const locationService = {
   getById: async (id: string) => {
     const { data } = await api.get(`/locations/${id}`);
     return data;
-  }
+  },
+
+  // services/locationService.ts
+  getNearby: async (lat: number, lng: number, radius?: number, startDate?: string, endDate?: string) => {
+    const { data } = await api.get('/locations/nearby', {
+      params: {
+        lat,
+        lng,
+        radius,
+        startDate,
+        endDate
+      }
+    });
+    return data;
+  },
+
 };
