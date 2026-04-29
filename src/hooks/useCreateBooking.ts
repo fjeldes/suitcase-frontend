@@ -19,6 +19,7 @@ export function useCreateBooking() {
       ]);
     },
     onError: (error: any) => {
+      console.error("Error creating booking:", error);
       const message = error.response?.data?.message || "Something went wrong";
       Alert.alert("Error", message);
     }

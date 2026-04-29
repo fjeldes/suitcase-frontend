@@ -1,14 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pickups } from '@/hooks/useDashboard'
+import { Ionicons } from '@expo/vector-icons'
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 
-interface Props {
-  count: number;
-  nextTime: string;
-  nextItem: string;
-}
+export const UpcomingPickups = (pickups: Pickups) => {
+  const { totalToday: count, nextPickup } = pickups
 
-export const UpcomingPickups = ({ count, nextTime, nextItem }: Props) => {
+  const nextTime = nextPickup ? nextPickup.time : 'No more pickups today'
+  const nextItem = nextPickup ? nextPickup.nextItem : ''
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -19,15 +18,17 @@ export const UpcomingPickups = ({ count, nextTime, nextItem }: Props) => {
       </View>
 
       <View style={styles.body}>
-        <Text style={styles.countText}>{count} today</Text>
+        <Text style={styles.countText}>{count} Today</Text>
         <View style={styles.nextInfoRow}>
           <Text style={styles.label}>Next: </Text>
-          <Text style={styles.value}>{nextTime} · {nextItem}</Text>
+          <Text style={styles.value}>
+            {nextTime} · {nextItem}
+          </Text>
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   card: {
@@ -87,4 +88,4 @@ const styles = StyleSheet.create({
     color: '#0A0E5E',
     fontWeight: '500',
   },
-});
+})

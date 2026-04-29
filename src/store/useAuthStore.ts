@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
-// Definimos la estructura del usuario para tener autocompletado
 interface User {
   id: string;
   name: string;
@@ -11,39 +10,50 @@ interface User {
 
 interface AuthState {
   token: string | null;
-  user: User | null; // <-- Nuevo estado
+  refreshToken: string | null; // <-- Nuevo
+  user: User | null;
   isAuthenticated: boolean;
-  setToken: (token: string, user: User) => Promise<void>; // <-- Ahora recibe user
+  // Ahora recibe ambos tokens
+  setTokens: (token: string, refreshToken: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
+  refreshToken: null,
   user: null,
   isAuthenticated: false,
 
-  setToken: async (token: string, user: User) => {
-    // Guardamos ambos en el almacenamiento local
+  setTokens: async (token: string, refreshToken: string, user: User) => {
     await AsyncStorage.setItem('userToken', token);
+    await AsyncStorage.setItem('refreshToken', refreshToken);
     await AsyncStorage.setItem('userData', JSON.stringify(user));
     
-    set({ token, user, isAuthenticated: true });
+    set({ token, refreshToken, user, isAuthenticated: true });
   },
 
   logout: async () => {
     await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('refreshToken');
     await AsyncStorage.removeItem('userData');
-    set({ token: null, user: null, isAuthenticated: false });
+    set({ token: null, refreshToken: null, user: null, isAuthenticated: false });
   },
 
   checkAuth: async () => {
-    const token = await AsyncStorage.getItem('userToken');
-    const userData = await AsyncStorage.getItem('userData');
+    const [token, refreshToken, userData] = await Promise.all([
+      AsyncStorage.getItem('userToken'),
+      AsyncStorage.getItem('refreshToken'),
+      AsyncStorage.getItem('userData'),
+    ]);
     
-    // Si existe userData, lo parseamos de vuelta a objeto
     const user = userData ? JSON.parse(userData) : null;
     
-    set({ token, user, isAuthenticated: !!token });
+    set({ 
+      token, 
+      refreshToken, 
+      user, 
+      isAuthenticated: !!token 
+    });
   },
 }));

@@ -1,25 +1,53 @@
 import { api } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
 
-// Definimos la interfaz para tener autocompletado y evitar errores
-interface DashboardStats {
-  activeItems: number;
-  totalSlots: number;
-  percentage: number;
-  revenue: number;
+export interface Pickups {
+  totalToday: number;
+  nextPickup: {
+    time: string;
+    nextItem: string;
+  } | null;
 }
 
-export const useDashboardStats = () => {
-  return useQuery<DashboardStats>({
-    queryKey: ['dashboard-stats'],
+export interface DashboardData {
+  storeInfo: {
+    id: string;
+    name: string;
+    status: string;
+  };
+  revenue: {
+    today: number;
+    yesterday: number;
+    percentageIncrease: number;
+  };
+  bookings: {
+    activeCount: number;
+    liveStatus: boolean;
+  };
+  pickups: Pickups;
+  
+  occupancy: Array<{
+    label: string;
+    percentage: number;
+    color: string;
+  }>;
+}
+
+export const useDashboardStats = (locationId?: string) => {
+  return useQuery<DashboardData>({
+    // Incluimos locationId en la key para que si cambias de tienda, se refresque la caché
+    queryKey: ['dashboard-stats', locationId],
     queryFn: async () => {
-      // Llamada al endpoint que creamos en el LocationsController
-      const { data } = await api.get('/locations/owner/stats');
+      // Ajustamos la URL a la que definiste en tu Controller
+      const url = locationId 
+        ? `/locations/owner/stats?locationId=${locationId}` 
+        : '/locations/owner/stats';
+        
+      const { data } = await api.get(url);
       return data;
     },
-    // Opcional: Refrescar los datos cada 30 segundos automáticamente
-    refetchInterval: 30000, 
-    // Evita que la UI parpadee si la conexión es lenta
+    refetchInterval: 30000, // 30 segundos
     placeholderData: (previousData) => previousData,
+    staleTime: 10000, // Considera los datos "frescos" por 10 segundos
   });
 };

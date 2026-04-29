@@ -1,72 +1,68 @@
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons'
+import { StatusBar } from 'expo-status-bar'
+import React, { useEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+  ActivityIndicator,
+  Animated,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 
-// Importamos tus herramientas personalizadas
-import { ROUTES } from '@/constants/routes';
-import { useNearbyStores } from '@/hooks/useNearbyStores';
-import { useUserLocation } from '@/hooks/useUserLocation';
-import { useLocationStore } from '@/store/useLocationStore';
-import { useRouter } from 'expo-router';
+import { ROUTES } from '@/constants/routes'
+import { useNearbyStores } from '@/hooks/useNearbyStores'
+import { useUserLocation } from '@/hooks/useUserLocation'
+import { useLocationStore } from '@/store/useLocationStore'
+import { useRouter } from 'expo-router'
 
 export default function ExploreScreen() {
-  const mapRef = useRef<MapView>(null);
-  const router = useRouter();
-  const [selectedStore, setSelectedStore] = useState<any>(null);
+  const mapRef = useRef<MapView>(null)
+  const router = useRouter()
+  const [selectedStore, setSelectedStore] = useState<any>(null)
 
-  // 1. Iniciamos el tracking de ubicación (llena el Zustand store automáticamente)
-  const { getLocation, loading: locationLoading } = useUserLocation();
+  // --- Lógica de Animación ---
+  const bottomAnim = useRef(new Animated.Value(110)).current
 
-  // 2. Obtenemos datos del Store global
-  const { lat, lng, setLocation } = useLocationStore();
+  useEffect(() => {
+    Animated.spring(bottomAnim, {
+      toValue: selectedStore ? 360 : 110,
+      useNativeDriver: false,
+      friction: 8,
+      tension: 50,
+    }).start()
+  }, [selectedStore])
 
-  // 3. Hook para traer las tiendas de NestJS (React Query)
-  const { data: stores, isLoading: storesLoading } = useNearbyStores();
+  const { getLocation, loading: locationLoading } = useUserLocation()
+  const { lat, lng, setLocation } = useLocationStore()
+  const { data: stores, isLoading: storesLoading } = useNearbyStores()
 
-  // Función para centrar el mapa en el usuario
   const handleCenterMap = async () => {
-    await getLocation();
+    await getLocation()
     if (lat && lng) {
-      mapRef.current?.animateToRegion({
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lng),
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      }, 1000);
+      mapRef.current?.animateToRegion(
+        {
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lng),
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        1000,
+      )
     }
-  };
-
-  // Estado local para el radio dinámico
-  const [radius, setRadius] = useState(5);
+  }
 
   const handleRegionChange = (region: Region) => {
-    // 1. Calculamos el radio basado en el zoom (latitudeDelta)
-    // 1 grado de latitud son aprox 111km. 
-    // Dividimos por 2 porque el delta es el total visible en pantalla.
-    const newRadius = (region.latitudeDelta * 111) / 2;
-    
-    // Limitamos el radio (ej: mínimo 1km, máximo 50km) para no sobrecargar
-    const clampedRadius = Math.max(1, Math.min(newRadius, 50));
-    setRadius(clampedRadius);
-
-    // 2. Actualizamos las coordenadas en el Store
-    // Esto disparará automáticamente el useNearbyStores porque lat/lng son dependencias
     setLocation({
-      address: 'Map Area', 
+      address: 'Map Area',
       lat: region.latitude.toString(),
-      lng: region.longitude.toString()
-    });
-  };
-  console.log(stores)
+      lng: region.longitude.toString(),
+    })
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -84,16 +80,21 @@ export default function ExploreScreen() {
           longitudeDelta: 0.05,
         }}
         onRegionChangeComplete={handleRegionChange}
+        // Solo cerramos si tocamos el mapa directamente, no un marcador
+        onPress={() => setSelectedStore(null)}
       >
-        {/* Renderizado de Marcadores desde el Backend */}
         {stores?.map((store: any) => (
           <Marker
             key={store.id}
-            coordinate={{ 
-              latitude: parseFloat(store.lat), 
-              longitude: parseFloat(store.lng) 
+            coordinate={{
+              latitude: parseFloat(store.lat),
+              longitude: parseFloat(store.lng),
             }}
-            onPress={() => setSelectedStore(store)}
+            // IMPORTANTE: stopPropagation evita que el mapa reciba el toque y cierre la card
+            onPress={(e) => {
+              e.stopPropagation()
+              setSelectedStore(store)
+            }}
           >
             <View
               style={[
@@ -111,18 +112,20 @@ export default function ExploreScreen() {
         ))}
       </MapView>
 
-      {/* Botón de Ubicación Clásico */}
-      <TouchableOpacity 
-        style={styles.locationButton} 
-        onPress={handleCenterMap}
-        disabled={locationLoading}
-      >
-        {locationLoading ? (
-          <ActivityIndicator size="small" color="#0A0E5E" />
-        ) : (
-          <Ionicons name="locate" size={26} color="#0A0E5E" />
-        )}
-      </TouchableOpacity>
+      {/* Botón de Ubicación */}
+      <Animated.View style={[styles.locationButton, { bottom: bottomAnim }]}>
+        <TouchableOpacity
+          onPress={handleCenterMap}
+          disabled={locationLoading}
+          style={styles.touchableArea}
+        >
+          {locationLoading ? (
+            <ActivityIndicator size="small" color="#0A0E5E" />
+          ) : (
+            <Ionicons name="locate" size={26} color="#0A0E5E" />
+          )}
+        </TouchableOpacity>
+      </Animated.View>
 
       {/* Barra de Búsqueda */}
       <View style={styles.searchContainer}>
@@ -133,11 +136,13 @@ export default function ExploreScreen() {
             style={styles.searchInput}
             placeholderTextColor="#8898AA"
           />
-          {storesLoading && <ActivityIndicator size="small" color="#0A0E5E" style={{ marginRight: 10 }} />}
+          {storesLoading && (
+            <ActivityIndicator size="small" color="#0A0E5E" style={{ marginRight: 10 }} />
+          )}
         </View>
       </View>
 
-      {/* Card de Detalle Dinámica */}
+      {/* Card de Detalle - Renderizado Condicional */}
       {selectedStore && (
         <View style={styles.detailCard}>
           <View style={styles.cardHeader}>
@@ -167,16 +172,18 @@ export default function ExploreScreen() {
             </View>
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.bookButton}
-            onPress={() => {router.push(ROUTES.CLIENT.STORE_DETAIL(selectedStore.id));}}
+            onPress={() => {
+              router.push(ROUTES.CLIENT.STORE_DETAIL(selectedStore.id))
+            }}
           >
             <Text style={styles.bookButtonText}>Book Space Now</Text>
           </TouchableOpacity>
         </View>
       )}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -185,15 +192,21 @@ const styles = StyleSheet.create({
   locationButton: {
     position: 'absolute',
     right: 20,
-    bottom: 320, // Ajustado para que quede sobre la card
     backgroundColor: 'white',
-    padding: 12,
     borderRadius: 30,
-    elevation: 8,
+    elevation: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 5,
-    zIndex: 10,
+    zIndex: 20, // Por encima de la card
+    width: 56,
+    height: 56,
+  },
+  touchableArea: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   markerContainer: {
     padding: 8,
@@ -208,10 +221,10 @@ const styles = StyleSheet.create({
   markerInactive: { backgroundColor: '#35489C' },
   searchContainer: {
     position: 'absolute',
-    top: 60,
+    top: Platform.OS === 'ios' ? 60 : 40,
     width: '100%',
     paddingHorizontal: 20,
-    zIndex: 10,
+    zIndex: 30, // Por encima de todo
   },
   searchBar: {
     backgroundColor: '#FFFFFF',
@@ -228,7 +241,7 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, color: '#32325D', fontSize: 16 },
   detailCard: {
     position: 'absolute',
-    bottom: 25,
+    bottom: Platform.OS === 'ios' ? 120 : 100, // Ajustado para que flote sobre el Tab Bar
     left: 20,
     right: 20,
     backgroundColor: '#FFFFFF',
@@ -238,6 +251,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
+    zIndex: 15, // Por debajo del botón de localización pero sobre el mapa
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
   storeName: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
@@ -264,4 +278,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bookButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
-});
+})
