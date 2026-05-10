@@ -5,59 +5,59 @@ import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Image,
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // --- COMPONENTE ---
 export const BookingCard = ({ booking }: { booking: BookingData }) => {
-    const router = useRouter();
+  const router = useRouter();
   // 1. Lógica de Negocio y Formateo
   const customer = booking.user.profile;
   const fullName = `${customer.firstName} ${customer.lastName}`;
   const inventorySummary = `${booking.items.small}S · ${booking.items.medium}M · ${booking.items.large}L`;
-  
+
   // Formateo de fecha: "19 Abr - 10:48 hrs"
   const pickupTime = `${dayjs(booking.endDate).format('DD MMM')} - ${dayjs(booking.endDate).format('HH:mm')} hrs`;
 
   // 2. Configuración de Estados (Mapeo de UI)
   const statusConfig = {
-    confirmed: { 
-      label: 'To Check-in', 
-      color: '#E8F8F1', 
-      text: '#27AE60', 
+    confirmed: {
+      label: 'To Check-in',
+      color: '#E8F8F1',
+      text: '#27AE60',
       dot: '#2ECC71',
       action: 'Confirm Drop-off'
     },
-    in_storage: { 
-      label: 'In Storage', 
-      color: '#FFF7ED', 
-      text: '#C2410C', 
+    in_storage: {
+      label: 'In Storage',
+      color: '#FFF7ED',
+      text: '#C2410C',
       dot: '#F97316',
       action: 'Confirm Pick-up'
     },
-    completed: { 
-      label: 'Completed', 
-      color: '#F3F4F6', 
-      text: '#6B7280', 
+    completed: {
+      label: 'Completed',
+      color: '#F3F4F6',
+      text: '#6B7280',
       dot: '#9CA3AF',
       action: 'View Details'
     },
-    pending: { 
-      label: 'Pending', 
-      color: '#FEF2F2', 
-      text: '#B91C1C', 
+    pending: {
+      label: 'Pending',
+      color: '#FEF2F2',
+      text: '#B91C1C',
       dot: '#EF4444',
       action: 'Review'
     },
-    cancelled: { 
-      label: 'Cancelled', 
-      color: '#F3F4F6', 
-      text: '#9CA3AF', 
+    cancelled: {
+      label: 'Cancelled',
+      color: '#F3F4F6',
+      text: '#9CA3AF',
       dot: '#D1D5DB',
       action: 'Archived'
     }
@@ -74,14 +74,14 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
 
   return (
     <View style={[styles.card, { borderLeftColor: booking.status === 'confirmed' ? '#FF6B00' : '#D1D5DB' }]}>
-      
+
       {/* HEADER: Avatar, Nombre y Status */}
       <View style={styles.cardHeader}>
-        <Image 
-          source={{ 
-            uri: customer.avatarUrl || `https://ui-avatars.com/api/?name=${fullName}&background=0A0E5E&color=fff` 
-          }} 
-          style={styles.avatar} 
+        <Image
+          source={{
+            uri: customer.avatarUrl || `https://ui-avatars.com/api/?name=${fullName}&background=0A0E5E&color=fff`
+          }}
+          style={styles.avatar}
         />
         <View style={styles.headerInfo}>
           <Text style={styles.customerName} numberOfLines={1}>{fullName}</Text>
@@ -100,7 +100,7 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
           <Text style={styles.infoLabel}>BOOKING ID</Text>
           <Text style={styles.infoValue}>#{booking.id.split('-')[0].toUpperCase()}</Text>
         </View>
-        
+
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>INVENTORY</Text>
           <View style={styles.valueWithIcon}>
@@ -117,9 +117,9 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
 
       {/* BUTTONS: Acciones */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.viewQrBtn} activeOpacity={0.7} onPress={handleScanQR}>
+        <TouchableOpacity style={styles.viewQrBtn} activeOpacity={0.7} onPress={booking.status === 'confirmed' ? handleScanQR : () => null}>
           <Ionicons name="qr-code-outline" size={18} color="#0A0E5E" />
-          <Text style={styles.viewQrText}>Scan QR</Text>
+          <Text style={styles.viewQrText}>{booking.status === 'confirmed' ? 'Scan QR' : 'Ver Detalles'} </Text>
         </TouchableOpacity>
       </View>
     </View>

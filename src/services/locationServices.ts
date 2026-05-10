@@ -20,17 +20,23 @@ export const locationService = {
   },
 
   // services/locationService.ts
-  getNearby: async (lat: number, lng: number, radius?: number, startDate?: string, endDate?: string) => {
+  getNearby: async (lat: number, lng: number, radius?: number, startDate?: string, endDate?: string, search?: string, bounds?: any) => {
     const { data } = await api.get('/locations/nearby', {
       params: {
         lat,
         lng,
         radius,
         startDate,
-        endDate
+        endDate,
+        search,
+        ...bounds
       }
     });
     return data;
   },
-
+  update: async (id: string, data: any) => {
+    // Usamos PATCH porque normalmente solo enviamos los campos que cambiaron
+    const response = await api.patch(`/locations/${id}`, data);
+    return response.data;
+  },
 };

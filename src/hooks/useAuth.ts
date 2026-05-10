@@ -19,8 +19,18 @@ export const useLoginMutation = () => {
       }
     },
     onError: (error: any) => {
-      // Un pequeño tip: si el error es 401 aquí, es por credenciales inválidas
-      console.error("Error al iniciar sesión:", error.response?.data || error.message);
+      const message = error.response?.data?.message || 'Invalid credentials';
+      
+      // Muestra un Toast mucho más amigable
+      import('react-native-toast-message').then(({ default: Toast }) => {
+        Toast.show({
+            type: 'error',
+            text1: message.includes('verify') ? 'Verificación Requerida' : 'Login Failed',
+            text2: message,
+            position: 'bottom',
+        });
+      });
+      console.error("Error al iniciar sesión:", message);
     }
   });
 };

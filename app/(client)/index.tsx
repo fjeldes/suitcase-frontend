@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import MapView, { Marker, Region } from 'react-native-maps'
 
 import { ROUTES } from '@/constants/routes'
 import { useNearbyStores } from '@/hooks/useNearbyStores'
@@ -38,7 +39,11 @@ export default function ExploreScreen() {
 
   const { getLocation, loading: locationLoading } = useUserLocation()
   const { lat, lng, setLocation } = useLocationStore()
-  const { data: stores, isLoading: storesLoading } = useNearbyStores()
+  const [mapBounds, setMapBounds] = useState<any>(null)
+
+  const { data: stores, isLoading: storesLoading } = useNearbyStores({
+    bounds: mapBounds
+  })
 
   const handleCenterMap = async () => {
     await getLocation()
@@ -55,12 +60,59 @@ export default function ExploreScreen() {
     }
   }
 
+  const handleSelectSuggestion = (store: any) => {
+    setSelectedStore(store)
+    mapRef.current?.animateToRegion({
+      latitude: parseFloat(store.lat),
+      longitude: parseFloat(store.lng),
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    }, 1000)
+  }
+
+  const handleSelectPlace = (data: any, details: any) => {
+    if (details) {
+      const { lat, lng } = details.geometry.location;
+      const address = data.description;
+      
+      // 1. Actualizar el store de ubicación
+      setLocation({
+        address,
+        lat: lat.toString(),
+        lng: lng.toString(),
+      });
+
+      // 2. Mover el mapa a la nueva ubicación
+      mapRef.current?.animateToRegion({
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+    }
+  }
+
   const handleRegionChange = (region: Region) => {
+    // 1. Actualizar ubicación central en el store
     setLocation({
       address: 'Map Area',
       lat: region.latitude.toString(),
       lng: region.longitude.toString(),
     })
+
+    // 2. Calcular Bounding Box para el filtro eficiente
+    const latDelta = region.latitudeDelta
+    const lngDelta = region.longitudeDelta
+
+    setMapBounds({
+      minLat: region.latitude - latDelta / 2,
+      maxLat: region.latitude + latDelta / 2,
+      minLng: region.longitude - lngDelta / 2,
+      maxLng: region.longitude + lngDelta / 2,
+    })
+
+    // 3. Opcional: Cerrar detalle si el usuario se aleja mucho (opcional UX)
+    // setSelectedStore(null)
   }
 
   return (
@@ -69,7 +121,7 @@ export default function ExploreScreen() {
 
       <MapView
         ref={mapRef}
-        provider={PROVIDER_GOOGLE}
+        // provider={PROVIDER_GOOGLE}
         style={styles.map}
         showsUserLocation={true}
         showsMyLocationButton={false}
@@ -127,19 +179,59 @@ export default function ExploreScreen() {
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Barra de Búsqueda */}
+      {/* Barra de Búsqueda de Google Places */}
       <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color="#8898AA" style={styles.searchIcon} />
-          <TextInput
-            placeholder="Find storage near you..."
-            style={styles.searchInput}
-            placeholderTextColor="#8898AA"
-          />
-          {storesLoading && (
-            <ActivityIndicator size="small" color="#0A0E5E" style={{ marginRight: 10 }} />
+        <GooglePlacesAutocomplete
+          placeholder="Search places or addresses..."
+          fetchDetails={true}
+          minLength={3}
+          debounce={400}
+          onPress={(data, details = null) => handleSelectPlace(data, details)}
+          query={{
+            key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+            language: 'es',
+            components: 'country:cl', // Restringe a Chile para mayor precisión
+          }}
+          renderLeftButton={() => (
+            <Ionicons name="search" size={20} color="#8898AA" style={styles.searchIconInside} />
           )}
-        </View>
+          styles={{
+            container: { flex: 0 },
+            textInputContainer: {
+              backgroundColor: '#FFFFFF',
+              borderRadius: 30,
+              paddingHorizontal: 10,
+              height: 50,
+              alignItems: 'center',
+              elevation: 4,
+              shadowColor: '#000',
+              shadowOpacity: 0.1,
+            },
+            textInput: {
+              height: 40,
+              color: '#32325D',
+              fontSize: 16,
+              marginTop: 0,
+              marginBottom: 0,
+              paddingLeft: 0,
+            },
+            listView: {
+              backgroundColor: 'white',
+              borderRadius: 20,
+              marginTop: 10,
+              elevation: 10,
+              shadowColor: '#000',
+              shadowOpacity: 0.15,
+              shadowRadius: 10,
+            },
+            row: {
+              paddingVertical: 13,
+            },
+            description: {
+              color: '#4B5563',
+            },
+          }}
+        />
       </View>
 
       {/* Card de Detalle - Renderizado Condicional */}
@@ -237,8 +329,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
   },
-  searchIcon: { marginRight: 10 },
-  searchInput: { flex: 1, color: '#32325D', fontSize: 16 },
+  searchIconInside: { marginLeft: 5, marginRight: 5 },
   detailCard: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 120 : 100, // Ajustado para que flote sobre el Tab Bar
@@ -278,4 +369,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bookButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  
+  // Estilos de Sugerencias
+  suggestionsContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginTop: 10,
+    paddingVertical: 10,
+    maxHeight: 250,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    overflow: 'hidden',
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#F0F0F0',
+  },
+  suggestionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0A0E5E',
+  },
+  suggestionSubtitle: {
+    fontSize: 12,
+    color: '#8898AA',
+    marginTop: 2,
+  },
 })

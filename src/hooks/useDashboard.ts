@@ -9,6 +9,17 @@ export interface Pickups {
   } | null;
 }
 
+export interface NextEvent {
+  time: string;
+  customerName: string;
+  itemsDetail: string;
+}
+
+export interface EventSummary {
+  totalToday: number;
+  nextEvent: NextEvent | null;
+}
+
 export interface DashboardData {
   storeInfo: {
     id: string;
@@ -24,8 +35,15 @@ export interface DashboardData {
     activeCount: number;
     liveStatus: boolean;
   };
-  pickups: Pickups;
-  
+  // AQUÍ EL CAMBIO: Agregamos dropoffs y renombramos las interfaces internas para claridad
+  dropoffs: {
+    totalToday: number;
+    nextDropoff: NextEvent | null;
+  };
+  pickups: {
+    totalToday: number;
+    nextPickup: NextEvent | null;
+  };
   occupancy: Array<{
     label: string;
     percentage: number;
@@ -33,21 +51,40 @@ export interface DashboardData {
   }>;
 }
 
-export const useDashboardStats = (locationId?: string) => {
+export const useDashboardStats = (locationId?: string, options?: { enabled?: boolean }) => {
   return useQuery<DashboardData>({
-    // Incluimos locationId en la key para que si cambias de tienda, se refresque la caché
     queryKey: ['dashboard-stats', locationId],
     queryFn: async () => {
-      // Ajustamos la URL a la que definiste en tu Controller
-      const url = locationId 
-        ? `/locations/owner/stats?locationId=${locationId}` 
+      const url = locationId
+        ? `/locations/owner/stats?locationId=${locationId}`
         : '/locations/owner/stats';
-        
+
       const { data } = await api.get(url);
       return data;
     },
-    refetchInterval: 30000, // 30 segundos
+    enabled: options?.enabled ?? true,
+    refetchInterval: 30000,
     placeholderData: (previousData) => previousData,
-    staleTime: 10000, // Considera los datos "frescos" por 10 segundos
+    staleTime: 10000,
+  });
+};
+
+export interface Location {
+  id: string;
+  name: string;
+  address: string;
+  isActive: boolean;
+  city?: string;
+  country?: string;
+}
+
+export const useMyLocations = () => {
+  return useQuery<Location[]>({
+    queryKey: ['my-locations'],
+    queryFn: async () => {
+      const { data } = await api.get('/locations/me');
+      return data;
+    },
+    staleTime: 30000, // 30 segundos de datos frescos
   });
 };

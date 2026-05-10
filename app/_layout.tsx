@@ -4,18 +4,20 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
-import { Stack, useRouter } from 'expo-router'
+import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreenNative from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 // Hooks y Stores
+import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useRegisterPushToken } from '@/hooks/usePushNotifications'
 import { SplashScreen } from '@/screens/auth/SplashScreen'
 import { useAuthStore } from '@/store/useAuthStore'
 import 'react-native-reanimated'
+import Toast from 'react-native-toast-message'
 
 Notifications.setNotificationHandler({
   handleNotification: async () =>
@@ -38,6 +40,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme()
   const router = useRouter()
   const [appIsReady, setAppIsReady] = useState(false)
+  const splashHidden = React.useRef(false);
   const { isAuthenticated, user, checkAuth } = useAuthStore()
 
   // Ahora useMutation está dentro del Provider y no dará error
@@ -95,28 +98,42 @@ function RootLayoutNav() {
     }
   }
 
-  // 3. Manejo de navegación y registro de notificaciones
+  const segments = useSegments();
+
+  // 3. Manejo de navegación inicial y registro de notificaciones
   useEffect(() => {
-    if (appIsReady) {
-      SplashScreenNative.hideAsync()
+    if (!appIsReady) return;
 
-      if (!isAuthenticated) {
-        router.replace(ROUTES.AUTH.LOGIN)
-      } else {
-        // Registramos notificaciones solo si está autenticado
-        configurePushNotifications()
+    // Ocultar Splash solo la primera vez
+    if (!splashHidden.current) {
+      SplashScreenNative.hideAsync().catch(() => {});
+      splashHidden.current = true;
+    }
 
-        const roles = user?.roles || []
-        if (roles.includes('owner')) {
-          router.replace(ROUTES.OWNER.DASHBOARD)
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!isAuthenticated) {
+      // Si no está autenticado y no está en auth, mandarlo a login
+      if (!inAuthGroup) {
+        router.replace(ROUTES.AUTH.LOGIN);
+      }
+    } else {
+      // Solo hacemos la redirección automática si el usuario está en el grupo de login
+      // o si acabamos de abrir la app y no estamos en ninguna ruta protegida aún.
+      if (inAuthGroup || segments.length === 0) {
+        configurePushNotifications();
+
+        const roles = user?.roles || [];
+        if (roles.includes('owner') || roles.includes('staff')) {
+          router.replace(ROUTES.OWNER.DASHBOARD);
         } else if (roles.includes('client')) {
-          router.replace(ROUTES.CLIENT.EXPLORE)
+          router.replace(ROUTES.CLIENT.EXPLORE);
         } else {
-          router.replace(ROUTES.AUTH.LOGIN)
+          router.replace(ROUTES.AUTH.LOGIN);
         }
       }
     }
-  }, [appIsReady, isAuthenticated, user?.roles])
+  }, [appIsReady, isAuthenticated, user, segments])
 
   if (!appIsReady) {
     return <SplashScreen />
@@ -129,6 +146,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(owner)" options={{ animation: 'fade' }} />
         <Stack.Screen name="(client)" options={{ animation: 'fade' }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="accept-staff" options={{ presentation: 'modal' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
@@ -136,15 +154,23 @@ function RootLayoutNav() {
   )
 }
 
+import { StripeProvider } from '@stripe/stripe-react-native'
+
 // --- COMPONENTE PRINCIPAL (PROVIDERS) ---
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <RootLayoutNav />
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
+      <StripeProvider
+        publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder"}
+        merchantIdentifier="merchant.com.suitcase" // necesario para Apple Pay
+      >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <RootLayoutNav />
+            <Toast config={toastConfig} />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </StripeProvider>
     </QueryClientProvider>
   )
 }

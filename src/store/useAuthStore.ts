@@ -5,7 +5,10 @@ interface User {
   id: string;
   name: string;
   email: string;
-  roles: string[];
+  roles: any[];
+  profile?: {
+    avatar: string | null;
+  };
 }
 
 interface AuthState {
@@ -13,8 +16,8 @@ interface AuthState {
   refreshToken: string | null; // <-- Nuevo
   user: User | null;
   isAuthenticated: boolean;
-  // Ahora recibe ambos tokens
   setTokens: (token: string, refreshToken: string, user: User) => Promise<void>;
+  setUser: (user: User) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -31,6 +34,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     await AsyncStorage.setItem('userData', JSON.stringify(user));
     
     set({ token, refreshToken, user, isAuthenticated: true });
+  },
+
+  setUser: async (user: User) => {
+    await AsyncStorage.setItem('userData', JSON.stringify(user));
+    set({ user });
   },
 
   logout: async () => {

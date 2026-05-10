@@ -28,11 +28,16 @@ export const bookingService = {
         return data;
     },
 
+    cancel: async (bookingId: string) => {
+        const { data } = await api.patch(`/bookings/${bookingId}/cancel`);
+        return data;
+    },
+
     validateQR: async (qrCode: string) => {
         const { data } = await api.get(`/bookings/validate-qr/${qrCode}`);
         return data;
     },
-    
+
     processBookingAction: async (qrCode: string) => {
         const { data } = await api.patch(`/bookings/process-qr/${qrCode}`);
         return data;

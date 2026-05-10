@@ -1,10 +1,11 @@
-import { ROUTES } from '@/constants/routes';
-import { useLoginMutation } from '@/hooks/useAuth';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { GoogleButton } from '@/components/auth/GoogleButton'
+import { ROUTES } from '@/constants/routes'
+import { useLoginMutation } from '@/hooks/useAuth'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'expo-router'
+import React, { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -14,45 +15,50 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { z } from 'zod';
+  View,
+} from 'react-native'
+import { z } from 'zod'
 
 // 1. Esquema de validación
 const loginSchema = z.object({
   email: z.string().email('Ingresa un email válido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-});
+})
 
-type LoginForm = z.infer<typeof loginSchema>;
+type LoginForm = z.infer<typeof loginSchema>
 
 export const LoginScreen = () => {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const loginMutation = useLoginMutation();
+  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
+  const loginMutation = useLoginMutation()
 
   // 2. React Hook Form
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' }
-  });
+    defaultValues: { email: '', password: '' },
+  })
 
   const onSubmit = (data: LoginForm) => {
-    loginMutation.mutate(data);
-  };
+    loginMutation.mutate(data)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
       >
         <View style={styles.content}>
-          
           <View style={styles.header}>
             <View style={styles.logoRow}>
               <MaterialCommunityIcons name="shield-lock" size={28} color="#0A0E5E" />
-              <Text style={styles.logoText}>Secure<Text style={styles.bold}>Transit</Text></Text>
+              <Text style={styles.logoText}>
+                Secure<Text style={styles.bold}>Transit</Text>
+              </Text>
             </View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Please enter your details to access your dashboard.</Text>
@@ -66,8 +72,13 @@ export const LoginScreen = () => {
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputContainer, errors.email && styles.inputError]}>
-                  <Ionicons name="mail-outline" size={20} color="#64748B" style={styles.inputIcon} />
-                  <TextInput 
+                  <Ionicons
+                    name="mail-outline"
+                    size={20}
+                    color="#64748B"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
                     style={styles.input}
                     placeholder="name@company.com"
                     onBlur={onBlur}
@@ -85,8 +96,8 @@ export const LoginScreen = () => {
             {/* INPUT DE PASSWORD */}
             <View style={styles.labelRow}>
               <Text style={styles.label}>Password</Text>
-              <TouchableOpacity>
-                <Text style={styles.forgotPassword}>Forgot Password?</Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
+                <Text style={styles.forgotPassword}>Forgot password?</Text>
               </TouchableOpacity>
             </View>
             <Controller
@@ -94,8 +105,13 @@ export const LoginScreen = () => {
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputContainer, errors.password && styles.inputError]}>
-                  <Ionicons name="lock-closed-outline" size={20} color="#64748B" style={styles.inputIcon} />
-                  <TextInput 
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color="#64748B"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
                     style={styles.input}
                     placeholder="••••••••"
                     onBlur={onBlur}
@@ -105,10 +121,10 @@ export const LoginScreen = () => {
                     editable={!loginMutation.isPending}
                   />
                   <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    <Ionicons 
-                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                      size={20} 
-                      color="#64748B" 
+                    <Ionicons
+                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                      size={20}
+                      color="#64748B"
                     />
                   </TouchableOpacity>
                 </View>
@@ -117,8 +133,8 @@ export const LoginScreen = () => {
             {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
 
             {/* BOTÓN LOGIN */}
-            <TouchableOpacity 
-              style={[styles.loginBtn, loginMutation.isPending && styles.disabledBtn]} 
+            <TouchableOpacity
+              style={[styles.loginBtn, loginMutation.isPending && styles.disabledBtn]}
               onPress={handleSubmit(onSubmit)}
               disabled={loginMutation.isPending}
             >
@@ -139,15 +155,14 @@ export const LoginScreen = () => {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity style={styles.socialBtn}>
-            <Ionicons name="logo-google" size={20} color="#000" />
-            <Text style={styles.socialBtnText}>Continue with Google</Text>
-          </TouchableOpacity>
+          <GoogleButton />
 
+          {/* 
           <TouchableOpacity style={styles.socialBtn}>
             <Ionicons name="logo-apple" size={20} color="#000" />
             <Text style={styles.socialBtnText}>Continue with Apple</Text>
           </TouchableOpacity>
+          */}
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
@@ -155,12 +170,11 @@ export const LoginScreen = () => {
               <Text style={styles.signUpLink}>Sign up</Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   // ... mantén tus estilos y agrega estos:
@@ -192,24 +206,24 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: { fontSize: 14, fontWeight: '600', color: '#334155', marginBottom: 8 },
   forgotPassword: { fontSize: 14, fontWeight: '600', color: '#0A0E5E', marginBottom: 8 },
-  inputContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    backgroundColor: '#F1F5F9', 
-    borderRadius: 16, 
-    paddingHorizontal: 16, 
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 16,
+    paddingHorizontal: 16,
     height: 56,
-    marginBottom: 20 
+    marginBottom: 20,
   },
   inputIcon: { marginRight: 12 },
   input: { flex: 1, fontSize: 16, color: '#1E293B' },
-  loginBtn: { 
-    backgroundColor: '#0A0E5E', 
-    borderRadius: 16, 
-    height: 56, 
-    flexDirection: 'row', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+  loginBtn: {
+    backgroundColor: '#0A0E5E',
+    borderRadius: 16,
+    height: 56,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 10,
     marginTop: 10,
   },
@@ -217,20 +231,20 @@ const styles = StyleSheet.create({
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
   dividerText: { marginHorizontal: 16, color: '#64748B', fontWeight: '500' },
-  socialBtn: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    backgroundColor: '#fff', 
-    borderRadius: 16, 
-    height: 56, 
-    borderWidth: 1, 
-    borderColor: '#E2E8F0', 
+  socialBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    height: 56,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     marginBottom: 12,
-    gap: 12
+    gap: 12,
   },
   socialBtnText: { fontSize: 16, fontWeight: '600', color: '#1E293B' },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
   footerText: { color: '#64748B', fontSize: 14 },
-  signUpLink: { color: '#0A0E5E', fontSize: 14, fontWeight: 'bold' }
-});
+  signUpLink: { color: '#0A0E5E', fontSize: 14, fontWeight: 'bold' },
+})

@@ -10,13 +10,15 @@ export function useCreateBooking() {
 
   return useMutation({
     mutationFn: (payload: CreateBookingPayload) => bookingService.create(payload),
-    onSuccess: () => {
-      // Invalidamos el caché para que la lista de bookings se refresque
-      queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
-      
-      Alert.alert("Success", "Booking created successfully!", [
-        { text: "OK", onPress: () => router.push(ROUTES.CLIENT.BOOKINGS) }
-      ]);
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+
+      const bookingId = data?.id;
+      if (bookingId) {
+        router.push(ROUTES.CLIENT.BOOKING_DETAIL(bookingId));
+      } else {
+        router.push(ROUTES.CLIENT.BOOKINGS);
+      }
     },
     onError: (error: any) => {
       console.error("Error creating booking:", error);

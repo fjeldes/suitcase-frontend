@@ -79,6 +79,10 @@ export default function ClientLayout() {
       {/* Rutas ocultas */}
       <Tabs.Screen name="store/[id]" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="booking-ticket" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="become-owner" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="payment-methods" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="settings" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="help" options={{ href: null, tabBarStyle: { display: 'none' } }} />
     </Tabs>
   );
 }

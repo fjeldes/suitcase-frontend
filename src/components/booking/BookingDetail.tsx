@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Image,
   SafeAreaView,
   ScrollView,
@@ -15,6 +16,13 @@ import {
   View,
 } from 'react-native'
 
+import { usePayment } from '@/hooks/usePayment'
+import { useReviews } from '@/hooks/useReviews'
+import { paymentService } from '@/services/paymentServices'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { DateInput } from '../ui/DateInput'
+
 interface Props {
   storeId: string | string[]
 }
@@ -22,60 +30,82 @@ interface Props {
 export default function BookingDetail({ storeId }: Props) {
   const router = useRouter()
 
-  // Hooks de datos y mutación
+  // Hooks de datos, mutación y pago
   const { data: store, isLoading, error } = useStoreDetail(storeId)
   const { mutate: createBooking, isPending } = useCreateBooking()
+  const { reviews, averageRating, isLoadingReviews } = useReviews(Array.isArray(storeId) ? storeId[0] : storeId)
+  const { setupPaymentSheet } = usePayment();
 
-  // Estados de maletas inicializados en 0
-  const [bags, setBags] = useState({
-    small: 0,
-    medium: 0,
-    large: 0,
-  })
+  const { data: savedCards, isLoading: loadingCards, error: cardsError, refetch: refetchCards } = useQuery({
+    queryKey: ['payment-methods'],
+    queryFn: () => paymentService.getSavedCards(),
+  });
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
-  // Resetear maletas si cambia el store o carga inicialmente
   useEffect(() => {
-    if (store) {
-      setBags({ small: 0, medium: 0, large: 0 })
+    if (savedCards && savedCards.length > 0 && !selectedCardId) {
+      const defaultCard = savedCards.find((c: any) => c.isDefault) || savedCards[0];
+      setSelectedCardId(defaultCard.id);
     }
+  }, [savedCards]);
+
+  // Estados de maletas
+  const [bags, setBags] = useState({ small: 0, medium: 0, large: 0 })
+
+  useEffect(() => {
+    if (store) setBags({ small: 0, medium: 0, large: 0 })
   }, [store])
 
-  // Fechas por defecto
-  const [startDate] = useState(new Date())
-  const [endDate] = useState(new Date(new Date().getTime() + 8 * 60 * 60 * 1000))
+  // Fechas
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
+  const [showHours, setShowHours] = useState(false);
 
-  // Cálculo de precio total basado en disponibilidad real
+  // Determinar si la tienda está abierta ahora
+  const isStoreOpen = useMemo(() => {
+    if (!store?.workingHours) return true;
+    const now = new Date();
+    const dayConfig = store.workingHours.find((h: any) => h.day === now.getDay());
+    if (!dayConfig || dayConfig.isClosed) return false;
+
+    const timeToMinutes = (t: string) => {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    return currentMins >= timeToMinutes(dayConfig.open) && currentMins <= timeToMinutes(dayConfig.close);
+  }, [store]);
+
+  // Cálculo de días y precio total
+  const days = useMemo(() => {
+    const diffMs = endDate.getTime() - startDate.getTime();
+    return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  }, [startDate, endDate])
+
   const totalPrice = useMemo(() => {
     if (!store || !store.pricePerDay) return 0
-
-    const smallPrice = store.pricePerDay.small || 0
-    const mediumPrice = store.pricePerDay.medium || 0
-    const largePrice = store.pricePerDay.large || 0
-
-    return bags.small * smallPrice + bags.medium * mediumPrice + bags.large * largePrice
-  }, [bags, store])
+    return (bags.small * store.pricePerDay.small + bags.medium * store.pricePerDay.medium + bags.large * store.pricePerDay.large) * days
+  }, [bags, store, days])
 
   const updateQuantity = (type: keyof typeof bags, delta: number) => {
     const newValue = bags[type] + delta
-
     if (newValue < 0) return
-
-    // USAMOS availability QUE VIENE DEL BACKEND (Capacidad - Ocupado)
     const limit = store?.availability?.[type] ?? 0
-
     if (newValue > limit) {
-      Alert.alert(
-        'No Space Available',
-        `Sorry, this location only has ${limit} ${type} slots left.`,
-      )
+      Alert.alert('No Space Available', `Sorry, this location only has ${limit} ${type} slots left.`)
       return
     }
-
     setBags({ ...bags, [type]: newValue })
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (isPending || totalPrice === 0) return
+
+    if (startDate >= endDate) {
+      Alert.alert("Invalid Dates", "Pick-up time must be after Drop-off time.");
+      return;
+    }
 
     createBooking({
       locationId: Array.isArray(storeId) ? storeId[0] : storeId,
@@ -85,72 +115,43 @@ export default function BookingDetail({ storeId }: Props) {
     })
   }
 
-  if (isLoading)
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0A0E5E" />
-      </View>
-    )
+  const handleAddCard = async () => {
+    const result = await setupPaymentSheet();
+    if (result.success) {
+      await refetchCards();
+    }
+  };
 
-  if (error)
-    return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>Error loading store details</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.retryBtn}>
-          <Text style={styles.retryBtnText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    )
+  if (isLoading) return <View style={styles.center}><ActivityIndicator size="large" color="#0A0E5E" /></View>
+  if (error) return <View style={styles.center}><Text style={styles.errorText}>Error loading store details</Text></View>
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
-        bounces={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView style={styles.container} bounces={false} contentContainerStyle={styles.scrollContent}>
         {/* HEADER */}
         <View style={styles.header}>
-          <Image
-            source={{
-              uri:
-                store?.image ||
-                'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?q=80&w=1000&auto=format&fit=crop',
-            }}
-            style={styles.bannerImage}
-          />
-
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={28} color="#0A0E5E" />
-          </TouchableOpacity>
-
+          <Image source={{ uri: store?.imageUrl || 'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?q=80&w=1000&auto=format&fit=crop' }} style={styles.bannerImage} />
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}><Ionicons name="chevron-back" size={28} color="#0A0E5E" /></TouchableOpacity>
           <View style={styles.headerInfoCard}>
             <Text style={styles.storeName}>{store?.name || 'Loading...'}</Text>
-            <Text style={styles.subInfo}>
-              <Ionicons name="navigate" size={14} color="#0A0E5E" /> {store?.address?.split(',')[0]}{' '}
-              • 24/7 Access
-            </Text>
+            <Text style={styles.subInfo}><Ionicons name="navigate" size={14} color="#0A0E5E" /> {store?.address?.split(',')[0]} • {isStoreOpen ? 'Open Now' : 'Closed'}</Text>
           </View>
         </View>
 
-        {/* INFO BARS */}
-        <View style={styles.statsContainer}>
-          <View style={styles.ratingBadge}>
-            <Ionicons name="star" size={16} color="#FFD700" />
-            <Text style={styles.ratingText}> 4.9 (128 Reviews)</Text>
-          </View>
-        </View>
-
-        {/* SECURITY SECTION */}
+        {/* HORARIOS */}
         <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="shield-checkmark" size={20} color="#0A0E5E" />
-            <Text style={styles.sectionTitle}> Security</Text>
-          </View>
-          <View style={styles.securityGrid}>
-            <Text style={styles.securityItem}>• 24/7 CCTV Monitoring</Text>
-            <Text style={styles.securityItem}>• Insured up to $3,000</Text>
-          </View>
+          <TouchableOpacity style={styles.sectionHeader} onPress={() => setShowHours(!showHours)}>
+            <Ionicons name="time" size={20} color="#0A0E5E" /><Text style={styles.sectionTitle}> Opening Hours</Text>
+            <Ionicons name={showHours ? "chevron-up" : "chevron-down"} size={20} color="#CBD5E0" style={{ marginLeft: 'auto' }} />
+          </TouchableOpacity>
+          {showHours && (
+            <View style={styles.hoursList}>
+              {store?.workingHours?.map((item: any) => (
+                <View key={item.day} style={styles.hourRow}><Text style={styles.dayText}>{item.label}</Text><Text style={[styles.timeText, item.isClosed && styles.closedText]}>{item.isClosed ? 'Closed' : `${item.open} - ${item.close}`}</Text></View>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* CONFIGURATION */}
@@ -158,17 +159,65 @@ export default function BookingDetail({ storeId }: Props) {
           <Text style={styles.configMainTitle}>Configure Storage</Text>
 
           <View style={styles.dateTimeRow}>
-            <View style={styles.dateInput}>
-              <Text style={styles.dateLabel}>DROP-OFF</Text>
-              <Text style={styles.dateValue}>{startDate.toLocaleDateString()} - 10:00 AM</Text>
-            </View>
-            <View style={styles.dateInput}>
-              <Text style={styles.dateLabel}>PICK-UP</Text>
-              <Text style={styles.dateValue}>{endDate.toLocaleDateString()} - 06:00 PM</Text>
-            </View>
+            <DateInput
+              label="DROP-OFF"
+              value={startDate}
+              onChange={(date) => {
+                setStartDate(date);
+                if (date >= endDate) setEndDate(new Date(date.getTime() + 2 * 60 * 60 * 1000));
+              }}
+              minimumDate={new Date()}
+              icon="calendar"
+            />
+            <DateInput
+              label="PICK-UP"
+              value={endDate}
+              onChange={(date) => setEndDate(date)}
+              minimumDate={startDate}
+              icon="time"
+            />
           </View>
 
           <Text style={styles.luggageLabel}>LUGGAGE ITEMS</Text>
+
+          {/* REVIEWS SECTION */}
+          <View style={styles.reviewsContainer}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="chatbubbles" size={20} color="#0A0E5E" />
+              <Text style={styles.sectionTitle}> What travelers say</Text>
+            </View>
+
+            {isLoadingReviews ? (
+              <ActivityIndicator color="#0A0E5E" />
+            ) : reviews.length === 0 ? (
+              <View style={styles.emptyReviewsContainer}>
+                <Ionicons name="chatbubble-ellipses-outline" size={40} color="#CBD5E0" />
+                <Text style={styles.emptyReviews}>No reviews yet. Be the first!</Text>
+              </View>
+            ) : (
+              reviews.map((rev: any) => (
+                <View key={rev.id} style={styles.reviewItem}>
+                  <View style={styles.reviewHeader}>
+                    <Text style={styles.reviewerName}>
+                      {rev.user?.profile?.firstName || 'User'} {rev.user?.profile?.lastName || ''}
+                    </Text>
+                    <View style={styles.starsRow}>
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Ionicons
+                          key={s}
+                          name="star"
+                          size={12}
+                          color={s <= rev.rating ? "#FFD700" : "#E2E8F0"}
+                        />
+                      ))}
+                    </View>
+                  </View>
+                  <Text style={styles.reviewComment}>{rev.comment}</Text>
+                  <Text style={styles.reviewDate}>{dayjs(rev.createdAt).format('MMM D, YYYY')}</Text>
+                </View>
+              ))
+            )}
+          </View>
 
           {/* ITEM SELECTORS */}
           {(['small', 'medium', 'large'] as const).map((type) => {
@@ -182,8 +231,8 @@ export default function BookingDetail({ storeId }: Props) {
                     {type === 'small'
                       ? 'Small / Backpack'
                       : type === 'medium'
-                      ? 'Medium Suitcase'
-                      : 'Large / Overweight'}
+                        ? 'Medium Suitcase'
+                        : 'Large / Overweight'}
                   </Text>
                   <View style={styles.priceRow}>
                     <Text style={styles.itemPrice}>${store?.pricePerDay?.[type] || 0}/day</Text>
@@ -227,11 +276,109 @@ export default function BookingDetail({ storeId }: Props) {
             )
           })}
 
+          <View style={styles.statsContainer}>
+            <View style={styles.ratingBadge}>
+              <Ionicons name="star" size={16} color="#FFD700" />
+              <Text style={styles.ratingText}>
+                {averageRating || 'No rating'} ({reviews.length} Reviews)
+              </Text>
+            </View>
+          </View>
+
+          {/* PRICE BREAKDOWN */}
+          {totalPrice > 0 && (
+            <View style={styles.breakdownCard}>
+              <Text style={styles.breakdownTitle}>Price Breakdown</Text>
+              <View style={styles.breakdownDivider} />
+              {(['small', 'medium', 'large'] as const).map((type) => {
+                const qty = bags[type]
+                if (qty === 0) return null
+                const price = store?.pricePerDay?.[type] || 0
+                const subtotal = qty * price * days
+                const name = type === 'small' ? 'Small / Backpack' : type === 'medium' ? 'Medium Suitcase' : 'Large / Overweight'
+                return (
+                  <View key={type} style={styles.breakdownRow}>
+                    <Text style={styles.breakdownItem}>{qty}x {name}</Text>
+                    <Text style={styles.breakdownCalc}>${price}/day × {days} {days > 1 ? 'días' : 'día'}</Text>
+                    <Text style={styles.breakdownTotal}>${subtotal.toLocaleString()}</Text>
+                  </View>
+                )
+              })}
+              <View style={styles.breakdownDivider} />
+              <View style={styles.breakdownFinalRow}>
+                <Text style={styles.breakdownFinalLabel}>Total ({days} {days > 1 ? 'días' : 'día'})</Text>
+                <Text style={styles.breakdownFinalValue}>${Math.round(totalPrice).toLocaleString()}</Text>
+              </View>
+            </View>
+          )}
+
+          {/* PAYMENT METHOD */}
+          <View style={styles.paymentSection}>
+            <Text style={styles.paymentSectionTitle}>PAYMENT METHOD</Text>
+            {cardsError ? (
+              <View style={styles.addCardPrompt}>
+                <Ionicons name="alert-circle-outline" size={24} color="#E53E3E" />
+                <Text style={[styles.addCardPromptText, { color: '#E53E3E' }]}>Error loading cards</Text>
+                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}>
+                  <Text style={styles.addCardBtnText}>Add a card instead</Text>
+                </TouchableOpacity>
+              </View>
+            ) : loadingCards ? (
+              <ActivityIndicator color="#0A0E5E" style={{ marginVertical: 12 }} />
+            ) : savedCards && savedCards.length > 0 ? (
+              <>
+                <FlatList
+                  data={savedCards}
+                  keyExtractor={(item: any) => item.id}
+                  scrollEnabled={false}
+                  renderItem={({ item }: { item: any }) => {
+                    const isSelected = item.id === selectedCardId;
+                    return (
+                      <TouchableOpacity
+                        style={[styles.cardOption, isSelected && styles.cardOptionSelected]}
+                        onPress={() => setSelectedCardId(item.id)}
+                      >
+                        <View style={styles.cardOptionLeft}>
+                          <Ionicons
+                            name={item.brand === 'visa' ? 'card' : 'card-outline'}
+                            size={22}
+                            color={isSelected ? '#0A0E5E' : '#64748B'}
+                          />
+                          <View style={{ marginLeft: 12 }}>
+                            <Text style={[styles.cardOptionNumber, isSelected && { color: '#0A0E5E' }]}>
+                              •••• {item.last4}
+                            </Text>
+                            <Text style={styles.cardOptionBrand}>{item.brand?.toUpperCase()}</Text>
+                          </View>
+                        </View>
+                        <Ionicons
+                          name={isSelected ? 'radio-button-on' : 'radio-button-off'}
+                          size={22}
+                          color={isSelected ? '#0A0E5E' : '#CBD5E0'}
+                        />
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}>
+                  <Ionicons name="add-circle-outline" size={18} color="#0A0E5E" />
+                  <Text style={styles.addCardBtnText}>Add another card</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard}>
+                <Ionicons name="card-outline" size={24} color="#0A0E5E" />
+                <Text style={styles.addCardPromptText}>Add Payment Method</Text>
+                <Text style={styles.addCardPromptSub}>Secure checkout with Stripe</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
           {/* TOTAL & CONFIRM */}
           <View style={styles.footer}>
             <View>
               <Text style={styles.totalHoursLabel}>Total Price</Text>
-              <Text style={styles.totalAmount}>${totalPrice.toFixed(2)}</Text>
+              <Text style={styles.totalAmount}>${Math.round(totalPrice).toLocaleString()}</Text>
             </View>
             <TouchableOpacity
               style={[styles.confirmButton, (totalPrice === 0 || isPending) && styles.disabledBtn]}
@@ -383,4 +530,191 @@ const styles = StyleSheet.create({
   errorText: { color: '#64748B', marginBottom: 20 },
   retryBtn: { backgroundColor: '#0A0E5E', padding: 12, borderRadius: 8 },
   retryBtnText: { color: 'white', fontWeight: 'bold' },
+
+  // Price Breakdown
+  breakdownCard: {
+    backgroundColor: '#F8F9FB',
+    borderRadius: 18,
+    padding: 18,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#EDF2F7',
+  },
+  breakdownTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#8898AA',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  breakdownDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 10,
+  },
+  breakdownRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  breakdownItem: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0A0E5E',
+  },
+  breakdownCalc: {
+    fontSize: 11,
+    color: '#8898AA',
+    marginRight: 12,
+  },
+  breakdownTotal: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0A0E5E',
+    minWidth: 60,
+    textAlign: 'right',
+  },
+  breakdownFinalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  breakdownFinalLabel: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0A0E5E',
+  },
+  breakdownFinalValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0A0E5E',
+  },
+
+  // Payment Section
+  paymentSection: {
+    marginTop: 24,
+  },
+  paymentSectionTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#8898AA',
+    letterSpacing: 1,
+    marginBottom: 12,
+  },
+  cardOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F8F9FB',
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 8,
+    borderWidth: 1.5,
+    borderColor: '#EDF2F7',
+  },
+  cardOptionSelected: {
+    borderColor: '#0A0E5E',
+    backgroundColor: '#F0F2FF',
+  },
+  cardOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardOptionNumber: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  cardOptionBrand: {
+    fontSize: 11,
+    color: '#94A3B8',
+    marginTop: 1,
+  },
+  addCardBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    gap: 6,
+  },
+  addCardBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0A0E5E',
+  },
+  addCardPrompt: {
+    backgroundColor: '#F8F9FB',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderStyle: 'dashed',
+    padding: 24,
+    alignItems: 'center',
+    gap: 6,
+  },
+  addCardPromptText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0A0E5E',
+    marginTop: 4,
+  },
+  addCardPromptSub: {
+    fontSize: 12,
+    color: '#94A3B8',
+  },
+
+  // Hours Styles
+  hoursList: { marginTop: 10, gap: 8 },
+  hourRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
+  dayText: { color: '#4A5568', fontSize: 14, fontWeight: '500' },
+  timeText: { color: '#2D3748', fontSize: 14, fontWeight: 'bold' },
+  closedText: { color: '#E53E3E' },
+  reviewsContainer: {
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  reviewItem: {
+    backgroundColor: '#F8F9FB',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  reviewerName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#0A0E5E',
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  reviewComment: {
+    fontSize: 14,
+    color: '#4A5568',
+    lineHeight: 20,
+  },
+  reviewDate: {
+    fontSize: 11,
+    color: '#A0AEC0',
+    marginTop: 8,
+  },
+  emptyReviewsContainer: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    backgroundColor: '#F8F9FB',
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  emptyReviews: {
+    color: '#8898AA',
+    fontSize: 14,
+    marginTop: 10,
+  },
 })

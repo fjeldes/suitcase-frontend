@@ -3,7 +3,7 @@ import React from 'react';
 import { Image, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 // Asumimos que la imagen del escudo naranja está en tus assets
-const ShieldIcon = require('../../../assets/images/logo.png'); 
+const ShieldIcon = require('@/assets/images/logo.png'); 
 
 export const SplashScreen = () => {
   return (

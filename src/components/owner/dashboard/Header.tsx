@@ -1,25 +1,61 @@
 import { ROUTES } from '@/constants/routes'
+import { staffService } from '@/services/staffService';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useMyLocations } from '@/hooks/useDashboard'
+import { useOwnerStore } from '@/store/useOwnerStore'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export const HeaderDashboard = ({ storeName }: { storeName: string }) => {
+export const HeaderDashboard = ({
+  onPress,
+  showChevron
+}: {
+  onPress?: () => void;
+  showChevron?: boolean;
+}) => {
   const router = useRouter()
+  const { data: stores } = useMyLocations();
+  const { user } = useAuthStore();
+  const isStaff = user?.roles?.includes('staff');
+  const { data: staffLocations } = useQuery({
+    queryKey: ['staff-locations'],
+    queryFn: () => staffService.getMyLocations(),
+  });
+  const { activeLocationId, setActiveLocation, activeLocationName } = useOwnerStore();
+  const assignedLocations = isStaff ? (staffLocations || []).map((s: any) => s.location).filter(Boolean) : [];
+
+  useEffect(() => {
+    const locations = isStaff ? assignedLocations : stores;
+    if (locations && locations.length > 0 && !activeLocationId) {
+      setActiveLocation(locations[0].id, locations[0].name);
+    }
+  }, [stores, assignedLocations, activeLocationId, isStaff]);
 
   return (
     <View style={styles.header}>
-      <View style={styles.headerLeft}>
+      <TouchableOpacity
+        style={styles.headerLeft}
+        onPress={onPress}
+        disabled={!onPress}
+        activeOpacity={0.7}
+      >
         <View style={styles.storeIconBg}>
           <MaterialCommunityIcons name="storefront" size={20} color="#0A0E5E" />
         </View>
         <View>
           <Text style={styles.headerSubtitle}>ACTIVE HUB</Text>
-          <Text style={styles.headerTitle}>{storeName}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text style={styles.headerTitle}>{activeLocationName}</Text>
+            {showChevron && <Ionicons name="chevron-down" size={14} color="#6366F1" />}
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.headerRight}>
-        <TouchableOpacity style={styles.iconCircle}>
+        <TouchableOpacity style={styles.iconCircle}
+          onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
           <Ionicons name="notifications" size={24} color="#0A0E5E" />
           <View style={styles.notificationDot} />
         </TouchableOpacity>

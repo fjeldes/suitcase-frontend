@@ -13,7 +13,11 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native'
+import * as ImagePicker from 'expo-image-picker'
+import { uploadService } from '@/services/uploadService'
+import Toast from 'react-native-toast-message'
 
 export default function CreateLocationScreen() {
   const router = useRouter()
@@ -34,6 +38,16 @@ export default function CreateLocationScreen() {
     largeCapacity: '1',
     lat: '',
     lng: '',
+    imageUrl: null as string | null,
+    workingHours: [
+      { day: 1, label: 'Mon', open: '09:00', close: '18:00', isClosed: false },
+      { day: 2, label: 'Tue', open: '09:00', close: '18:00', isClosed: false },
+      { day: 3, label: 'Wed', open: '09:00', close: '18:00', isClosed: false },
+      { day: 4, label: 'Thu', open: '09:00', close: '18:00', isClosed: false },
+      { day: 5, label: 'Fri', open: '09:00', close: '18:00', isClosed: false },
+      { day: 6, label: 'Sat', open: '10:00', close: '14:00', isClosed: true },
+      { day: 0, label: 'Sun', open: '00:00', close: '00:00', isClosed: true },
+    ]
   })
 
   // 2. Efecto para actualizar el formulario cuando volvemos del mapa
@@ -65,14 +79,50 @@ export default function CreateLocationScreen() {
         const response = await locationService.create(form);
         
         console.log('Success:', response);
-        alert('Location created successfully!');
-        router.replace(ROUTES.OWNER.DASHBOARD);
+        Toast.show({
+          type: 'success',
+          text1: 'Success! ✨',
+          text2: 'Location created successfully.'
+        });
+        router.replace(ROUTES.OWNER.STORES);
         
       } catch (error: any) {
         console.error('Error creating location:', error.response?.data || error.message);
-        alert(error.response?.data?.message || 'Something went wrong');
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: error.response?.data?.message || 'Something went wrong'
+        });
       } finally {
         setLoading(false);
+      }
+    };
+
+    const pickImage = async () => {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Toast.show({ type: 'error', text1: 'Permission Denied', text2: 'Need access to gallery.' });
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        try {
+          setLoading(true);
+          const uploadedUrl = await uploadService.uploadImage(result.assets[0].uri, 'locations');
+          setForm({ ...form, imageUrl: uploadedUrl });
+          Toast.show({ type: 'success', text1: 'Image uploaded!' });
+        } catch (error) {
+          Toast.show({ type: 'error', text1: 'Upload failed' });
+        } finally {
+          setLoading(false);
+        }
       }
     };
   
@@ -92,6 +142,39 @@ export default function CreateLocationScreen() {
         <Text style={styles.description}>
           Expand your network. Provide a secure vault for travelers and earn more...
         </Text>
+
+        {/* Store Photo Section */}
+        <View style={styles.sectionHeader}>
+          <Ionicons name="camera" size={20} color="#B45309" />
+          <Text style={styles.sectionTitle}>Store Photo</Text>
+        </View>
+
+        <TouchableOpacity 
+          style={[styles.imageUploadCard, form.imageUrl ? styles.imageActive : null]} 
+          onPress={pickImage}
+          disabled={loading}
+        >
+          {form.imageUrl ? (
+            <View style={styles.imagePreviewContainer}>
+              <View style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <Image 
+                  source={{ uri: form.imageUrl }} 
+                  style={styles.previewImage} 
+                />
+                <View style={styles.imageOverlay}>
+                  <Ionicons name="create" size={24} color="#FFF" />
+                  <Text style={styles.overlayText}>Change Photo</Text>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.uploadPlaceholder}>
+              <Ionicons name="cloud-upload-outline" size={40} color="#64748B" />
+              <Text style={styles.uploadTitle}>Upload Main Photo</Text>
+              <Text style={styles.uploadSubtitle}>Showcase your storage space</Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
         <View style={styles.sectionHeader}>
           <Ionicons name="location" size={20} color="#B45309" />
@@ -164,6 +247,59 @@ export default function CreateLocationScreen() {
           />
         </View>
 
+        <View style={styles.sectionHeader}>
+          <Ionicons name="time" size={20} color="#B45309" />
+          <Text style={styles.sectionTitle}>Business Hours</Text>
+        </View>
+
+        <View style={styles.hoursContainer}>
+          {form.workingHours.map((item, index) => (
+            <View key={item.day} style={styles.hourRow}>
+              <View style={styles.dayInfo}>
+                <Text style={styles.dayLabel}>{item.label}</Text>
+                <TouchableOpacity 
+                  onPress={() => {
+                    const newHours = [...form.workingHours];
+                    newHours[index].isClosed = !newHours[index].isClosed;
+                    setForm({ ...form, workingHours: newHours });
+                  }}
+                  style={[styles.statusBadge, item.isClosed ? styles.closedBadge : styles.openBadge]}
+                >
+                  <Text style={styles.statusText}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
+                </TouchableOpacity>
+              </View>
+
+              {!item.isClosed && (
+                <View style={styles.timeInputs}>
+                  <TextInput
+                    style={styles.timeInput}
+                    value={item.open}
+                    onChangeText={(val) => {
+                      const newHours = [...form.workingHours];
+                      newHours[index].open = val;
+                      setForm({ ...form, workingHours: newHours });
+                    }}
+                    placeholder="09:00"
+                    maxLength={5}
+                  />
+                  <Text style={styles.timeDivider}>to</Text>
+                  <TextInput
+                    style={styles.timeInput}
+                    value={item.close}
+                    onChangeText={(val) => {
+                      const newHours = [...form.workingHours];
+                      newHours[index].close = val;
+                      setForm({ ...form, workingHours: newHours });
+                    }}
+                    placeholder="18:00"
+                    maxLength={5}
+                  />
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+
         <TouchableOpacity style={styles.submitBtn} onPress={() => handleSubmit()} disabled={loading}>
           <Text style={styles.submitBtnText}>Create Storage Location</Text>
           <Ionicons name="chevron-forward" size={20} color="#fff" />
@@ -219,6 +355,120 @@ const styles = StyleSheet.create({
   },
   mapButtonText: { fontWeight: 'bold', color: '#0A0E5E' },
   priceContainer: { gap: 12 },
+  imageUploadCard: {
+    height: 180,
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    borderStyle: 'dashed',
+    marginBottom: 25,
+    overflow: 'hidden',
+  },
+  imageActive: {
+    borderStyle: 'solid',
+    borderColor: '#0A0E5E',
+  },
+  uploadPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  uploadTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0A0E5E',
+  },
+  uploadSubtitle: {
+    fontSize: 13,
+    color: '#94A3B8',
+  },
+  imagePreviewContainer: {
+    flex: 1,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10, 14, 94, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+  },
+  overlayText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  hoursContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    padding: 16,
+    gap: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+  },
+  hourRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  dayInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  dayLabel: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0A0E5E',
+    width: 40,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  openBadge: {
+    backgroundColor: '#DCFCE7',
+  },
+  closedBadge: {
+    backgroundColor: '#F1F5F9',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#10B981',
+  },
+  timeInputs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  timeInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    width: 60,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#0A0E5E',
+  },
+  timeDivider: {
+    fontSize: 12,
+    color: '#94A3B8',
+  },
   submitBtn: {
     backgroundColor: '#0A0E5E',
     borderRadius: 18,

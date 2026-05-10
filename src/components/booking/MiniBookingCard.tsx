@@ -1,26 +1,34 @@
+import { ROUTES } from '@/constants/routes';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export const MiniBookingCard = ({ booking }: { booking: any }) => {
-  const dateStr = new Date(booking.startDate).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    hour: '2-digit', 
-    minute: '2-digit' 
+export const MiniBookingCard = ({
+  booking,
+  onReview
+}: {
+  booking: any,
+  onReview?: () => void
+}) => {
+  const dateStr = new Date(booking.startDate).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
-
+  const router = useRouter()
   const totalItems = (booking.items?.small || 0) + (booking.items?.medium || 0) + (booking.items?.large || 0);
 
   return (
     <View style={styles.miniCard}>
       <View style={styles.miniHeader}>
         <View style={[
-          styles.badgeUpcoming, 
+          styles.badgeUpcoming,
           booking.status === 'completed' && { backgroundColor: '#EDFDFD' }
         ]}>
           <Text style={[
-            styles.badgeTextUpcoming, 
+            styles.badgeTextUpcoming,
             booking.status === 'completed' && { color: '#319795' }
           ]}>
             {booking.status.toUpperCase()}
@@ -30,10 +38,22 @@ export const MiniBookingCard = ({ booking }: { booking: any }) => {
       </View>
       <Text style={styles.miniStoreName}>{booking.location?.name}</Text>
       <Text style={styles.miniDate}>{dateStr}</Text>
-      
+
       <View style={styles.miniFooter}>
-        <Text style={styles.itemTotal}>{totalItems} Items Total</Text>
-        <TouchableOpacity style={styles.modifyButton}>
+        <View>
+          <Text style={styles.itemTotal}>{totalItems} Items Total</Text>
+          {booking.status === 'completed' && !booking.review && (
+            <TouchableOpacity
+              style={styles.reviewLink}
+              onPress={onReview}
+            >
+              <Ionicons name="star" size={14} color="#FBB142" />
+              <Text style={styles.reviewLinkText}> Review Store</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <TouchableOpacity style={styles.modifyButton} onPress={() => router.push(ROUTES.CLIENT.PAST_BOOKING_DETAIL(booking.id))}>
           <Text style={styles.modifyText}>Details </Text>
           <Ionicons name="chevron-forward" size={14} color="#A0522D" />
         </TouchableOpacity>
@@ -53,4 +73,14 @@ const styles = StyleSheet.create({
   itemTotal: { color: '#0A0E5E', fontWeight: '500', fontSize: 13 },
   modifyButton: { flexDirection: 'row', alignItems: 'center' },
   modifyText: { color: '#A0522D', fontWeight: '700', fontSize: 13 },
+  reviewLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  reviewLinkText: {
+    color: '#FBB142',
+    fontWeight: '700',
+    fontSize: 12,
+  },
 });

@@ -6,18 +6,24 @@ interface NearbyOptions {
   radius?: number;
   startDate?: Date;
   endDate?: Date;
+  search?: string;
+  bounds?: {
+    minLat: number;
+    maxLat: number;
+    minLng: number;
+    maxLng: number;
+  };
 }
 
 export function useNearbyStores(options: NearbyOptions = {}) {
-  const { radius = 5, startDate, endDate } = options;
+  const { radius = 5, startDate, endDate, search, bounds } = options;
   
   // Extraemos lat y lng de tu store de Zustand
   const { lat, lng } = useLocationStore();
 
   return useQuery({
-    // Incluimos radius y fechas en la queryKey para que React Query 
-    // refresque la data si el usuario cambia el filtro.
-    queryKey: ['stores', 'nearby', lat, lng, radius, startDate?.toISOString(), endDate?.toISOString()],
+    // Incluimos radius, fechas, búsqueda y BOUNDS en la queryKey 
+    queryKey: ['stores', 'nearby', lat, lng, radius, startDate?.toISOString(), endDate?.toISOString(), search, bounds],
     
     queryFn: async () => {
       if (!lat || !lng) return [];
@@ -32,7 +38,9 @@ export function useNearbyStores(options: NearbyOptions = {}) {
         parseFloat(lng), 
         radius, 
         startStr, 
-        endStr
+        endStr,
+        search,
+        bounds
       );
     },
     

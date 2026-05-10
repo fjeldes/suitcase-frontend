@@ -2,27 +2,30 @@ import { useBookingsQuery } from '@/hooks/useMyBookings';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MainBookingCard } from '../booking/MainBookingCard';
 import { MiniBookingCard } from '../booking/MiniBookingCard';
+import { ReviewModal } from '../booking/ReviewModal';
 
 export default function BookingsScreen() {
   const [activeTab, setActiveTab] = useState<'Active' | 'Past'>('Active');
+  const [selectedBookingForReview, setSelectedBookingForReview] = useState<any>(null);
   const { data: bookings, isLoading, refetch } = useBookingsQuery();
 
   const filteredBookings = useMemo(() => {
     if (!bookings) return [];
     return bookings.filter((b: any) => {
       if (activeTab === 'Active') {
-        return b.status === 'confirmed' || b.status === 'pending';
+        // B-03: Incluir in_storage para que la reserva no "desaparezca" tras el check-in
+        return b.status === 'confirmed' || b.status === 'pending' || b.status === 'in_storage';
       }
       return b.status === 'completed' || b.status === 'cancelled';
     });
@@ -47,7 +50,7 @@ export default function BookingsScreen() {
 
       <View style={styles.tabContainer}>
         {(['Active', 'Past'] as const).map((tab) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             key={tab}
             style={[styles.tabButton, activeTab === tab && styles.tabButtonActive]}
             onPress={() => setActiveTab(tab)}
@@ -70,14 +73,28 @@ export default function BookingsScreen() {
             <Text style={styles.emptyText}>No {activeTab.toLowerCase()} bookings found</Text>
           </View>
         }
-        renderItem={({ item, index }) => (
-          index === 0 && activeTab === 'Active' ? (
-            <MainBookingCard booking={item} />
+        renderItem={({ item }) => (
+          activeTab === 'Active' ? (
+            <MainBookingCard
+              booking={item}
+              onReview={() => setSelectedBookingForReview(item)}
+            />
           ) : (
-            <MiniBookingCard booking={item} />
+            <MiniBookingCard
+              booking={item}
+              onReview={() => setSelectedBookingForReview(item)}
+            />
           )
         )}
       />
+
+      {selectedBookingForReview && (
+        <ReviewModal
+          isVisible={!!selectedBookingForReview}
+          onClose={() => setSelectedBookingForReview(null)}
+          booking={selectedBookingForReview}
+        />
+      )}
     </SafeAreaView>
   );
 }

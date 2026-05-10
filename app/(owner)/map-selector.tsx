@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView from 'react-native-maps';
 
 export default function MapSelector() {
   const router = useRouter();
@@ -54,7 +54,7 @@ export default function MapSelector() {
       lat: region.latitude.toString(),
       lng: region.longitude.toString(),
     });
-  
+
     // Volvemos físicamente atrás. El mapa desaparece del stack.
     router.back();
   };
@@ -63,7 +63,7 @@ export default function MapSelector() {
     <View style={styles.container}>
       <MapView
         ref={mapRef}
-        provider={PROVIDER_GOOGLE}
+        // provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFillObject}
         initialRegion={region}
         onRegionChangeComplete={(newRegion) => {
@@ -86,8 +86,11 @@ export default function MapSelector() {
           </TouchableOpacity>
           <GooglePlacesAutocomplete
             ref={googleInputRef}
-            placeholder="Search address"
+            placeholder="Search address in Chile..."
             fetchDetails={true}
+            minLength={3} // Empezar a buscar tras 3 letras
+            debounce={400} // Retraso para no saturar la API
+            enablePoweredByContainer={false}
             onPress={(data, details = null) => {
               if (details) {
                 mapRef.current?.animateToRegion({
@@ -98,7 +101,11 @@ export default function MapSelector() {
                 });
               }
             }}
-            query={{ key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY, language: 'es' }}
+            query={{ 
+              key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY, 
+              language: 'es',
+              components: 'country:cl', // Restringir solo a Chile
+            }}
             styles={autocompleteStyles}
           />
         </View>
@@ -109,7 +116,7 @@ export default function MapSelector() {
         <Text style={styles.label}>SELECTED LOCATION</Text>
         <Text style={styles.addressMain}>{addressInfo.main}</Text>
         <Text style={styles.addressFull}>{addressInfo.full}</Text>
-        
+
         <TouchableOpacity style={styles.btn} onPress={handleConfirm} disabled={isSearching}>
           {isSearching ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Confirm Location</Text>}
           <Ionicons name="checkmark-circle" size={20} color="#fff" />
@@ -137,6 +144,6 @@ const styles = StyleSheet.create({
 });
 
 const autocompleteStyles = {
-    container: { flex: 1 },
-    textInput: { height: 48, borderRadius: 12, elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 }
+  container: { flex: 1 },
+  textInput: { height: 48, borderRadius: 12, elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 }
 };

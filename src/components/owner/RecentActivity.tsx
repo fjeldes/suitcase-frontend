@@ -1,9 +1,11 @@
+import { useActivityLogs } from '@/hooks/useActivityLogs';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { styles } from './RecentActivity.styles';
 
 interface ActivityProps {
-  type: 'BOOKING' | 'COLLECTION' | 'REVIEW';
+  type: 'BOOKING' | 'COLLECTION' | 'REVIEW' | 'CANCELLED';
   title: string;
   location: string;
   time: string;
@@ -17,6 +19,7 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
     BOOKING: { color: '#B45309', icon: 'time-outline', badgeBg: '#F1F5F9', badgeText: '#1E293B' },
     COLLECTION: { color: '#818CF8', icon: 'checkmark-circle-outline', badgeBg: '#F0FDF4', badgeText: '#166534' },
     REVIEW: { color: '#CBD5E1', icon: 'star', badgeBg: 'transparent', badgeText: '' },
+    CANCELLED: { color: '#F87171', icon: 'close-circle-outline', badgeBg: '#FEF2F2', badgeText: '#991B1B' },
   };
 
   const current = config[type];
@@ -33,7 +36,7 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
       <View style={styles.contentContainer}>
         <Text style={styles.activityTitle}>{title}</Text>
         <Text style={styles.activitySubtitle}>{location} · {time}</Text>
-        
+
         {type === 'REVIEW' ? (
           <View style={styles.starsRow}>
             {[1, 2, 3, 4, 5].map((s) => (
@@ -52,57 +55,125 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
 };
 
 export const RecentActivity = () => {
+  const { data: logs, isLoading } = useActivityLogs(5);
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <ActivityIndicator color="#0A0E5E" style={{ marginTop: 20 }} />
+      </View>
+    );
+  }
+
+  if (!logs || logs.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <View style={styles.emptyCard}>
+          <Ionicons name="list-circle-outline" size={32} color="#94A3B8" />
+          <Text style={styles.emptyTextTitle}>No activity yet</Text>
+          <Text style={styles.emptyText}>When bookings are made, they will appear here.</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Recent Activity</Text>
-      
+
       <View style={styles.listCard}>
-        <ActivityItem 
-          type="BOOKING"
-          title="New Booking: 2x Suitcase"
-          location="The Grand Archive"
-          time="12:45 PM"
-          statusText="Pending Drop-off"
-        />
-        <ActivityItem 
-          type="COLLECTION"
-          title="Collection Completed"
-          location="St. Pancras Vault"
-          time="10:20 AM"
-          statusText="Order #8921"
-        />
-        <ActivityItem 
-          type="REVIEW"
-          title="Review Received"
-          location="The Grand Archive"
-          time="Yesterday"
-          isLast={true}
-        />
+        {logs.map((log, idx) => {
+          const isLast = idx === logs.length - 1;
+          const timeFormatted = formatTime(log.createdAt);
+          const locationName = log.location?.name || 'Store';
+
+          if (log.type === 'NEW_BOOKING') {
+            return (
+              <ActivityItem
+                key={log.id}
+                type="BOOKING"
+                title={`New Booking: ${log.payload?.itemsSummary || 'Items'}`}
+                location={locationName}
+                time={timeFormatted}
+                statusText={log.payload?.status}
+                isLast={isLast}
+              />
+            );
+          }
+
+          if (log.type === 'COLLECTION_COMPLETED') {
+            return (
+              <ActivityItem
+                key={log.id}
+                type="COLLECTION"
+                title="Collection Completed"
+                location={locationName}
+                time={timeFormatted}
+                statusText={log.payload?.orderNumber}
+                isLast={isLast}
+              />
+            );
+          }
+
+          if (log.type === 'BOOKING_CANCELLED') {
+            return (
+              <ActivityItem
+                key={log.id}
+                type="CANCELLED"
+                title="Booking Cancelled"
+                location={locationName}
+                time={timeFormatted}
+                statusText={log.payload?.orderNumber}
+                isLast={isLast}
+              />
+            );
+          }
+
+          if (log.type === 'REVIEW_RECEIVED') {
+            return (
+              <ActivityItem
+                key={log.id}
+                type="REVIEW"
+                title="Review Received"
+                location={locationName}
+                time={timeFormatted}
+                isLast={isLast}
+              />
+            );
+          }
+
+          // Fallback para otros tipos de evento
+          return (
+            <ActivityItem
+              key={log.id}
+              type="BOOKING"
+              title="Activity Logged"
+              location={locationName}
+              time={timeFormatted}
+              isLast={isLast}
+            />
+          );
+        })}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { marginTop: 25, paddingHorizontal: 4 },
-  sectionTitle: { fontSize: 28, fontWeight: 'bold', color: '#0A0E5E', marginBottom: 20 },
-  listCard: { backgroundColor: '#fff', borderRadius: 24, paddingVertical: 20 },
-  itemWrapper: { flexDirection: 'row', minHeight: 80, paddingHorizontal: 20 },
-  timelineContainer: { alignItems: 'center', width: 20, marginRight: 15 },
-  dot: { width: 14, height: 14, borderRadius: 7, zIndex: 1 },
-  line: { flex: 1, width: 2, backgroundColor: '#F1F5F9', marginVertical: 4 },
-  contentContainer: { flex: 1, paddingBottom: 25 },
-  activityTitle: { fontSize: 16, fontWeight: 'bold', color: '#1E293B', marginBottom: 4 },
-  activitySubtitle: { fontSize: 14, color: '#64748B', marginBottom: 10 },
-  badge: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12, 
-    paddingVertical: 6, 
-    borderRadius: 10,
-    gap: 6
-  },
-  badgeText: { fontSize: 12, fontWeight: '600' },
-  starsRow: { flexDirection: 'row', marginTop: 4 }
-});
