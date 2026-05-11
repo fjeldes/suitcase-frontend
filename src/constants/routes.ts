@@ -16,6 +16,7 @@ export const ROUTES = {
     BOOKINGS: '/(owner)/bookings',
     STAFF: '/(owner)/staff',
     STATS: '/(owner)/stats',
+    ACTIVITY_LOGS: '/(owner)/activity-logs',
     // Usamos funciones para rutas con parámetros [id]
     BOOKING_DETAIL: (id: string) => `/(owner)/bookings/${id}` as const,
     SCANNER: '/(owner)/bookings/scanner',

@@ -1,7 +1,9 @@
+import { ROUTES } from '@/constants/routes';
 import { useActivityLogs } from '@/hooks/useActivityLogs';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './RecentActivity.styles';
 
 interface ActivityProps {
@@ -54,8 +56,9 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
   );
 };
 
-export const RecentActivity = () => {
-  const { data: logs, isLoading } = useActivityLogs(5);
+export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
+  const router = useRouter();
+  const { data: logs, isLoading } = useActivityLogs(maxItems);
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -101,79 +104,28 @@ export const RecentActivity = () => {
       <Text style={styles.sectionTitle}>Recent Activity</Text>
 
       <View style={styles.listCard}>
-        {logs.map((log, idx) => {
-          const isLast = idx === logs.length - 1;
+        {logs.slice(0, maxItems).map((log, idx) => {
+          const isLast = idx === Math.min(logs.length, maxItems) - 1;
           const timeFormatted = formatTime(log.createdAt);
           const locationName = log.location?.name || 'Store';
 
-          if (log.type === 'NEW_BOOKING') {
-            return (
-              <ActivityItem
-                key={log.id}
-                type="BOOKING"
-                title={`New Booking: ${log.payload?.itemsSummary || 'Items'}`}
-                location={locationName}
-                time={timeFormatted}
-                statusText={log.payload?.status}
-                isLast={isLast}
-              />
-            );
-          }
-
-          if (log.type === 'COLLECTION_COMPLETED') {
-            return (
-              <ActivityItem
-                key={log.id}
-                type="COLLECTION"
-                title="Collection Completed"
-                location={locationName}
-                time={timeFormatted}
-                statusText={log.payload?.orderNumber}
-                isLast={isLast}
-              />
-            );
-          }
-
-          if (log.type === 'BOOKING_CANCELLED') {
-            return (
-              <ActivityItem
-                key={log.id}
-                type="CANCELLED"
-                title="Booking Cancelled"
-                location={locationName}
-                time={timeFormatted}
-                statusText={log.payload?.orderNumber}
-                isLast={isLast}
-              />
-            );
-          }
-
-          if (log.type === 'REVIEW_RECEIVED') {
-            return (
-              <ActivityItem
-                key={log.id}
-                type="REVIEW"
-                title="Review Received"
-                location={locationName}
-                time={timeFormatted}
-                isLast={isLast}
-              />
-            );
-          }
-
-          // Fallback para otros tipos de evento
-          return (
-            <ActivityItem
-              key={log.id}
-              type="BOOKING"
-              title="Activity Logged"
-              location={locationName}
-              time={timeFormatted}
-              isLast={isLast}
-            />
+          const props = (type: ActivityProps['type'], title: string, statusText?: string) => (
+            <ActivityItem key={log.id} type={type} title={title} location={locationName} time={timeFormatted} statusText={statusText} isLast={isLast} />
           );
+
+          if (log.type === 'NEW_BOOKING') return props('BOOKING', `New Booking: ${log.payload?.itemsSummary || 'Items'}`, log.payload?.status);
+          if (log.type === 'COLLECTION_COMPLETED') return props('COLLECTION', 'Collection Completed', log.payload?.orderNumber);
+          if (log.type === 'BOOKING_CANCELLED') return props('CANCELLED', 'Booking Cancelled', log.payload?.orderNumber);
+          if (log.type === 'REVIEW_RECEIVED') return props('REVIEW', 'Review Received');
+          return props('BOOKING', 'Activity Logged');
         })}
       </View>
+
+      {logs.length > maxItems && (
+        <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.push(ROUTES.OWNER.ACTIVITY_LOGS)}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>View All Activity</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
