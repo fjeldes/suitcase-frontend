@@ -69,6 +69,8 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
     location,
     startDate: startRaw,
     endDate: endRaw,
+    surcharges = [],
+    totalSurcharge = 0,
   } = booking;
 
   const handleCancel = () => {
@@ -170,7 +172,7 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
         <BookingSummary
           items={booking.items}
           pricePerDay={booking.location.pricePerDay}
-          totalPrice={Number(booking.totalPrice)}
+          totalPrice={Number(booking.totalPrice) + totalSurcharge}
           days={days}
           currency="CLP"
           status={booking.status}
@@ -178,6 +180,21 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
           onCancel={handleCancel}
           onViewReceipt={() => { /* lógica de recibo */ }}
         />
+
+        {surcharges.length > 0 && (
+          <View style={styles.surchargeSection}>
+            <Text style={styles.surchargeTitle}>EXTRA CHARGES</Text>
+            {surcharges.map((s: any, i: number) => (
+              <View key={i} style={styles.surchargeRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.surchargeLabel}>{s.description}</Text>
+                  <Text style={styles.surchargeDate}>{new Date(s.createdAt).toLocaleDateString()}</Text>
+                </View>
+                <Text style={styles.surchargeAmount}>+${Number(s.total).toLocaleString()}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -275,4 +292,10 @@ const styles = StyleSheet.create({
     borderColor: '#E53E3E',
   },
   cancelButtonText: { color: '#E53E3E', fontWeight: 'bold', fontSize: 16 },
+  surchargeSection: { marginTop: 20 },
+  surchargeTitle: { fontSize: 12, fontWeight: '800', color: '#E53E3E', letterSpacing: 1, marginBottom: 10 },
+  surchargeRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF5F5', padding: 14, borderRadius: 14, marginBottom: 8 },
+  surchargeLabel: { fontSize: 13, fontWeight: '600', color: '#1A202C' },
+  surchargeDate: { fontSize: 11, color: '#94A3B8', marginTop: 2 },
+  surchargeAmount: { fontSize: 16, fontWeight: '800', color: '#E53E3E' },
 });

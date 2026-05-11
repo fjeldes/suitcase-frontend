@@ -132,12 +132,27 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                 <BookingSummary
                     items={booking.items}
                     pricePerDay={booking.location.pricePerDay}
-                    totalPrice={Number(booking.totalPrice)}
+                    totalPrice={Number(booking.totalPrice) + (booking.totalSurcharge || 0)}
                     days={days}
                     currency="CLP"
                     status={booking.status}
                     onViewReceipt={() => { /* lógica de recibo */ }}
                 />
+
+                {(booking.surcharges || []).length > 0 && (
+                    <View style={{ marginTop: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '800', color: '#E53E3E', letterSpacing: 1, marginBottom: 8 }}>EXTRA CHARGES</Text>
+                        {(booking.surcharges || []).map((s: any, i: number) => (
+                            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF5F5', padding: 12, borderRadius: 12, marginBottom: 6 }}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#1A202C' }}>{s.description}</Text>
+                                    <Text style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{new Date(s.createdAt).toLocaleDateString()}</Text>
+                                </View>
+                                <Text style={{ fontSize: 15, fontWeight: '800', color: '#E53E3E' }}>+${Number(s.total).toLocaleString()}</Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
 
                 {/* Action Buttons */}
                 <TouchableOpacity style={styles.primaryBtn}>
