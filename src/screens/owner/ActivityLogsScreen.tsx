@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   topBarTitle: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#94A3B8', fontSize: 15, marginTop: 12 },
-  list: { padding: 20, paddingBottom: 100 },
+  list: { padding: 20, paddingBottom: 120 },
   row: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', padding: 16,
     borderRadius: 16, marginBottom: 8, gap: 12,

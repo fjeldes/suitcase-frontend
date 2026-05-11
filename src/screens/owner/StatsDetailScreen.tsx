@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, paddingVertical: 15,
   },
   topBarTitle: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
-  scroll: { padding: 20, paddingBottom: 100 },
+  scroll: { padding: 20, paddingBottom: 120 },
   section: { marginBottom: 24 },
   sectionTitle: {
     fontSize: 12, fontWeight: '800', color: '#8898AA', letterSpacing: 1,

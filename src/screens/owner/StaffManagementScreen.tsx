@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   topBarTitle: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
   locationLabel: { fontSize: 12, fontWeight: '700', color: '#64748B', paddingHorizontal: 20, marginBottom: 10, letterSpacing: 0.5 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  list: { padding: 20, paddingBottom: 100 },
+  list: { padding: 20, paddingBottom: 120 },
   empty: { alignItems: 'center', marginTop: 60, gap: 12 },
   emptyText: { fontSize: 15, color: '#94A3B8' },
   staffRow: {
