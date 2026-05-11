@@ -58,7 +58,7 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
 
 export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
   const router = useRouter();
-  const { data: logs, isLoading } = useActivityLogs(maxItems);
+  const { data: logs, isLoading } = useActivityLogs(10);
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
