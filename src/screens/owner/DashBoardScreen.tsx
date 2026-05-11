@@ -1,10 +1,7 @@
 import { ROUTES } from "@/constants/routes";
 import { CapacitySection } from "@/components/owner/dashboard/CapacityCircles";
-import { CurrentBookingsCard } from "@/components/owner/dashboard/CurrentBookingsCard";
 import { HeaderDashboard } from "@/components/owner/dashboard/Header";
 import { StatMiniCards } from "@/components/owner/dashboard/StatMiniCards";
-import { UpcomingDropoffsCard } from "@/components/owner/dashboard/UpcomingDropoffsCard";
-import { UpcomingPickupsCard } from "@/components/owner/dashboard/UpcomingPickupsCard";
 import { RecentActivity } from "@/components/owner/RecentActivity";
 import { staffService } from "@/services/staffService";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -15,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { FlatList, Modal, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import dayjs from 'dayjs';
 import { styles } from "./DashBoardScreen.styles";
 import { LoadingDashboard } from "./LoadingDashboard";
 
@@ -166,31 +164,82 @@ export default function DashboardScreen() {
                     </View>
                 )}
 
-                {!isStaff && (
-                    <StatMiniCards
-                        todayRevenue={dashboardData.revenue.today}
-                        activeBookings={dashboardData.bookings.activeCount}
-                        pickupsToday={dashboardData.pickups.totalToday}
-                        dropoffsToday={dashboardData.dropoffs.totalToday}
-                        percentageIncrease={dashboardData.revenue.percentageIncrease}
-                    />
-                )}
-
-                <CurrentBookingsCard count={dashboardData.bookings.activeCount} />
-
-                <UpcomingPickupsCard
-                    count={dashboardData.pickups.totalToday}
-                    nextTime={dashboardData.pickups.nextPickup?.time}
-                    nextPerson={dashboardData.pickups.nextPickup?.customerName}
-                    nextItem={dashboardData.pickups.nextPickup?.itemsDetail}
+                <StatMiniCards
+                    todayRevenue={dashboardData.revenue.today}
+                    activeBookings={dashboardData.bookings.activeCount}
+                    pickupsToday={dashboardData.pickups.totalToday}
+                    dropoffsToday={dashboardData.dropoffs.totalToday}
+                    percentageIncrease={dashboardData.revenue.percentageIncrease}
+                    onViewDetails={() => router.push(ROUTES.OWNER.STATS)}
                 />
 
-                <UpcomingDropoffsCard
-                    count={dashboardData.dropoffs.totalToday}
-                    nextTime={dashboardData.dropoffs.nextDropoff?.time}
-                    nextPerson={dashboardData.dropoffs.nextDropoff?.customerName}
-                    nextItem={dashboardData.dropoffs.nextDropoff?.itemsDetail}
-                />
+                {/* Upcoming Events */}
+                <View style={{ marginBottom: 20 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '800', color: '#8898AA', letterSpacing: 1, marginBottom: 10, marginLeft: 4 }}>
+                        UPCOMING TODAY
+                    </Text>
+                    <View style={{ backgroundColor: 'white', borderRadius: 20, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5 }}>
+                        {dashboardData.dropoffs.nextDropoff && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
+                                <View style={{ width: 40, height: 40, backgroundColor: '#FFF7ED', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                                    <Ionicons name="log-in-outline" size={20} color="#FF6D00" />
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>Drop-off: {dashboardData.dropoffs.nextDropoff.customerName}</Text>
+                                    <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{dashboardData.dropoffs.nextDropoff.time} • {dashboardData.dropoffs.nextDropoff.itemsDetail}</Text>
+                                </View>
+                            </View>
+                        )}
+                        {dashboardData.pickups.nextPickup && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: dashboardData.dropoffs.nextDropoff ? 1 : 0, borderBottomColor: '#F1F5F9' }}>
+                                <View style={{ width: 40, height: 40, backgroundColor: '#F0FDF4', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                                    <Ionicons name="log-out-outline" size={20} color="#22C55E" />
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>Pickup: {dashboardData.pickups.nextPickup.customerName}</Text>
+                                    <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{dashboardData.pickups.nextPickup.time} • {dashboardData.pickups.nextPickup.itemsDetail}</Text>
+                                </View>
+                            </View>
+                        )}
+                        {!dashboardData.dropoffs.nextDropoff && !dashboardData.pickups.nextPickup && (
+                            <View style={{ alignItems: 'center', padding: 24 }}>
+                                <Text style={{ fontSize: 14, color: '#94A3B8' }}>No upcoming events today</Text>
+                            </View>
+                        )}
+                        <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>View All Bookings</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Quick Actions */}
+                <View style={{ marginBottom: 20 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '800', color: '#8898AA', letterSpacing: 1, marginBottom: 10, marginLeft: 4 }}>
+                        QUICK ACTIONS
+                    </Text>
+                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
+                            <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
+                                <Ionicons name="qr-code-outline" size={24} color="#0A0E5E" />
+                            </View>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Scan QR</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
+                            <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
+                                <Ionicons name="briefcase-outline" size={24} color="#0A0E5E" />
+                            </View>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Bookings</Text>
+                        </TouchableOpacity>
+                        {!isStaff && (
+                            <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.STORES)}>
+                                <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Ionicons name="storefront-outline" size={24} color="#0A0E5E" />
+                                </View>
+                                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Stores</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
 
                 {!isStaff && <CapacitySection data={dashboardData.occupancy} />}
 

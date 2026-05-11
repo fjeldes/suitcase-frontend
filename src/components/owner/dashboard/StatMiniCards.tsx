@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface StatCardProps {
   title: string;
@@ -28,6 +28,7 @@ interface StatMiniCardsProps {
   pickupsToday: number;
   dropoffsToday: number;
   percentageIncrease: number;
+  onViewDetails?: () => void;
 }
 
 export const StatMiniCards = ({
@@ -36,42 +37,20 @@ export const StatMiniCards = ({
   pickupsToday,
   dropoffsToday,
   percentageIncrease,
+  onViewDetails,
 }: StatMiniCardsProps) => {
   const isPositive = percentageIncrease >= 0;
   const revenueSub = `${isPositive ? '+' : ''}${percentageIncrease}% vs yesterday`;
 
   return (
-    <View style={styles.grid}>
-      <StatCard
-        title="Revenue Today"
-        value={`$${todayRevenue.toFixed(0)}`}
-        icon="cash-outline"
-        color="#0A0E5E"
-        bgColor="#EEF2FF"
-        subtitle={revenueSub}
-      />
-      <StatCard
-        title="Active Bookings"
-        value={activeBookings}
-        icon="briefcase-outline"
-        color="#6366F1"
-        bgColor="#EEF2FF"
-      />
-      <StatCard
-        title="Pickups Today"
-        value={pickupsToday}
-        icon="log-out-outline"
-        color="#22C55E"
-        bgColor="#F0FDF4"
-      />
-      <StatCard
-        title="Dropoffs Today"
-        value={dropoffsToday}
-        icon="log-in-outline"
-        color="#FF6D00"
-        bgColor="#FFF7ED"
-      />
-    </View>
+    <TouchableOpacity onPress={onViewDetails} activeOpacity={onViewDetails ? 0.8 : 1} disabled={!onViewDetails}>
+      <View style={styles.grid}>
+        <StatCard title="Revenue Today" value={`$${todayRevenue.toFixed(0)}`} icon="cash-outline" color="#0A0E5E" bgColor="#EEF2FF" subtitle={revenueSub} />
+        <StatCard title="Active Bookings" value={activeBookings} icon="briefcase-outline" color="#6366F1" bgColor="#EEF2FF" />
+        <StatCard title="Pickups Today" value={pickupsToday} icon="log-out-outline" color="#22C55E" bgColor="#F0FDF4" />
+        <StatCard title="Dropoffs Today" value={dropoffsToday} icon="log-in-outline" color="#FF6D00" bgColor="#FFF7ED" />
+      </View>
+    </TouchableOpacity>
   );
 };
 

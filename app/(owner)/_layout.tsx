@@ -80,6 +80,7 @@ export default function OwnerLayout() {
       <Tabs.Screen name="map-selector" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="notifications" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="stores" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="stats" options={{ href: null, tabBarStyle: { display: 'none' } }} />
     </Tabs>
   );
 }
