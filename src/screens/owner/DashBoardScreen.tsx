@@ -168,8 +168,10 @@ export default function DashboardScreen() {
 
                 {!isStaff && (
                     <StatMiniCards
-                        today={dashboardData.revenue.today}
-                        yesterday={dashboardData.revenue.yesterday}
+                        todayRevenue={dashboardData.revenue.today}
+                        activeBookings={dashboardData.bookings.activeCount}
+                        pickupsToday={dashboardData.pickups.totalToday}
+                        dropoffsToday={dashboardData.dropoffs.totalToday}
                         percentageIncrease={dashboardData.revenue.percentageIncrease}
                     />
                 )}
@@ -191,25 +193,6 @@ export default function DashboardScreen() {
                 />
 
                 {!isStaff && <CapacitySection data={dashboardData.occupancy} />}
-
-                {!isStaff && (
-                    <TouchableOpacity style={{
-                        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                        backgroundColor: 'white', padding: 16, borderRadius: 20, marginTop: 8,
-                        elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5,
-                    }} onPress={() => router.push(ROUTES.OWNER.STAFF)}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                            <View style={{ width: 44, height: 44, backgroundColor: '#EEF2FF', borderRadius: 12, justifyContent: 'center', alignItems: 'center' }}>
-                                <Ionicons name="people-outline" size={22} color="#0A0E5E" />
-                            </View>
-                            <View>
-                                <Text style={{ fontSize: 15, fontWeight: '700', color: '#1A202C' }}>Manage Staff</Text>
-                                <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>Add or remove team members</Text>
-                            </View>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
-                    </TouchableOpacity>
-                )}
 
                 {!isStaff && <RecentActivity />}
             </ScrollView>

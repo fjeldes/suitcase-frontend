@@ -8,7 +8,7 @@ export const CurrentBookingsCard = ({ count }: { count: number }) => {
   const router = useRouter()
   return (
     <TouchableOpacity
-      onPress={() => router.push(ROUTES.OWNER.BOOKINGS)}
+      onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}
       activeOpacity={0.8} // Mejora el feedback al tocar
     >
       <View style={styles.card}>

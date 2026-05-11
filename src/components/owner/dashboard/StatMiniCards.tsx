@@ -1,67 +1,114 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  bgColor: string;
+  subtitle?: string;
+}
+
+const StatCard = ({ title, value, icon, color, bgColor, subtitle }: StatCardProps) => (
+  <View style={[styles.card, { backgroundColor: bgColor }]}>
+    <View style={[styles.iconBox, { backgroundColor: color + '20' }]}>
+      <Ionicons name={icon} size={20} color={color} />
+    </View>
+    <Text style={styles.value}>{value}</Text>
+    <Text style={styles.title}>{title}</Text>
+    {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+  </View>
+);
+
 interface StatMiniCardsProps {
-  today: number;
-  yesterday: number;
+  todayRevenue: number;
+  activeBookings: number;
+  pickupsToday: number;
+  dropoffsToday: number;
   percentageIncrease: number;
 }
 
-export const StatMiniCards = ({ 
-  today, 
-  percentageIncrease, 
+export const StatMiniCards = ({
+  todayRevenue,
+  activeBookings,
+  pickupsToday,
+  dropoffsToday,
+  percentageIncrease,
 }: StatMiniCardsProps) => {
-  
-  // Determinamos el icono de tendencia (subida o bajada)
   const isPositive = percentageIncrease >= 0;
-  const trendIcon = isPositive ? '↗' : '↘';
+  const revenueSub = `${isPositive ? '+' : ''}${percentageIncrease}% vs yesterday`;
 
   return (
-    <View style={styles.row}>
-      {/* Tarjeta de REVENUE (Azul) */}
-      <View style={[styles.miniCard, { backgroundColor: '#0A0E5E' }]}>
-        <Text style={styles.miniLabelWhite}>REVENUE</Text>
-        <Text style={styles.miniValueWhite}>${today.toFixed(2)}</Text>
-        <Text style={styles.miniSubWhite}>
-          {trendIcon} {isPositive ? '+' : ''}{percentageIncrease}%
-        </Text>
-      </View>
+    <View style={styles.grid}>
+      <StatCard
+        title="Revenue Today"
+        value={`$${todayRevenue.toFixed(0)}`}
+        icon="cash-outline"
+        color="#0A0E5E"
+        bgColor="#EEF2FF"
+        subtitle={revenueSub}
+      />
+      <StatCard
+        title="Active Bookings"
+        value={activeBookings}
+        icon="briefcase-outline"
+        color="#6366F1"
+        bgColor="#EEF2FF"
+      />
+      <StatCard
+        title="Pickups Today"
+        value={pickupsToday}
+        icon="log-out-outline"
+        color="#22C55E"
+        bgColor="#F0FDF4"
+      />
+      <StatCard
+        title="Dropoffs Today"
+        value={dropoffsToday}
+        icon="log-in-outline"
+        color="#FF6D00"
+        bgColor="#FFF7ED"
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  row: { 
-    flexDirection: 'row', 
-    width: '100%' 
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 16,
   },
-  miniCard: { 
-    flex: 1, 
-    backgroundColor: '#0A0E5E', 
-    borderRadius: 24, 
-    padding: 20, 
-    shadowColor: '#000', 
-    shadowOpacity: 0.1, 
-    shadowRadius: 10, 
-    elevation: 4 
+  card: {
+    width: '48%',
+    borderRadius: 20,
+    padding: 16,
+    gap: 6,
   },
-  miniLabelWhite: { 
-    fontSize: 10, 
-    fontWeight: '800', 
-    color: 'rgba(255,255,255,0.6)', 
-    marginBottom: 8,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase'
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  miniValueWhite: { 
-    fontSize: 24, 
-    fontWeight: '800', 
-    color: '#FFF', 
-    marginBottom: 4 
+  value: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#0A0E5E',
   },
-  miniSubWhite: { 
-    fontSize: 12, 
-    fontWeight: '700', 
-    color: '#FFF' 
+  title: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#64748B',
+    letterSpacing: 0.3,
+  },
+  subtitle: {
+    fontSize: 10,
+    color: '#94A3B8',
+    marginTop: -2,
   },
 });

@@ -54,16 +54,12 @@ export const HeaderDashboard = ({
         </View>
       </TouchableOpacity>
       <View style={styles.headerRight}>
-        <TouchableOpacity style={styles.iconCircle}
-          onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
-          <Ionicons name="notifications" size={24} color="#0A0E5E" />
-          <View style={styles.notificationDot} />
+        <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
+          <Ionicons name="qr-code-outline" size={22} color="#0A0E5E" />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconCircle}
-          onPress={() => router.push(ROUTES.OWNER.PROFILE)}
-        >
-          <Ionicons name="person-circle-outline" size={32} color="#0A0E5E" />
+        <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
+          <Ionicons name="notifications" size={22} color="#0A0E5E" />
+          <View style={styles.notificationDot} />
         </TouchableOpacity>
       </View>
     </View>

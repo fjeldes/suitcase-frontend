@@ -112,11 +112,8 @@ export const ProfileScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Business</Text>
           <View style={styles.card}>
-            <MenuItem 
-              icon="storefront-outline" 
-              title="My Stores" 
-              onPress={() => router.push(ROUTES.OWNER.STORES)}
-            />
+            <MenuItem icon="storefront-outline" title="My Stores" onPress={() => router.push(ROUTES.OWNER.STORES)} />
+            <MenuItem icon="people-outline" title="Manage Staff" onPress={() => router.push(ROUTES.OWNER.STAFF)} family="Ionicons" />
             <MenuItem icon="card" title="Payout Methods" />
             <MenuItem icon="newspaper" title="Tax Info" family="Ionicons" />
             <MenuItem icon="handshake" title="Partner Terms" family="FontAwesome5" />
