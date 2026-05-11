@@ -1,13 +1,16 @@
 import { FormInput } from '@/components/ui/FormInput'
 import { useSignupMutation } from '@/hooks/useSignUp'
 import { SignUpFormData, signupSchema } from '@/schemas/auth.schema'
+import { termsService } from '@/services/termsService'
 import { Ionicons } from '@expo/vector-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
+    ActivityIndicator,
     KeyboardAvoidingView,
+    Modal,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -20,6 +23,10 @@ export default function RegisterScreen() {
   const router = useRouter()
   const { email: prefillEmail, staffToken } = useLocalSearchParams<{ email?: string; staffToken?: string }>()
   const [showPassword, setShowPassword] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [showTerms, setShowTerms] = useState(false)
+  const [termsContent, setTermsContent] = useState('')
+  const [loadingTerms, setLoadingTerms] = useState(false)
   const signupMutation = useSignupMutation(staffToken)
   const {
     control,
@@ -36,9 +43,18 @@ export default function RegisterScreen() {
     },
   })
 
+  useEffect(() => {
+    (async () => {
+      setLoadingTerms(true)
+      try {
+        const terms = await termsService.getLatest('client')
+        setTermsContent(terms.content)
+      } catch { setTermsContent('Terms and conditions are currently unavailable.') }
+      finally { setLoadingTerms(false) }
+    })()
+  }, [])
+
   const onSubmit = (data: SignUpFormData) => {
-    // Aquí llamas a tu backend de NestJS
-    console.log('Sending to NestJS:', data)
     signupMutation.mutate(data)
   }
 
@@ -112,10 +128,58 @@ export default function RegisterScreen() {
               error={errors.confirmPassword}
             />
 
-            <TouchableOpacity style={styles.signUpButton} onPress={handleSubmit(onSubmit)}>
+            {/* Terms checkbox */}
+            <TouchableOpacity
+              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginTop: 8 }}
+              onPress={() => setTermsAccepted(!termsAccepted)}
+              activeOpacity={0.7}
+            >
+              <View style={{
+                width: 22, height: 22, borderRadius: 6, borderWidth: 2,
+                borderColor: termsAccepted ? '#0A0E5E' : '#CBD5E0',
+                backgroundColor: termsAccepted ? '#0A0E5E' : 'transparent',
+                justifyContent: 'center', alignItems: 'center', marginTop: 2,
+              }}>
+                {termsAccepted && <Ionicons name="checkmark" size={16} color="white" />}
+              </View>
+              <Text style={{ flex: 1, fontSize: 13, color: '#64748B', lineHeight: 18 }}>
+                I have read and accept the{' '}
+                <Text style={{ color: '#0A0E5E', fontWeight: '700' }} onPress={() => setShowTerms(true)}>
+                  Terms & Conditions
+                </Text>
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.signUpButton, (!termsAccepted || loadingTerms) && { opacity: 0.5 }]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={!termsAccepted || loadingTerms}
+            >
               <Text style={styles.signUpButtonText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Terms Modal */}
+          <Modal visible={showTerms} transparent animationType="slide">
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+              <View style={{
+                backgroundColor: 'white', borderTopLeftRadius: 32, borderTopRightRadius: 32,
+                padding: 24, paddingBottom: 40, maxHeight: '80%',
+              }}>
+                <View style={{ width: 40, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
+                <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginBottom: 16 }}>Terms & Conditions</Text>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator>
+                  <Text style={{ fontSize: 14, color: '#1A202C', lineHeight: 22, whiteSpace: 'pre-wrap' }}>{termsContent}</Text>
+                </ScrollView>
+                <TouchableOpacity
+                  style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: '#0A0E5E', alignItems: 'center' }}
+                  onPress={() => setShowTerms(false)}
+                >
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
           {/* ... Resto del componente (Divider, Social, etc.) */}
         </ScrollView>
