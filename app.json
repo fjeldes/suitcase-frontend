@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "luggage-app",
-    "slug": "luggage-app",
+    "name": "SecureCustodian",
+    "slug": "secure-custodian",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "bundleIdentifier": "com.fjeldesr.luggageapp",
+      "bundleIdentifier": "com.securecustodian.app",
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Necesitamos tu ubicación para mostrar lugares cercanos"
@@ -17,14 +17,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#000666",
         "foregroundImage": "./src/assets/images/android-icon-foreground.png",
         "backgroundImage": "./src/assets/images/android-icon-background.png",
         "monochromeImage": "./src/assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.fjeldesr.luggageapp"
+      "package": "com.securecustodian.app"
     },
     "web": {
       "output": "static",
@@ -38,9 +38,9 @@
           "image": "./src/assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#000666",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#000666"
           }
         }
       ],

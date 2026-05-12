@@ -26,11 +26,11 @@ export const SplashScreen = () => {
 
         {/* Textos Principales */}
         <Text style={styles.mainTitle}>
-          Secure<Text style={styles.boldText}>Transit</Text>
+          Secure<Text style={styles.boldText}>Custodian</Text>
         </Text>
         
         <Text style={styles.subTitle}>
-          Your Premium Luggage Custodian
+          Your luggage, safe anywhere
         </Text>
       </View>
 
