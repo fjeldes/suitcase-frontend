@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router'
 import React from 'react'
 import {
     ActivityIndicator,
-    Alert,
     SafeAreaView,
     ScrollView,
     StatusBar,
@@ -44,23 +43,9 @@ export default function BookingValidated() {
   const bookingIdDisplay = currentBooking.id?.slice(0, 8).toUpperCase()
 
   const handleConfirm = () => {
-    // Usamos el qrCode para identificar la reserva en el backend
     processBooking(currentBooking.qrCode, {
       onSuccess: () => {
-        Alert.alert(
-          'Success!',
-          isCheckIn
-            ? 'The items have been safely stored.'
-            : 'The booking has been completed and items returned.',
-          [
-            {
-              text: 'Return to Dashboard',
-              onPress: () => {
-                router.replace(ROUTES.OWNER.DASHBOARD)
-              },
-            },
-          ],
-        )
+        router.replace(ROUTES.OWNER.CHECKIN_SUCCESS)
       },
       onError: (err: any) => {
         const errorMsg = err.response?.data?.message || 'Action could not be completed.'

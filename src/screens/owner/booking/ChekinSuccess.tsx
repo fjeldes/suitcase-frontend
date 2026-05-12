@@ -13,10 +13,14 @@ import {
   View,
 } from 'react-native'
 
+const ITEM_LABELS: Record<string, string> = {
+  small: 'Small Bag',
+  medium: 'Medium Suitcase',
+  large: 'Large Suitcase',
+}
+
 export const CheckInSuccess = () => {
   const router = useRouter()
-
-  // 1. Obtener datos y funciones del Store Unificado
   const { currentBooking, clearCurrentBooking } = useBookingStore()
 
   if (!currentBooking) {
@@ -28,38 +32,45 @@ export const CheckInSuccess = () => {
     )
   }
 
+  const isCheckIn = currentBooking.status === 'in_storage'
   const bookingIdDisplay = currentBooking.id?.slice(0, 8).toUpperCase()
+  const items = currentBooking.items || { small: 0, medium: 0, large: 0 }
+  const hasItems = Object.values(items).some((v: any) => v > 0)
+
+  const handleDone = () => {
+    clearCurrentBooking()
+    router.replace(ROUTES.OWNER.DASHBOARD)
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Custom Navbar (Opcional si usas el de Expo Router) */}
-      <View style={styles.navbar}>
-        <Ionicons name="menu-outline" size={28} color="#0A0E5E" />
-        <Text style={styles.brandText}>LuggageVault</Text>
-        <View style={styles.avatarMini} />
-      </View>
-
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Success Header Section */}
-        <View style={styles.successHeader}>
+        {/* Success Icon */}
+        <View style={styles.successSection}>
           <View style={styles.outerCircle}>
             <View style={styles.innerCircle}>
               <Ionicons name="checkmark" size={48} color="#22C55E" />
             </View>
           </View>
-          <Text style={styles.mainTitle}>Check-in Successful!</Text>
-          <Text style={styles.subTitle}>The customer is verified and ready for storage.</Text>
+          <Text style={styles.title}>
+            {isCheckIn ? 'Check-in Successful!' : 'Check-out Successful!'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {isCheckIn
+              ? 'The items have been safely stored.'
+              : 'The booking has been completed and items returned.'}
+          </Text>
         </View>
 
-        {/* Customer Info Card */}
-        <View style={styles.infoCard}>
-          <Text style={styles.labelHighlight}>CUSTOMER</Text>
+        {/* Customer Card */}
+        <View style={styles.card}>
+          <Text style={styles.label}>CUSTOMER</Text>
           <Text style={styles.customerName}>
             {currentBooking.user?.profile
               ? `${currentBooking.user.profile.firstName} ${currentBooking.user.profile.lastName}`
               : 'Guest User'}
           </Text>
           <Text style={styles.bookingId}>Booking ID: #{bookingIdDisplay}</Text>
-
           <View style={styles.identityBadge}>
             <MaterialCommunityIcons name="shield-check" size={16} color="#0A0E5E" />
             <Text style={styles.identityText}> Identity Confirmed</Text>
@@ -67,51 +78,36 @@ export const CheckInSuccess = () => {
         </View>
 
         {/* Items Card */}
-        <View style={styles.infoCard}>
-          <Text style={styles.labelHighlight}>ITEMS TO STORE</Text>
-
-          <View style={styles.itemRow}>
-            <View style={styles.itemIconBox}>
-              <MaterialCommunityIcons name="bag-checked" size={24} color="#0A0E5E" />
-            </View>
-            <View>
-              <Text style={styles.itemName}>2 Large Suitcases</Text>
-              <Text style={styles.itemType}>Standard Storage</Text>
-            </View>
+        {hasItems && (
+          <View style={styles.card}>
+            <Text style={styles.label}>ITEMS TO STORE</Text>
+            {Object.entries(items).map(([key, value]) => {
+              if (!value || (value as number) === 0) return null
+              return (
+                <View key={key} style={styles.itemRow}>
+                  <View style={styles.itemIconBox}>
+                    <MaterialCommunityIcons
+                      name={key === 'large' ? 'bag-checked' : 'bag-personal'}
+                      size={24}
+                      color="#0A0E5E"
+                    />
+                  </View>
+                  <View>
+                    <Text style={styles.itemName}>
+                      {value} {ITEM_LABELS[key] || key}
+                    </Text>
+                    <Text style={styles.itemType}>Scan verified</Text>
+                  </View>
+                </View>
+              )
+            })}
           </View>
-
-          <View style={styles.itemRow}>
-            <View style={styles.itemIconBox}>
-              <MaterialCommunityIcons name="bag-personal" size={24} color="#0A0E5E" />
-            </View>
-            <View>
-              <Text style={styles.itemName}>1 Backpack</Text>
-              <Text style={styles.itemType}>Cabin Size</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Storage Instruction Box (Blue) */}
-        <View style={styles.instructionBox}>
-          <View style={styles.infoIconCircle}>
-            <Ionicons name="information-outline" size={24} color="white" />
-          </View>
-          <View style={styles.instructionTextContainer}>
-            <Text style={styles.instructionTitle}>Storage Instruction</Text>
-            <Text style={styles.instructionBody}>
-              Please ensure labels are attached to the items before storing them in the
-              <Text style={styles.vaultHighlight}> 'Main Vault'</Text> area.
-            </Text>
-          </View>
-        </View>
+        )}
 
         {/* Action Button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.replace(ROUTES.OWNER.BOOKINGS)}
-        >
+        <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
           <MaterialCommunityIcons name="archive-arrow-down-outline" size={22} color="white" />
-          <Text style={styles.backButtonText}> Back to Bookings</Text>
+          <Text style={styles.doneButtonText}> Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -120,183 +116,39 @@ export const CheckInSuccess = () => {
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F9FAFB' },
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: 'white',
-  },
-  brandText: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0A0E5E',
-  },
-  avatarMini: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    backgroundColor: '#333',
-  },
-  scrollContent: {
-    paddingHorizontal: 25,
-    paddingBottom: 40,
-  },
-  successHeader: {
-    alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 30,
-  },
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  scrollContent: { paddingHorizontal: 25, paddingBottom: 40 },
+  successSection: { alignItems: 'center', marginTop: 40, marginBottom: 30 },
   outerCircle: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    backgroundColor: '#E8FBF2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
+    width: 130, height: 130, borderRadius: 65, backgroundColor: '#E8FBF2',
+    justifyContent: 'center', alignItems: 'center', marginBottom: 20,
   },
   innerCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    width: 90, height: 90, borderRadius: 45, backgroundColor: 'white',
+    justifyContent: 'center', alignItems: 'center',
+    elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5,
   },
-  mainTitle: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#0A0E5E',
-    textAlign: 'center',
-    marginBottom: 10,
+  title: { fontSize: 28, fontWeight: '900', color: '#0A0E5E', textAlign: 'center', marginBottom: 10 },
+  subtitle: { fontSize: 15, color: '#6B7280', textAlign: 'center', lineHeight: 22, paddingHorizontal: 20 },
+  card: {
+    backgroundColor: 'white', borderRadius: 30, padding: 25, marginBottom: 15,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 10, elevation: 2,
   },
-  subTitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 15,
-  },
-  infoCard: {
-    backgroundColor: 'white',
-    borderRadius: 30,
-    padding: 25,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  labelHighlight: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#FF7A00', // Naranja del diseño
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  customerName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0A0E5E',
-    marginBottom: 4,
-  },
-  bookingId: {
-    fontSize: 16,
-    color: '#4B5563',
-    marginBottom: 15,
-  },
-  identityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  identityText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0A0E5E',
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
+  label: { fontSize: 11, fontWeight: '800', color: '#FF7A00', letterSpacing: 1, marginBottom: 12 },
+  customerName: { fontSize: 22, fontWeight: '700', color: '#0A0E5E', marginBottom: 4 },
+  bookingId: { fontSize: 15, color: '#4B5563', marginBottom: 15 },
+  identityBadge: { flexDirection: 'row', alignItems: 'center' },
+  identityText: { fontSize: 14, fontWeight: '600', color: '#0A0E5E' },
+  itemRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   itemIconBox: {
-    width: 45,
-    height: 45,
-    backgroundColor: '#F1F3F9',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
+    width: 45, height: 45, backgroundColor: '#F1F3F9', borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center', marginRight: 15,
   },
-  itemName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
+  itemName: { fontSize: 16, fontWeight: '700', color: '#111827' },
+  itemType: { fontSize: 13, color: '#6B7280' },
+  doneButton: {
+    backgroundColor: '#0A0E5E', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    paddingVertical: 18, borderRadius: 20, marginTop: 10,
   },
-  itemType: {
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  instructionBox: {
-    backgroundColor: '#232D8F', // Azul oscuro vibrante
-    borderRadius: 30,
-    padding: 25,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 30,
-  },
-  infoIconCircle: {
-    width: 45,
-    height: 45,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 22.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  instructionTextContainer: {
-    flex: 1,
-  },
-  instructionTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  instructionBody: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  vaultHighlight: {
-    color: '#FF7A00',
-    fontWeight: '800',
-    textDecorationLine: 'underline',
-  },
-  backButton: {
-    backgroundColor: '#0A0E5E',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 18,
-    borderRadius: 20,
-    marginBottom: 20,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '700',
-  },
+  doneButtonText: { color: 'white', fontSize: 18, fontWeight: '700' },
 })
