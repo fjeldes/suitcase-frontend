@@ -1,6 +1,8 @@
 import { useBookingsQuery } from '@/hooks/useMyBookings';
+import { api } from '@/services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -19,6 +21,24 @@ export default function BookingsScreen() {
   const [activeTab, setActiveTab] = useState<'Active' | 'Past'>('Active');
   const [selectedBookingForReview, setSelectedBookingForReview] = useState<any>(null);
   const { data: bookings, isLoading, refetch } = useBookingsQuery();
+
+  // Auto-prompt review when switching to Past tab
+  useEffect(() => {
+    if (activeTab !== 'Past') return;
+    AsyncStorage.getItem('review_skip').then((skip) => {
+      if (skip === 'true') return;
+      api.get('/reviews/eligible').then((res: any) => {
+        if (res.eligible && res.bookings?.length > 0) {
+          setSelectedBookingForReview(res.bookings[0]);
+        }
+      }).catch(() => {});
+    });
+  }, [activeTab]);
+
+  const handleCloseReview = () => {
+    setSelectedBookingForReview(null);
+    AsyncStorage.setItem('review_skip', 'true');
+  };
 
   const filteredBookings = useMemo(() => {
     if (!bookings) return [];
@@ -91,7 +111,7 @@ export default function BookingsScreen() {
       {selectedBookingForReview && (
         <ReviewModal
           isVisible={!!selectedBookingForReview}
-          onClose={() => setSelectedBookingForReview(null)}
+          onClose={handleCloseReview}
           booking={selectedBookingForReview}
         />
       )}
