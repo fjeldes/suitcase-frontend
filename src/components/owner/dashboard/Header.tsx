@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { theme } from '@/styles/globalStyles';
 
 export const HeaderDashboard = ({
   onPress,
@@ -36,14 +37,9 @@ export const HeaderDashboard = ({
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.headerLeft}
-        onPress={onPress}
-        disabled={!onPress}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={styles.headerLeft} onPress={onPress} disabled={!onPress} activeOpacity={0.7}>
         <View style={styles.storeIconBg}>
-          <MaterialCommunityIcons name="storefront" size={20} color="#0A0E5E" />
+          <MaterialCommunityIcons name="storefront" size={20} color="#000666" />
         </View>
         <View>
           <Text style={styles.headerSubtitle}>ACTIVE HUB</Text>
@@ -55,10 +51,10 @@ export const HeaderDashboard = ({
       </TouchableOpacity>
       <View style={styles.headerRight}>
         <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
-          <Ionicons name="qr-code-outline" size={22} color="#0A0E5E" />
+          <Ionicons name="qr-code-outline" size={22} color="#000666" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
-          <Ionicons name="notifications" size={22} color="#0A0E5E" />
+          <Ionicons name="notifications" size={22} color="#000666" />
           <View style={styles.notificationDot} />
         </TouchableOpacity>
       </View>
@@ -71,33 +67,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: 'rgba(255,255,255,0.85)',
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   storeIconBg: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 40, height: 40, backgroundColor: '#f3f3f3', borderRadius: theme.borderRadius.lg,
+    justifyContent: 'center', alignItems: 'center',
   },
-  headerSubtitle: { fontSize: 10, fontWeight: '800', color: '#94A3B8', letterSpacing: 1 },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#0A0E5E' },
+  headerSubtitle: { fontSize: 10, fontWeight: '800', color: '#454652', letterSpacing: 1 },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: '#1a1c1c' },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 15 },
   iconCircle: { position: 'relative' },
   notificationDot: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FF6D00',
-    borderWidth: 1.5,
-    borderColor: '#FFF',
+    position: 'absolute', top: 2, right: 2, width: 8, height: 8, borderRadius: 4,
+    backgroundColor: '#fd6c00', borderWidth: 1.5, borderColor: '#FFF',
   },
-  avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: '#E2E8F0' },
 })

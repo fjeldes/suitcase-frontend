@@ -1,16 +1,16 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons } from '@expo/vector-icons'; // Asegúrate de que esta importación sea correcta
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, Text } from 'react-native';
+
+const activeBlue = '#000666';
+const inactiveGray = '#8E8E93';
+const activeBackground = '#eef2ff';
 
 export default function ClientLayout() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-
-  const activeBlue = '#2E3192';
-  const inactiveGray = '#8E8E93';
-  const activeBackground = isDark ? '#2A2D5E' : '#F0F2FF';
 
   return (
     <Tabs
@@ -19,12 +19,12 @@ export default function ClientLayout() {
         tabBarActiveTintColor: activeBlue,
         tabBarInactiveTintColor: inactiveGray,
         tabBarStyle: {
-          backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+          backgroundColor: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.85)',
           borderTopWidth: 0,
           elevation: 20,
-          shadowColor: '#000',
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
+          shadowColor: '#1a237e',
+          shadowOpacity: 0.06,
+          shadowRadius: 40,
           shadowOffset: { width: 0, height: -5 },
           height: Platform.OS === 'ios' ? 94 : 74,
           paddingBottom: Platform.OS === 'ios' ? 30 : 12,
@@ -51,7 +51,6 @@ export default function ClientLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="bookings"
         options={{
@@ -63,7 +62,6 @@ export default function ClientLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{
@@ -75,23 +73,20 @@ export default function ClientLayout() {
           ),
         }}
       />
-
-      {/* Rutas ocultas */}
       <Tabs.Screen name="store/[id]" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="booking-ticket" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="become-owner" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="payment-methods" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="settings" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="help" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="legal" options={{ href: null, tabBarStyle: { display: 'none' } }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 60,  // Ancho fijo para la "cápsula"
-    height: 32, // Alto fijo
+    width: 60,
+    height: 32,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',

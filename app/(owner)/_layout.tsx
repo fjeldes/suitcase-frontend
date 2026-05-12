@@ -1,8 +1,8 @@
-import { ROUTES } from '@/constants/routes';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 const activeBlue = '#0A0E5E';
 const inactiveGray = '#8E8E93';
@@ -18,12 +18,12 @@ export default function OwnerLayout() {
         tabBarActiveTintColor: activeBlue,
         tabBarInactiveTintColor: inactiveGray,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'rgba(255,255,255,0.85)',
           borderTopWidth: 0,
           elevation: 20,
-          shadowColor: '#000',
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
+          shadowColor: '#1a237e',
+          shadowOpacity: 0.06,
+          shadowRadius: 40,
           shadowOffset: { width: 0, height: -5 },
           height: Platform.OS === 'ios' ? 94 : 74,
           paddingBottom: Platform.OS === 'ios' ? 30 : 12,
@@ -32,11 +32,7 @@ export default function OwnerLayout() {
           borderTopRightRadius: 30,
           position: 'absolute',
         },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '700',
-          marginTop: 4,
-        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700', marginTop: 4 },
       }}
     >
       <Tabs.Screen
@@ -72,26 +68,19 @@ export default function OwnerLayout() {
           ),
         }}
       />
-      {/* Hidden routes */}
-      <Tabs.Screen name="staff" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="create-location" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="create" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="staff" options={{ href: null }} />
+      <Tabs.Screen name="create-location" options={{ href: null }} />
+      <Tabs.Screen name="create" options={{ href: null }} />
       <Tabs.Screen name="edit-store" options={{ href: null }} />
-      <Tabs.Screen name="map-selector" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="notifications" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="stores" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="stats" options={{ href: null, tabBarStyle: { display: 'none' } }} />
-      <Tabs.Screen name="activity-logs" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="map-selector" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="stores" options={{ href: null }} />
+      <Tabs.Screen name="stats" options={{ href: null }} />
+      <Tabs.Screen name="activity-logs" options={{ href: null }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    width: 60,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  iconContainer: { width: 60, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 });
