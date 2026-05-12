@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
@@ -110,7 +111,6 @@ function RootLayoutNav() {
   useEffect(() => {
     if (!appIsReady) return;
 
-    // Ocultar Splash solo la primera vez
     if (!splashHidden.current) {
       SplashScreenNative.hideAsync().catch(() => {});
       splashHidden.current = true;
@@ -119,13 +119,16 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!isAuthenticated) {
-      // Si no está autenticado y no está en auth, mandarlo a login
       if (!inAuthGroup) {
-        router.replace(ROUTES.AUTH.LOGIN);
+        AsyncStorage.getItem('onboarding_complete').then((done) => {
+          if (done === 'true') {
+            router.replace(ROUTES.AUTH.LOGIN);
+          } else {
+            router.replace('/(auth)/onboarding');
+          }
+        });
       }
     } else {
-      // Solo hacemos la redirección automática si el usuario está en el grupo de login
-      // o si acabamos de abrir la app y no estamos en ninguna ruta protegida aún.
       if (inAuthGroup || segments.length === 0) {
         configurePushNotifications();
 
