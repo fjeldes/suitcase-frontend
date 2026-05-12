@@ -14,6 +14,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Linking from 'expo-linking'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
@@ -143,6 +144,36 @@ function RootLayoutNav() {
       }
     }
   }, [appIsReady, isAuthenticated, user, segments])
+
+  // Deep link handler
+  useEffect(() => {
+    const parseParams = (query: string): Record<string, string> => {
+      const params: Record<string, string> = {};
+      if (!query) return params;
+      query.split('&').forEach((p) => {
+        const [k, v] = p.split('=');
+        if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || '');
+      });
+      return params;
+    };
+
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      const path = url.replace(/.*?:\/\//g, '').split('?')[0].replace(/\/$/g, '');
+      const query = url.split('?')[1] || '';
+      const params = parseParams(query);
+
+      if (path === 'accept-staff' && params.token) {
+        router.push(`/accept-staff?token=${params.token}`);
+      } else if (path === 'reset-password' && params.token) {
+        router.push(`/(auth)/reset-password?token=${params.token}`);
+      }
+    };
+
+    Linking.getInitialURL().then((url) => { if (url) handleDeepLink({ url }); });
+    const sub = Linking.addEventListener('url', handleDeepLink);
+    return () => sub.remove();
+  }, []);
 
   if (!appIsReady) {
     return <SplashScreen />
