@@ -8,7 +8,10 @@ import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreenNative from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
+import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { NetworkBanner } from '@/components/ui/NetworkBanner'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
@@ -166,7 +169,12 @@ export default function RootLayout() {
       >
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
-            <RootLayoutNav />
+            <ErrorBoundary>
+              <View style={{ flex: 1 }}>
+                <NetworkBanner />
+                <RootLayoutNav />
+              </View>
+            </ErrorBoundary>
             <Toast config={toastConfig} />
           </BottomSheetModalProvider>
         </GestureHandlerRootView>
