@@ -39,6 +39,7 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#000666",
+          "imageWidth": 180,
           "dark": {
             "backgroundColor": "#000666"
           }
