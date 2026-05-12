@@ -72,6 +72,8 @@ export default function SettingsScreen() {
     setLanguage(lang);
     setShowLanguage(false);
     await AsyncStorage.setItem('app_language', lang);
+    const { default: i18n } = await import('@/i18n');
+    i18n.changeLanguage(lang);
     Toast.show({ type: 'success', text1: lang === 'es' ? 'Idioma cambiado a Español' : 'Language changed to English' });
   };
 

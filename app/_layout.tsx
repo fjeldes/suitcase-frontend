@@ -15,6 +15,7 @@ import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Linking from 'expo-linking'
+import '@/i18n'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
