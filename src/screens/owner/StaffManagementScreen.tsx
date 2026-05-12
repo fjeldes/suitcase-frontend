@@ -18,9 +18,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 export default function StaffManagementScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { activeLocationId, activeLocationName } = useOwnerStore();
@@ -56,27 +58,27 @@ export default function StaffManagementScreen() {
       if (result.link) {
         setInviteLink(result.link);
       }
-      Toast.show({ type: 'success', text1: 'Invitation sent', text2: `${inviteName} will receive an email` });
+      Toast.show({ type: 'success', text1: t('staff.invitation_sent'), text2: t('staff.invitation_email_hint', { name: inviteName }) });
     } catch (e: any) {
-      Toast.show({ type: 'error', text1: 'Error', text2: e?.response?.data?.message || 'Could not send invitation' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: e?.response?.data?.message || t('staff.invitation_failed') });
     } finally {
       setAdding(false);
     }
   };
 
   const handleRemove = (assignmentId: string, name: string) => {
-    Alert.alert('Remove Staff', `Remove ${name} from this location?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('staff.remove_staff'), t('staff.remove_confirm', { name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Remove',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await staffService.removeStaff(assignmentId);
             await queryClient.invalidateQueries({ queryKey: ['staff', activeLocationId] });
-            Toast.show({ type: 'success', text1: 'Staff removed' });
+            Toast.show({ type: 'success', text1: t('staff.removed_success') });
           } catch {
-            Toast.show({ type: 'error', text1: 'Error removing staff' });
+            Toast.show({ type: 'error', text1: t('staff.remove_failed') });
           }
         },
       },
@@ -89,7 +91,7 @@ export default function StaffManagementScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Staff</Text>
+        <Text style={styles.topBarTitle}>{t('staff.title')}</Text>
         <TouchableOpacity onPress={() => setShowAdd(true)}>
           <Ionicons name="add-circle-outline" size={28} color="#0A0E5E" />
         </TouchableOpacity>
@@ -109,13 +111,13 @@ export default function StaffManagementScreen() {
           ListEmptyComponent={
             <View style={styles.empty}>
               <Ionicons name="people-outline" size={48} color="#CBD5E0" />
-              <Text style={styles.emptyText}>No staff assigned yet</Text>
+              <Text style={styles.emptyText}>{t('staff.no_staff')}</Text>
             </View>
           }
           renderItem={({ item }: any) => {
             const name = item.staff?.profile
               ? `${item.staff.profile.firstName || ''} ${item.staff.profile.lastName || ''}`.trim()
-              : item.staff?.email || 'Unknown';
+              : item.staff?.email || t('staff.unknown');
             return (
               <View style={styles.staffRow}>
                 <View style={styles.staffLeft}>
@@ -141,12 +143,12 @@ export default function StaffManagementScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Invite Staff Member</Text>
-            <Text style={styles.modalSub}>They will receive an email to accept the invitation.</Text>
+            <Text style={styles.modalTitle}>{t('staff.invite')}</Text>
+            <Text style={styles.modalSub}>{t('staff.invite_desc')}</Text>
             <View style={{ gap: 12 }}>
               <TextInput
                 style={styles.emailInput}
-                placeholder="Full name"
+                placeholder={t('staff.invite_name')}
                 placeholderTextColor="#94A3B8"
                 value={inviteName}
                 onChangeText={setInviteName}
@@ -154,7 +156,7 @@ export default function StaffManagementScreen() {
               />
               <TextInput
                 style={styles.emailInput}
-                placeholder="email@example.com"
+                placeholder={t('staff.invite_email')}
                 placeholderTextColor="#94A3B8"
                 value={inviteEmail}
                 onChangeText={setInviteEmail}
@@ -164,14 +166,14 @@ export default function StaffManagementScreen() {
             </View>
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowAdd(false); setInviteName(''); setInviteEmail(''); }}>
-                <Text style={styles.cancelBtnText}>Cancel</Text>
+                <Text style={styles.cancelBtnText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.addBtn, adding && { opacity: 0.6 }]}
                 onPress={handleInvite}
                 disabled={adding || !inviteName.trim() || !inviteEmail.trim()}
               >
-                {adding ? <ActivityIndicator color="white" size="small" /> : <Text style={styles.addBtnText}>Send Invitation</Text>}
+                {adding ? <ActivityIndicator color="white" size="small" /> : <Text style={styles.addBtnText}>{t('staff.send_invitation')}</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -183,20 +185,20 @@ export default function StaffManagementScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Invitation Link</Text>
+            <Text style={styles.modalTitle}>{t('staff.invitation_link')}</Text>
             <Text style={styles.modalSub}>
-              Share this link with the staff member to accept the invitation.
+              {t('staff.link_desc')}
             </Text>
 
             <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748B', letterSpacing: 0.5, marginBottom: 6 }}>
-              PRODUCTION LINK
+              {t('staff.link_production_label')}
             </Text>
             <View style={styles.linkBox}>
               <Text style={styles.linkText} selectable>{inviteLink}</Text>
             </View>
 
             <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748B', letterSpacing: 0.5, marginBottom: 6, marginTop: 12 }}>
-              EXPO GO (DEVELOPMENT)
+              {t('staff.link_expo_label')}
             </Text>
             {expoLink ? (
               <>
@@ -204,7 +206,7 @@ export default function StaffManagementScreen() {
                   <Text style={styles.linkText} selectable>{expoLink}</Text>
                 </View>
                 <Text style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>
-                  Paste this URL in Safari/Chrome on your phone to open Expo Go.
+                  {t('staff.link_expo_hint')}
                 </Text>
               </>
             ) : (
@@ -220,15 +222,15 @@ export default function StaffManagementScreen() {
               onPress={() => {
                 if (inviteLink) {
                   Clipboard.setStringAsync(inviteLink);
-                  Toast.show({ type: 'success', text1: 'Link copied to clipboard' });
+                  Toast.show({ type: 'success', text1: t('staff.link_copied') });
                 }
               }}
             >
               <Ionicons name="copy-outline" size={20} color="white" />
-              <Text style={styles.copyBtnText}>Copy Production Link</Text>
+              <Text style={styles.copyBtnText}>{t('staff.copy_link')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.closeLinkBtn} onPress={() => setInviteLink(null)}>
-              <Text style={styles.closeLinkBtnText}>Done</Text>
+              <Text style={styles.closeLinkBtnText}>{t('common.done')}</Text>
             </TouchableOpacity>
           </View>
         </View>

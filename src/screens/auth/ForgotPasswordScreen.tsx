@@ -14,25 +14,26 @@ import {
   View,
 } from 'react-native';
 import { api } from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
 
   const handleSendCode = async () => {
     if (!email) {
-      Alert.alert('Error', 'Please enter your email address.');
+      Alert.alert(t('common.error'), t('auth.error_email_required'));
       return;
     }
 
     setIsSending(true);
     try {
       await api.post('/auth/forgot-password', { email });
-      // Navegar a la pantalla de reset donde ingresará el código y su nueva clave
       router.push({ pathname: '/(auth)/reset-password', params: { email } });
     } catch (err: any) {
-      Alert.alert('Error', err.response?.data?.message || 'Something went wrong.');
+      Alert.alert(t('common.error'), err.response?.data?.message || t('auth.error_something_wrong'));
     } finally {
       setIsSending(false);
     }
@@ -49,16 +50,16 @@ export default function ForgotPasswordScreen() {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Forgot Password?</Text>
+          <Text style={styles.title}>{t('auth.forgot_password')}</Text>
           <Text style={styles.subtitle}>
-            Enter your registered email address and we'll send you a 6-digit code to reset your password.
+            {t('auth.forgot_subtitle')}
           </Text>
 
           <View style={styles.inputContainer}>
             <Ionicons name="mail-outline" size={20} color="#64748B" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Email address"
+              placeholder={t('auth.email')}
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -74,7 +75,7 @@ export default function ForgotPasswordScreen() {
             {isSending ? (
               <ActivityIndicator color="#FFF" />
             ) : (
-              <Text style={styles.primaryButtonText}>Send Reset Code</Text>
+              <Text style={styles.primaryButtonText}>{t('auth.send_reset_code')}</Text>
             )}
           </TouchableOpacity>
         </View>

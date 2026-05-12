@@ -19,7 +19,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
+
 export default function RegisterScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { email: prefillEmail, staffToken } = useLocalSearchParams<{ email?: string; staffToken?: string }>()
   const [showPassword, setShowPassword] = useState(false)
@@ -49,7 +52,7 @@ export default function RegisterScreen() {
       try {
         const terms = await termsService.getLatest('client')
         setTermsContent(terms.content)
-      } catch { setTermsContent('Terms and conditions are currently unavailable.') }
+      } catch { setTermsContent(t('auth.terms_unavailable')) }
       finally { setLoadingTerms(false) }
     })()
   }, [])
@@ -70,46 +73,46 @@ export default function RegisterScreen() {
           </TouchableOpacity>
 
           <View style={styles.headerTextContainer}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join SecureCustodian for a safe storage.</Text>
+            <Text style={styles.title}>{t('auth.create_account')}</Text>
+            <Text style={styles.subtitle}>{t('auth.signup_subtitle')}</Text>
           </View>
 
           <View style={styles.formContainer}>
             <FormInput<SignUpFormData>
-              label="FIRST NAME"
+              label={t('auth.first_name')}
               name="firstName"
               control={control}
               icon="person-outline"
-              placeholder="John"
+              placeholder={t('auth.first_name_placeholder')}
               error={errors.firstName}
             />
 
             <FormInput<SignUpFormData>
-              label="LAST NAME"
+              label={t('auth.last_name')}
               name="lastName"
               control={control}
               icon="person-outline"
-              placeholder="Doe"
+              placeholder={t('auth.last_name_placeholder')}
               error={errors.lastName}
             />
 
             <FormInput<SignUpFormData>
-              label="EMAIL"
+              label={t('auth.email')}
               name="email"
               control={control}
               icon="mail-outline"
-              placeholder="john@example.com"
+              placeholder={t('auth.email_placeholder')}
               keyboardType="email-address"
               autoCapitalize="none"
               error={errors.email}
             />
 
             <FormInput<SignUpFormData>
-              label="PASSWORD"
+              label={t('auth.password')}
               name="password"
               control={control}
               icon="lock-closed-outline"
-              placeholder="********"
+              placeholder={t('auth.password_placeholder')}
               isPassword
               showPassword={showPassword}
               togglePassword={() => setShowPassword(!showPassword)}
@@ -117,11 +120,11 @@ export default function RegisterScreen() {
             />
 
             <FormInput<SignUpFormData>
-              label="CONFIRM PASSWORD"
+              label={t('auth.confirm_password')}
               name="confirmPassword"
               control={control}
               icon="lock-closed-outline"
-              placeholder="********"
+              placeholder={t('auth.password_placeholder')}
               isPassword
               showPassword={showPassword}
               togglePassword={() => setShowPassword(!showPassword)}
@@ -143,9 +146,9 @@ export default function RegisterScreen() {
                 {termsAccepted && <Ionicons name="checkmark" size={16} color="white" />}
               </View>
               <Text style={{ flex: 1, fontSize: 13, color: '#64748B', lineHeight: 18 }}>
-                I have read and accept the{' '}
+                {t('auth.terms_text')}{' '}
                 <Text style={{ color: '#0A0E5E', fontWeight: '700' }} onPress={() => setShowTerms(true)}>
-                  Terms & Conditions
+                  {t('settings.terms')}
                 </Text>
               </Text>
             </TouchableOpacity>
@@ -155,7 +158,7 @@ export default function RegisterScreen() {
               onPress={handleSubmit(onSubmit)}
               disabled={!termsAccepted || loadingTerms}
             >
-              <Text style={styles.signUpButtonText}>Sign Up</Text>
+              <Text style={styles.signUpButtonText}>{t('auth.sign_up')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -167,7 +170,7 @@ export default function RegisterScreen() {
                 padding: 24, paddingBottom: 40, maxHeight: '80%',
               }}>
                 <View style={{ width: 40, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
-                <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginBottom: 16 }}>Terms & Conditions</Text>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginBottom: 16 }}>{t('settings.terms')}</Text>
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator>
                   <Text style={{ fontSize: 14, color: '#1A202C', lineHeight: 22, whiteSpace: 'pre-wrap' }}>{termsContent}</Text>
                 </ScrollView>
@@ -175,13 +178,11 @@ export default function RegisterScreen() {
                   style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: '#0A0E5E', alignItems: 'center' }}
                   onPress={() => setShowTerms(false)}
                 >
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>Close</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>{t('common.close')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </Modal>
-
-          {/* ... Resto del componente (Divider, Social, etc.) */}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -10,32 +11,33 @@ const slides = [
   {
     id: '1',
     emoji: '📍',
-    title: 'Find a Store',
-    subtitle: 'Search for verified stores near you. Check prices, capacity, and hours in real-time.',
+    titleKey: 'onboarding.slide1_title',
+    subtitleKey: 'onboarding.slide1_desc',
   },
   {
     id: '2',
     emoji: '📅',
-    title: 'Book & Pay',
-    subtitle: 'Select your drop-off and pick-up dates. Choose your bags and pay securely with Stripe.',
+    titleKey: 'onboarding.slide2_title',
+    subtitleKey: 'onboarding.slide2_desc',
   },
   {
     id: '3',
     emoji: '📱',
-    title: 'Drop & Go',
-    subtitle: 'Show your QR code at the store. Your luggage is stored safely until you return.',
+    titleKey: 'onboarding.slide3_title',
+    subtitleKey: 'onboarding.slide3_desc',
   },
   {
     id: '4',
     emoji: '🔔',
-    title: 'Pickup Reminder',
-    subtitle: 'Get notified before your pickup time. Need more time? Extend directly from the app.',
+    titleKey: 'onboarding.slide4_title',
+    subtitleKey: 'onboarding.slide4_desc',
   },
 ];
 
 const ONBOARDING_KEY = 'onboarding_complete';
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatRef = useRef<FlatList>(null);
@@ -69,8 +71,8 @@ export default function OnboardingScreen() {
         renderItem={({ item }) => (
           <View style={styles.slide}>
             <Text style={styles.emoji}>{item.emoji}</Text>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.subtitle}>{item.subtitle}</Text>
+            <Text style={styles.title}>{t(item.titleKey)}</Text>
+            <Text style={styles.subtitle}>{t(item.subtitleKey)}</Text>
           </View>
         )}
       />
@@ -86,15 +88,15 @@ export default function OnboardingScreen() {
       <View style={styles.bottom}>
         {isLast ? (
           <TouchableOpacity style={styles.cta} onPress={handleGetStarted}>
-            <Text style={styles.ctaText}>Get Started</Text>
+            <Text style={styles.ctaText}>{t('onboarding.get_started')}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
-            <Text style={styles.nextText}>Next</Text>
+            <Text style={styles.nextText}>{t('common.next')}</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={handleGetStarted} style={styles.skip}>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={styles.skipText}>{t('common.skip')}</Text>
         </TouchableOpacity>
       </View>
     </View>

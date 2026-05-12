@@ -40,7 +40,18 @@
     "verify_email": "Verify your Email",
     "verify_subtitle": "Enter the 6-digit code sent to your email",
     "verify_button": "Verify Account",
-    "resend_code": "Resend Code"
+    "resend_code": "Resend Code",
+    "signup_subtitle": "Join SecureCustodian for a safe storage.",
+    "first_name_placeholder": "John",
+    "last_name_placeholder": "Doe",
+    "email_placeholder": "john@example.com",
+    "password_placeholder": "********",
+    "terms_text": "I have read and accept the",
+    "forgot_subtitle": "Enter your registered email address and we'll send you a 6-digit code to reset your password.",
+    "send_reset_code": "Send Reset Code",
+    "error_email_required": "Please enter your email address.",
+    "error_something_wrong": "Something went wrong.",
+    "terms_unavailable": "Terms and conditions are currently unavailable."
   },
   "tabs": {
     "explore": "EXPLORE",
@@ -84,7 +95,28 @@
     "switch_subtitle": "View the app as a client",
     "become_partner": "Become a Partner",
     "partner_title": "Earn Money with your Space",
-    "partner_desc": "List your unused space and start earning today."
+    "partner_desc": "List your unused space and start earning today.",
+    "joined_date": "Joined November 2023",
+    "traveler_badge": "TRAVELER",
+    "security_title": "Security Protocol Active",
+    "security_subtitle": "Your data and assets are guarded by multi-layer encryption.",
+    "permission_denied": "Permission Denied",
+    "permission_desc": "We need access to your photos to change your profile picture.",
+    "upload_success": "Profile picture updated correctly.",
+    "upload_fail": "Failed to upload image. Please try again.",
+    "title": "Profile",
+    "storage_partner": "Storage Partner",
+    "business": "Business",
+    "my_stores": "My Stores",
+    "manage_staff": "Manage Staff",
+    "partner_terms": "Partner Terms",
+    "mode": "Mode",
+    "support": "Support",
+    "contact_title": "Contact Support",
+    "contact_desc": "Send us an email and we'll get back to you within 24 hours.",
+    "email_label": "Email",
+    "switch_alert_desc": "You'll be redirected to the Explore screen.",
+    "switch_btn": "Switch"
   },
   "settings": {
     "title": "Settings",
@@ -105,7 +137,20 @@
     "new_password": "New Password",
     "confirm_new_password": "Confirm New Password",
     "password_min": "Password must be at least 6 characters",
-    "password_mismatch": "Passwords do not match"
+    "password_mismatch": "Passwords do not match",
+    "placeholder_full_name": "Your full name",
+    "placeholder_current_password": "Enter current password",
+    "placeholder_new_password": "Enter new password",
+    "placeholder_confirm_password": "Confirm new password",
+    "select_language": "Select Language",
+    "language_changed": "Language changed",
+    "update": "Update",
+    "error_empty_name": "Name cannot be empty",
+    "error_fields_required": "All fields are required",
+    "profile_updated": "Profile updated",
+    "password_changed": "Password changed successfully",
+    "error_update_profile": "Could not update profile",
+    "error_change_password": "Could not change password"
   },
   "owner": {
     "dashboard": "Dashboard",
@@ -123,7 +168,12 @@
     "staff_view": "Staff view — showing data for",
     "assigned_location": "assigned location",
     "no_store": "No store assigned yet",
-    "no_store_desc": "A store owner needs to invite you. Ask them to send you an invitation."
+    "no_store_desc": "A store owner needs to invite you. Ask them to send you an invitation.",
+    "select_location": "Select a location",
+    "no_upcoming": "No upcoming events today",
+    "view_all_bookings": "View All Bookings",
+    "dropoff_with_name": "Drop-off: {{name}}",
+    "pickup_with_name": "Pickup: {{name}}"
   },
   "staff": {
     "title": "Staff",
@@ -136,6 +186,18 @@
     "link_desc": "Share this link with the staff member.",
     "no_staff": "No staff assigned yet",
     "remove_staff": "Remove Staff",
-    "add_another": "Add another card"
+    "add_another": "Add another card",
+    "unknown": "Unknown",
+    "link_production_label": "PRODUCTION LINK",
+    "link_expo_label": "EXPO GO (DEVELOPMENT)",
+    "link_expo_hint": "Paste this URL in Safari/Chrome on your phone to open Expo Go.",
+    "copy_link": "Copy Production Link",
+    "remove_confirm": "Remove {{name}} from this location?",
+    "invitation_sent": "Invitation sent",
+    "invitation_email_hint": "{{name}} will receive an email",
+    "invitation_failed": "Could not send invitation",
+    "removed_success": "Staff removed",
+    "remove_failed": "Error removing staff",
+    "link_copied": "Link copied to clipboard"
   }
 }

@@ -40,7 +40,18 @@
     "verify_email": "Verifica tu Correo",
     "verify_subtitle": "Ingresa el código de 6 dígitos enviado a tu correo",
     "verify_button": "Verificar Cuenta",
-    "resend_code": "Reenviar Código"
+    "resend_code": "Reenviar Código",
+    "signup_subtitle": "Únete a SecureCustodian para un almacenamiento seguro.",
+    "first_name_placeholder": "Juan",
+    "last_name_placeholder": "Pérez",
+    "email_placeholder": "juan@ejemplo.com",
+    "password_placeholder": "********",
+    "terms_text": "He leído y acepto los",
+    "forgot_subtitle": "Ingresa tu correo electrónico registrado y te enviaremos un código de 6 dígitos para restablecer tu contraseña.",
+    "send_reset_code": "Enviar Código",
+    "error_email_required": "Por favor ingresa tu correo electrónico.",
+    "error_something_wrong": "Algo salió mal.",
+    "terms_unavailable": "Los términos y condiciones no están disponibles actualmente."
   },
   "tabs": {
     "explore": "EXPLORAR",
@@ -84,7 +95,28 @@
     "switch_subtitle": "Ver la app como cliente",
     "become_partner": "Conviértete en Socio",
     "partner_title": "Gana Dinero con tu Espacio",
-    "partner_desc": "Publica tu espacio no utilizado y comienza a ganar hoy."
+    "partner_desc": "Publica tu espacio no utilizado y comienza a ganar hoy.",
+    "joined_date": "Miembro desde Noviembre 2023",
+    "traveler_badge": "VIAJERO",
+    "security_title": "Protocolo de Seguridad Activo",
+    "security_subtitle": "Tus datos están protegidos por cifrado de múltiples capas.",
+    "permission_denied": "Permiso Denegado",
+    "permission_desc": "Necesitamos acceso a tus fotos para cambiar tu foto de perfil.",
+    "upload_success": "Foto de perfil actualizada correctamente.",
+    "upload_fail": "Error al subir la imagen. Intenta de nuevo.",
+    "title": "Perfil",
+    "storage_partner": "Socio de Almacenamiento",
+    "business": "Negocio",
+    "my_stores": "Mis Tiendas",
+    "manage_staff": "Gestionar Personal",
+    "partner_terms": "Términos del Socio",
+    "mode": "Modo",
+    "support": "Soporte",
+    "contact_title": "Contactar Soporte",
+    "contact_desc": "Envíanos un correo y te responderemos en menos de 24 horas.",
+    "email_label": "Correo",
+    "switch_alert_desc": "Serás redirigido a la pantalla de Explorar.",
+    "switch_btn": "Cambiar"
   },
   "settings": {
     "title": "Configuración",
@@ -105,7 +137,20 @@
     "new_password": "Nueva Contraseña",
     "confirm_new_password": "Confirmar Nueva Contraseña",
     "password_min": "La contraseña debe tener al menos 6 caracteres",
-    "password_mismatch": "Las contraseñas no coinciden"
+    "password_mismatch": "Las contraseñas no coinciden",
+    "placeholder_full_name": "Tu nombre completo",
+    "placeholder_current_password": "Ingresa contraseña actual",
+    "placeholder_new_password": "Ingresa nueva contraseña",
+    "placeholder_confirm_password": "Confirma nueva contraseña",
+    "select_language": "Seleccionar Idioma",
+    "language_changed": "Idioma cambiado",
+    "update": "Actualizar",
+    "error_empty_name": "El nombre no puede estar vacío",
+    "error_fields_required": "Todos los campos son requeridos",
+    "profile_updated": "Perfil actualizado",
+    "password_changed": "Contraseña cambiada exitosamente",
+    "error_update_profile": "No se pudo actualizar el perfil",
+    "error_change_password": "No se pudo cambiar la contraseña"
   },
   "owner": {
     "dashboard": "Panel",
@@ -123,7 +168,12 @@
     "staff_view": "Vista de staff — mostrando datos de",
     "assigned_location": "ubicación asignada",
     "no_store": "No hay tienda asignada",
-    "no_store_desc": "El dueño de la tienda debe invitarte. Pídele que te envíe una invitación."
+    "no_store_desc": "El dueño de la tienda debe invitarte. Pídele que te envíe una invitación.",
+    "select_location": "Seleccionar una ubicación",
+    "no_upcoming": "No hay eventos próximos hoy",
+    "view_all_bookings": "Ver Todas las Reservas",
+    "dropoff_with_name": "Entrega: {{name}}",
+    "pickup_with_name": "Recogida: {{name}}"
   },
   "staff": {
     "title": "Personal",
@@ -136,6 +186,18 @@
     "link_desc": "Comparte este enlace con el miembro del personal.",
     "no_staff": "No hay personal asignado",
     "remove_staff": "Eliminar Personal",
-    "add_another": "Agregar otra tarjeta"
+    "add_another": "Agregar otra tarjeta",
+    "unknown": "Desconocido",
+    "link_production_label": "ENLACE DE PRODUCCIÓN",
+    "link_expo_label": "EXPO GO (DESARROLLO)",
+    "link_expo_hint": "Pega esta URL en Safari/Chrome de tu teléfono para abrir Expo Go.",
+    "copy_link": "Copiar Enlace",
+    "remove_confirm": "¿Eliminar a {{name}} de esta ubicación?",
+    "invitation_sent": "Invitación enviada",
+    "invitation_email_hint": "{{name}} recibirá un correo",
+    "invitation_failed": "No se pudo enviar la invitación",
+    "removed_success": "Personal eliminado",
+    "remove_failed": "Error al eliminar personal",
+    "link_copied": "Enlace copiado al portapapeles"
   }
 }

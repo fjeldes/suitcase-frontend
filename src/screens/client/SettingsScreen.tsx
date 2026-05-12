@@ -20,6 +20,7 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 const APP_VERSION = '1.0.0';
 const NOTIF_KEYS = {
@@ -29,6 +30,7 @@ const NOTIF_KEYS = {
 };
 
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, setUser } = useAuthStore();
 
@@ -74,7 +76,7 @@ export default function SettingsScreen() {
     await AsyncStorage.setItem('app_language', lang);
     const { default: i18n } = await import('@/i18n');
     i18n.changeLanguage(lang);
-    Toast.show({ type: 'success', text1: lang === 'es' ? 'Idioma cambiado a Español' : 'Language changed to English' });
+    Toast.show({ type: 'success', text1: t('settings.language_changed') });
   };
 
   // Profile form
@@ -85,7 +87,7 @@ export default function SettingsScreen() {
 
   const handleSaveProfile = async (data: { name: string }) => {
     if (!data.name.trim()) {
-      Alert.alert('Error', 'Name cannot be empty');
+      Alert.alert(t('common.error'), t('settings.error_empty_name'));
       return;
     }
     try {
@@ -96,9 +98,9 @@ export default function SettingsScreen() {
       });
       await setUser(res.data);
       setShowProfile(false);
-      Toast.show({ type: 'success', text1: 'Profile updated' });
+      Toast.show({ type: 'success', text1: t('settings.profile_updated') });
     } catch (e: any) {
-      Toast.show({ type: 'error', text1: 'Error', text2: e?.response?.data?.message || 'Could not update profile' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: e?.response?.data?.message || t('settings.error_update_profile') });
     } finally {
       setSavingProfile(false);
     }
@@ -109,15 +111,15 @@ export default function SettingsScreen() {
 
   const handleChangePassword = async (data: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
     if (!data.currentPassword || !data.newPassword) {
-      Alert.alert('Error', 'All fields are required');
+      Alert.alert(t('common.error'), t('settings.error_fields_required'));
       return;
     }
     if (data.newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      Alert.alert(t('common.error'), t('settings.password_min'));
       return;
     }
     if (data.newPassword !== data.confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert(t('common.error'), t('settings.password_mismatch'));
       return;
     }
     try {
@@ -128,9 +130,9 @@ export default function SettingsScreen() {
       });
       setShowPassword(false);
       passwordForm.reset();
-      Toast.show({ type: 'success', text1: 'Password changed successfully' });
+      Toast.show({ type: 'success', text1: t('settings.password_changed') });
     } catch (e: any) {
-      Toast.show({ type: 'error', text1: 'Error', text2: e?.response?.data?.message || 'Could not change password' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: e?.response?.data?.message || t('settings.error_change_password') });
     } finally {
       setChangingPassword(false);
     }
@@ -138,18 +140,18 @@ export default function SettingsScreen() {
 
   const settingsSections = [
     {
-      title: 'ACCOUNT',
+      title: t('settings.account'),
       items: [
-        { icon: 'person-outline' as const, label: 'Edit Profile', onPress: () => setShowProfile(true) },
-        { icon: 'lock-closed-outline' as const, label: 'Change Password', onPress: () => setShowPassword(true) },
+        { icon: 'person-outline' as const, label: t('settings.edit_profile'), onPress: () => setShowProfile(true) },
+        { icon: 'lock-closed-outline' as const, label: t('settings.change_password'), onPress: () => setShowPassword(true) },
       ],
     },
     {
-      title: 'NOTIFICATIONS',
+      title: t('settings.notifications_title'),
       items: [
         {
           icon: 'briefcase-outline' as const,
-          label: 'Booking Updates',
+          label: t('settings.booking_updates'),
           right: (
             <Switch
               value={notifBookings}
@@ -161,7 +163,7 @@ export default function SettingsScreen() {
         },
         {
           icon: 'pricetag-outline' as const,
-          label: 'Promotions & Offers',
+          label: t('settings.promotions'),
           right: (
             <Switch
               value={notifPromos}
@@ -173,7 +175,7 @@ export default function SettingsScreen() {
         },
         {
           icon: 'shield-outline' as const,
-          label: 'System Announcements',
+          label: t('settings.system'),
           right: (
             <Switch
               value={notifSystem}
@@ -186,28 +188,28 @@ export default function SettingsScreen() {
       ],
     },
     {
-      title: 'APP',
+      title: t('settings.app'),
       items: [
         {
           icon: 'language-outline' as const,
-          label: 'Language',
+          label: t('settings.language'),
           right: <Text style={styles.langValue}>{language === 'es' ? 'Español' : 'English'}</Text>,
           onPress: () => setShowLanguage(true),
         },
         {
           icon: 'information-circle-outline' as const,
-          label: 'Version',
+          label: t('settings.version'),
           right: <Text style={styles.versionText}>{APP_VERSION}</Text>,
         },
         {
           icon: 'document-text-outline' as const,
-          label: 'Terms & Conditions',
+          label: t('settings.terms'),
           right: <Ionicons name="chevron-forward" size={18} color="#CBD5E0" />,
           onPress: () => router.push(ROUTES.LEGAL('client')),
         },
         {
           icon: 'lock-closed-outline' as const,
-          label: 'Privacy Policy',
+          label: t('settings.privacy'),
           right: <Ionicons name="chevron-forward" size={18} color="#CBD5E0" />,
           onPress: () => router.push(ROUTES.LEGAL('privacy')),
         },
@@ -221,7 +223,7 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Settings</Text>
+        <Text style={styles.topBarTitle}>{t('settings.title')}</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -257,21 +259,21 @@ export default function SettingsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Edit Profile</Text>
+            <Text style={styles.modalTitle}>{t('settings.edit_profile')}</Text>
 
             <View style={{ gap: 16, marginTop: 10 }}>
               <FormInput
                 control={profileForm.control}
                 name="name"
-                label="Full Name"
+                label={t('settings.full_name')}
                 icon="person-outline"
-                placeholder="Your full name"
+                placeholder={t('settings.placeholder_full_name')}
               />
             </View>
 
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalCancel} onPress={() => setShowProfile(false)}>
-                <Text style={styles.modalCancelText}>Cancel</Text>
+                <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalConfirm, savingProfile && { opacity: 0.6 }]}
@@ -281,7 +283,7 @@ export default function SettingsScreen() {
                 {savingProfile ? (
                   <ActivityIndicator color="white" size="small" />
                 ) : (
-                  <Text style={styles.modalConfirmText}>Save</Text>
+                  <Text style={styles.modalConfirmText}>{t('common.save')}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -294,15 +296,15 @@ export default function SettingsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Change Password</Text>
+            <Text style={styles.modalTitle}>{t('settings.change_password')}</Text>
 
             <View style={{ gap: 12, marginTop: 10 }}>
               <FormInput
                 control={passwordForm.control}
                 name="currentPassword"
-                label="Current Password"
+                label={t('settings.current_password')}
                 icon="lock-closed-outline"
-                placeholder="Enter current password"
+                placeholder={t('settings.placeholder_current_password')}
                 isPassword
                 showPassword={showCurrentPw}
                 togglePassword={() => setShowCurrentPw(!showCurrentPw)}
@@ -310,9 +312,9 @@ export default function SettingsScreen() {
               <FormInput
                 control={passwordForm.control}
                 name="newPassword"
-                label="New Password"
+                label={t('settings.new_password')}
                 icon="lock-open-outline"
-                placeholder="Enter new password"
+                placeholder={t('settings.placeholder_new_password')}
                 isPassword
                 showPassword={showNewPw}
                 togglePassword={() => setShowNewPw(!showNewPw)}
@@ -320,9 +322,9 @@ export default function SettingsScreen() {
               <FormInput
                 control={passwordForm.control}
                 name="confirmPassword"
-                label="Confirm Password"
+                label={t('settings.confirm_new_password')}
                 icon="checkmark-circle-outline"
-                placeholder="Confirm new password"
+                placeholder={t('settings.placeholder_confirm_password')}
                 isPassword
                 showPassword={showConfirmPw}
                 togglePassword={() => setShowConfirmPw(!showConfirmPw)}
@@ -331,7 +333,7 @@ export default function SettingsScreen() {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalCancel} onPress={() => setShowPassword(false)}>
-                <Text style={styles.modalCancelText}>Cancel</Text>
+                <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalConfirm, changingPassword && { opacity: 0.6 }]}
@@ -341,7 +343,7 @@ export default function SettingsScreen() {
                 {changingPassword ? (
                   <ActivityIndicator color="white" size="small" />
                 ) : (
-                  <Text style={styles.modalConfirmText}>Update</Text>
+                  <Text style={styles.modalConfirmText}>{t('settings.update')}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -355,7 +357,7 @@ export default function SettingsScreen() {
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowLanguage(false)} />
           <View style={styles.langModalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Select Language</Text>
+            <Text style={styles.modalTitle}>{t('settings.select_language')}</Text>
             {[
               { code: 'es', label: 'Español' },
               { code: 'en', label: 'English' },

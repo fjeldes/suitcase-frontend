@@ -20,61 +20,58 @@ import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import { uploadService } from '@/services/uploadService';
 import { api } from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window')
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter()
   const { user, logout, setUser } = useAuthStore()
   const [uploading, setUploading] = useState(false);
 
   const pickImage = async () => {
-    // 1. Pedir permisos
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Toast.show({
         type: 'error',
-        text1: 'Permission Denied',
-        text2: 'We need access to your photos to change your profile picture.'
+        text1: t('profile.permission_denied'),
+        text2: t('profile.permission_desc'),
       });
       return;
     }
 
-    // 2. Seleccionar imagen
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7, // Reducir un poco el peso antes de enviar
+      quality: 0.7,
     });
 
     if (!result.canceled) {
       try {
         setUploading(true);
         const imageUri = result.assets[0].uri;
-        
-        // 3. Subir a GCS vía Backend
+
         const publicUrl = await uploadService.uploadImage(imageUri, 'profiles');
 
-        // 4. Actualizar perfil en DB
         const { data: updatedUser } = await api.patch('/users/me/profile', {
           avatar: publicUrl
         });
 
-        // 5. Actualizar store global (ahora es async)
         await setUser(updatedUser);
-        
+
         Toast.show({
           type: 'success',
-          text1: 'Success',
-          text2: 'Profile picture updated correctly. ✨'
+          text1: t('common.success'),
+          text2: t('profile.upload_success'),
         });
       } catch (error) {
         console.error(error);
         Toast.show({
           type: 'error',
-          text1: 'Error',
-          text2: 'Failed to upload image. Please try again.'
+          text1: t('common.error'),
+          text2: t('profile.upload_fail'),
         });
       } finally {
         setUploading(false);
@@ -116,31 +113,29 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <View style={styles.headerInfo}>
-            <Text style={styles.userName}>{user?.name || 'My Profile'}</Text>
-            <Text style={styles.joinedDate}>Joined November 2023</Text>
+            <Text style={styles.userName}>{user?.name || t('profile.my_profile')}</Text>
+            <Text style={styles.joinedDate}>{t('profile.joined_date')}</Text>
             <View style={styles.premiumBadge}>
-              <Text style={styles.premiumText}>TRAVELER</Text>
+              <Text style={styles.premiumText}>{t('profile.traveler_badge')}</Text>
             </View>
           </View>
         </View>
 
         {/* SECCIÓN: BECOME A PARTNER (Banner azul con degradado) */}
         <LinearGradient colors={['#1A1F71', '#0A0E5E']} style={styles.partnerCard}>
-          <Text style={styles.partnerTitle}>Earn Money with your Space</Text>
+          <Text style={styles.partnerTitle}>{t('profile.partner_title')}</Text>
           <Text style={styles.partnerSubtitle}>
-            List your unused space and start earning today. Join our network of trusted local hosts.
+            {t('profile.partner_desc')}
           </Text>
 
           <TouchableOpacity 
             style={styles.partnerButton}
             onPress={() => router.push('/(client)/become-owner')}
           >
-            <Text style={styles.partnerButtonText}>Become a Partner</Text>
+            <Text style={styles.partnerButtonText}>{t('profile.become_partner')}</Text>
           </TouchableOpacity>
 
-          {/* Imagen que sobresale */}
           <Image
-            // source={require('@/assets/images/dashboard-preview.png')} // Asegúrate de tener esta imagen
             style={styles.previewImage}
             resizeMode="contain"
           />
@@ -155,7 +150,7 @@ export default function ProfileScreen() {
             <View style={styles.optionIconBox}>
               <Ionicons name="settings-outline" size={22} color="#0A0E5E" />
             </View>
-            <Text style={styles.optionItemText}>Settings</Text>
+            <Text style={styles.optionItemText}>{t('profile.settings')}</Text>
             <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
           </TouchableOpacity>
 
@@ -166,7 +161,7 @@ export default function ProfileScreen() {
             <View style={styles.optionIconBox}>
               <Ionicons name="card-outline" size={22} color="#0A0E5E" />
             </View>
-            <Text style={styles.optionItemText}>Payment Methods</Text>
+            <Text style={styles.optionItemText}>{t('profile.payment_methods')}</Text>
             <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
           </TouchableOpacity>
 
@@ -177,7 +172,7 @@ export default function ProfileScreen() {
             <View style={styles.optionIconBox}>
               <Ionicons name="help-circle-outline" size={22} color="#0A0E5E" />
             </View>
-            <Text style={styles.optionItemText}>Help & Support</Text>
+            <Text style={styles.optionItemText}>{t('profile.help_support')}</Text>
             <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
           </TouchableOpacity>
         </View>
@@ -188,9 +183,9 @@ export default function ProfileScreen() {
             <Ionicons name="lock-closed" size={20} color="#C05621" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.securityTitle}>Security Protocol Active</Text>
+            <Text style={styles.securityTitle}>{t('profile.security_title')}</Text>
             <Text style={styles.securitySubtitle}>
-              Your data and assets are guarded by multi-layer encryption.
+              {t('profile.security_subtitle')}
             </Text>
           </View>
         </View>
@@ -198,7 +193,7 @@ export default function ProfileScreen() {
         {/* LOGOUT */}
         <TouchableOpacity style={styles.logoutButton} onPress={logout}>
           <Ionicons name="log-out-outline" size={22} color="#E53E3E" />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -256,10 +251,10 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 30,
     padding: 25,
-    paddingBottom: 0, // Importante para que la imagen llegue al borde
+    paddingBottom: 0,
     alignItems: 'center',
     marginBottom: 40,
-    overflow: 'visible', // Permite que la imagen sobresalga si es necesario
+    overflow: 'visible',
   },
   partnerTitle: {
     color: 'white',
@@ -287,7 +282,7 @@ const styles = StyleSheet.create({
   previewImage: {
     width: width * 0.7,
     height: 180,
-    marginBottom: -20, // Efecto de sobresalir
+    marginBottom: -20,
   },
 
   // Options

@@ -13,10 +13,12 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { FlatList, Modal, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { styles } from "./DashBoardScreen.styles";
 import { LoadingDashboard } from "./LoadingDashboard";
 
 export default function DashboardScreen() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { data: stores } = useMyLocations();
     const { data: staffLocations } = useQuery({
@@ -48,10 +50,10 @@ export default function DashboardScreen() {
             <SafeAreaView style={{ flex: 1, backgroundColor: '#F8F9FE', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
                 <Ionicons name="business-outline" size={64} color="#CBD5E0" />
                 <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginTop: 16, textAlign: 'center' }}>
-                    No store assigned yet
+                    {t('owner.no_store')}
                 </Text>
                 <Text style={{ fontSize: 14, color: '#64748B', textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
-                    A store owner needs to invite you. Ask them to send you an invitation.
+                    {t('owner.no_store_desc')}
                 </Text>
             </SafeAreaView>
         );
@@ -98,7 +100,7 @@ export default function DashboardScreen() {
                             }} />
 
                             <Text style={{ fontSize: 22, fontWeight: '800', color: '#0A0E5E', marginBottom: 20 }}>
-                                Select a location
+                                {t('owner.select_location')}
                             </Text>
 
                             <FlatList
@@ -159,7 +161,7 @@ export default function DashboardScreen() {
                     <View style={{ padding: 16, backgroundColor: '#EEF2FF', borderRadius: 14, marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                         <Ionicons name="briefcase-outline" size={20} color="#0A0E5E" />
                         <Text style={{ fontSize: 13, color: '#0A0E5E', fontWeight: '500', flex: 1 }}>
-                            Staff view — showing data for {activeLocationName || 'assigned location'}
+                            {t('owner.staff_view')} {activeLocationName || t('owner.assigned_location')}
                         </Text>
                     </View>
                 )}
@@ -176,7 +178,7 @@ export default function DashboardScreen() {
                 {/* Upcoming Events */}
                 <View style={{ marginBottom: 20 }}>
                     <Text style={{ fontSize: 12, fontWeight: '800', color: '#8898AA', letterSpacing: 1, marginBottom: 10, marginLeft: 4 }}>
-                        UPCOMING TODAY
+                        {t('owner.upcoming_today')}
                     </Text>
                     <View style={{ backgroundColor: 'white', borderRadius: 20, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5 }}>
                         {dashboardData.dropoffs.nextDropoff && (
@@ -185,7 +187,7 @@ export default function DashboardScreen() {
                                     <Ionicons name="log-in-outline" size={20} color="#FF6D00" />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>Drop-off: {dashboardData.dropoffs.nextDropoff.customerName}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>{t('owner.dropoff_with_name', { name: dashboardData.dropoffs.nextDropoff.customerName })}</Text>
                                     <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{dashboardData.dropoffs.nextDropoff.time} • {dashboardData.dropoffs.nextDropoff.itemsDetail}</Text>
                                 </View>
                             </View>
@@ -196,18 +198,18 @@ export default function DashboardScreen() {
                                     <Ionicons name="log-out-outline" size={20} color="#22C55E" />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>Pickup: {dashboardData.pickups.nextPickup.customerName}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A202C' }}>{t('owner.pickup_with_name', { name: dashboardData.pickups.nextPickup.customerName })}</Text>
                                     <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{dashboardData.pickups.nextPickup.time} • {dashboardData.pickups.nextPickup.itemsDetail}</Text>
                                 </View>
                             </View>
                         )}
                         {!dashboardData.dropoffs.nextDropoff && !dashboardData.pickups.nextPickup && (
                             <View style={{ alignItems: 'center', padding: 24 }}>
-                                <Text style={{ fontSize: 14, color: '#94A3B8' }}>No upcoming events today</Text>
+                                <Text style={{ fontSize: 14, color: '#94A3B8' }}>{t('owner.no_upcoming')}</Text>
                             </View>
                         )}
                         <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
-                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>View All Bookings</Text>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>{t('owner.view_all_bookings')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -215,27 +217,27 @@ export default function DashboardScreen() {
                 {/* Quick Actions */}
                 <View style={{ marginBottom: 20 }}>
                     <Text style={{ fontSize: 12, fontWeight: '800', color: '#8898AA', letterSpacing: 1, marginBottom: 10, marginLeft: 4 }}>
-                        QUICK ACTIONS
+                        {t('owner.quick_actions')}
                     </Text>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
                         <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
                             <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                 <Ionicons name="qr-code-outline" size={24} color="#0A0E5E" />
                             </View>
-                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Scan QR</Text>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>{t('owner.scan_qr')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
                             <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                 <Ionicons name="briefcase-outline" size={24} color="#0A0E5E" />
                             </View>
-                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Bookings</Text>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>{t('owner.bookings')}</Text>
                         </TouchableOpacity>
                         {!isStaff && (
                             <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.STORES)}>
                                 <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                     <Ionicons name="storefront-outline" size={24} color="#0A0E5E" />
                                 </View>
-                                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>Stores</Text>
+                                <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>{t('owner.stores')}</Text>
                             </TouchableOpacity>
                         )}
                     </View>
