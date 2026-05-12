@@ -1,6 +1,9 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
@@ -13,7 +16,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Linking from 'expo-linking'
 import '@/i18n'
 // Hooks y Stores
@@ -34,7 +36,19 @@ Notifications.setNotificationHandler({
       shouldSetBadge: false,
     } as Notifications.NotificationBehavior), // Casting explícito
 })
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours cache
+      staleTime: 1000 * 60 * 2,     // 2 min stale
+    },
+  },
+})
+
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+  key: 'TANSTACK_QUERY_CACHE',
+})
 
 SplashScreenNative.preventAutoHideAsync()
 
@@ -200,10 +214,10 @@ import { StripeProvider } from '@stripe/stripe-react-native'
 // --- COMPONENTE PRINCIPAL (PROVIDERS) ---
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: asyncStoragePersister }}>
       <StripeProvider
         publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder"}
-        merchantIdentifier="merchant.com.suitcase" // necesario para Apple Pay
+        merchantIdentifier="merchant.com.suitcase"
       >
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
@@ -217,6 +231,6 @@ export default function RootLayout() {
           </BottomSheetModalProvider>
         </GestureHandlerRootView>
       </StripeProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   )
 }
