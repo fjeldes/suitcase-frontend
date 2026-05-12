@@ -1,6 +1,7 @@
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { ROUTES } from '@/constants/routes'
 import { api } from '@/services/api'
+import { ROUTES } from '@/constants/routes'
 import { useSwitchMode } from '@/hooks/useSwitchMode'
 import { useAuthStore } from '@/store/useAuthStore'
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -182,6 +183,8 @@ export const ProfileScreen = () => {
           <Text style={styles.sectionTitle}>Support</Text>
           <View style={styles.card}>
             <MenuItem icon="headset" title="Contact Us" onPress={() => setShowContact(true)} />
+            <MenuItem icon="document-text-outline" title="Terms & Conditions" family="Ionicons" onPress={() => router.push(ROUTES.LEGAL(isOwner ? 'owner' : 'staff'))} />
+            <MenuItem icon="lock-closed-outline" title="Privacy Policy" family="Ionicons" onPress={() => router.push(ROUTES.LEGAL('privacy'))} />
           </View>
         </View>
 

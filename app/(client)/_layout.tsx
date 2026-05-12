@@ -83,6 +83,7 @@ export default function ClientLayout() {
       <Tabs.Screen name="payment-methods" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="settings" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="help" options={{ href: null, tabBarStyle: { display: 'none' } }} />
+      <Tabs.Screen name="legal" options={{ href: null, tabBarStyle: { display: 'none' } }} />
     </Tabs>
   );
 }

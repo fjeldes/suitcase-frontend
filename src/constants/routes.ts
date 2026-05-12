@@ -23,6 +23,7 @@ export const ROUTES = {
     CONFIRM_CHECK_IN: '/(owner)/bookings/confirm-check-in',
     CHECKIN_SUCCESS: '/(owner)/bookings/check-in-success',
   },
+  LEGAL: (type: string) => `/legal/${type}` as const,
   CLIENT: {
     EXPLORE: '/(client)',
     BOOKINGS: '/(client)/bookings',

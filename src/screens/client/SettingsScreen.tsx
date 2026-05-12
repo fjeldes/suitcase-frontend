@@ -1,4 +1,5 @@
 import { FormInput } from '@/components/ui/FormInput';
+import { ROUTES } from '@/constants/routes';
 import { api } from '@/services/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -200,7 +201,13 @@ export default function SettingsScreen() {
           icon: 'document-text-outline' as const,
           label: 'Terms & Conditions',
           right: <Ionicons name="chevron-forward" size={18} color="#CBD5E0" />,
-          onPress: () => Alert.alert('Terms & Conditions', 'Coming soon.'),
+          onPress: () => router.push(ROUTES.LEGAL('client')),
+        },
+        {
+          icon: 'lock-closed-outline' as const,
+          label: 'Privacy Policy',
+          right: <Ionicons name="chevron-forward" size={18} color="#CBD5E0" />,
+          onPress: () => router.push(ROUTES.LEGAL('privacy')),
         },
       ],
     },
