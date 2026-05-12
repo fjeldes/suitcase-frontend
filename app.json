@@ -36,10 +36,9 @@
         "expo-splash-screen",
         {
           "image": "./src/assets/images/logo.png",
-          "imageWidth": 200,
+          "imageWidth": 180,
           "resizeMode": "contain",
           "backgroundColor": "#000666",
-          "imageWidth": 180,
           "dark": {
             "backgroundColor": "#000666"
           }
@@ -53,7 +52,8 @@
           "merchantIdentifier": "merchant.com.suitcase",
           "enableGooglePay": true
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true,

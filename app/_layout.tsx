@@ -12,6 +12,7 @@ import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NetworkBanner } from '@/components/ui/NetworkBanner'
+import { initSentry } from '@/services/sentry'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
@@ -45,6 +46,8 @@ function RootLayoutNav() {
   const [appIsReady, setAppIsReady] = useState(false)
   const splashHidden = React.useRef(false);
   const { isAuthenticated, user, checkAuth } = useAuthStore()
+
+  useEffect(() => { initSentry() }, [])
 
   // Ahora useMutation está dentro del Provider y no dará error
   const { mutate: registerPushToken } = useRegisterPushToken()
