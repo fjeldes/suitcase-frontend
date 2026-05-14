@@ -31,12 +31,12 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   const { mutate: cancelBooking, isPending: isCanceling } = useMutation({
     mutationFn: bookingService.cancel,
     onSuccess: () => {
-      Alert.alert('Booking Cancelled', 'Your booking has been cancelled successfully.');
+      Toast.show({ type: 'success', text1: 'Booking Cancelled', text2: 'Your booking has been cancelled successfully.' });
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       router.back();
     },
     onError: (err: any) => {
-      Alert.alert('Error', err?.response?.data?.message || 'Could not cancel booking.');
+      Toast.show({ type: 'error', text1: 'Error', text2: err?.response?.data?.message || 'Could not cancel booking.' });
     }
   });
 

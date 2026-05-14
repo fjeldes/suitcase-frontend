@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
   SafeAreaView,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 import { usePayment } from '@/hooks/usePayment'
 import { useReviews } from '@/hooks/useReviews'
@@ -96,7 +96,7 @@ export default function BookingDetail({ storeId }: Props) {
     if (newValue < 0) return
     const limit = store?.availability?.[type] ?? 0
     if (newValue > limit) {
-      Alert.alert('No Space Available', `Sorry, this location only has ${limit} ${type} slots left.`)
+      Toast.show({ type: 'error', text1: 'No Space Available', text2: `Sorry, this location only has ${limit} ${type} slots left.` })
       return
     }
     setBags({ ...bags, [type]: newValue })
@@ -106,7 +106,7 @@ export default function BookingDetail({ storeId }: Props) {
     if (isPending || totalPrice === 0) return
 
     if (startDate >= endDate) {
-      Alert.alert("Invalid Dates", "Pick-up time must be after Drop-off time.");
+      Toast.show({ type: 'error', text1: 'Invalid Dates', text2: 'Pick-up time must be after Drop-off time.' });
       return;
     }
 

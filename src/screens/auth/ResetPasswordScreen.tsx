@@ -3,7 +3,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useRef } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { api } from '@/services/api';
 
 export default function ResetPasswordScreen() {
@@ -56,22 +56,21 @@ export default function ResetPasswordScreen() {
   const handleReset = async () => {
     const fullCode = code.join('');
     if (fullCode.length < 6) {
-      Alert.alert('Error', 'Please enter the complete 6-digit code.');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Please enter the complete 6-digit code.' });
       return;
     }
     if (newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long.');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Password must be at least 6 characters long.' });
       return;
     }
 
     setIsResetting(true);
     try {
       await api.post('/auth/reset-password', { email, code: fullCode, newPassword });
-      Alert.alert('Success', 'Your password has been updated successfully.', [
-        { text: 'Log In', onPress: () => router.replace('/(auth)/login') }
-      ]);
+      Toast.show({ type: 'success', text1: 'Success', text2: 'Your password has been updated successfully.' });
+      router.replace('/(auth)/login');
     } catch (err: any) {
-      Alert.alert('Error', err.response?.data?.message || 'Invalid or expired code.');
+      Toast.show({ type: 'error', text1: 'Error', text2: err.response?.data?.message || 'Invalid or expired code.' });
     } finally {
       setIsResetting(false);
     }

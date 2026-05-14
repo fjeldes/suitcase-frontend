@@ -3,7 +3,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -87,7 +86,7 @@ export default function VerifyEmailScreen() {
               if (refresh.data?.accessToken) {
                 setTokens(refresh.data.accessToken, refresh.data.refreshToken, refresh.data.user);
               }
-              Alert.alert('Invitation Accepted', `You are now staff at ${result.locationName}!`);
+              Toast.show({ type: 'success', text1: 'Invitation Accepted', text2: `You are now staff at ${result.locationName}!` });
             }
           } catch {
             // Silently fail

@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   SafeAreaView,
   ScrollView,
@@ -87,7 +86,7 @@ export default function SettingsScreen() {
 
   const handleSaveProfile = async (data: { name: string }) => {
     if (!data.name.trim()) {
-      Alert.alert(t('common.error'), t('settings.error_empty_name'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.error_empty_name') });
       return;
     }
     try {
@@ -111,15 +110,15 @@ export default function SettingsScreen() {
 
   const handleChangePassword = async (data: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
     if (!data.currentPassword || !data.newPassword) {
-      Alert.alert(t('common.error'), t('settings.error_fields_required'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.error_fields_required') });
       return;
     }
     if (data.newPassword.length < 6) {
-      Alert.alert(t('common.error'), t('settings.password_min'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_min') });
       return;
     }
     if (data.newPassword !== data.confirmPassword) {
-      Alert.alert(t('common.error'), t('settings.password_mismatch'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_mismatch') });
       return;
     }
     try {

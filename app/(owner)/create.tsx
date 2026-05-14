@@ -3,7 +3,6 @@ import { api } from '@/services/api';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Button,
   Keyboard,
   StyleSheet,
@@ -14,6 +13,7 @@ import {
   ActivityIndicator,
   TextInput,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadService } from '@/services/uploadService';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -52,7 +52,7 @@ export default function CreateLocation() {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return Alert.alert('Error', 'Permiso denegado');
+    if (status !== 'granted') return Toast.show({ type: 'error', text1: 'Error', text2: 'Permiso denegado' });
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -67,7 +67,7 @@ export default function CreateLocation() {
   };
 
   const create = async () => {
-    if (!marker) return Alert.alert('Error', 'Selecciona un punto en el mapa');
+    if (!marker) return Toast.show({ type: 'error', text1: 'Error', text2: 'Selecciona un punto en el mapa' });
     try {
       setUploading(true);
       
@@ -86,10 +86,10 @@ export default function CreateLocation() {
         capacity: { small: 5, medium: 5, large: 5 },
         pricePerDay: { small: 5, medium: 7, large: 10 },
       });
-      Alert.alert('Éxito', 'Location creada correctamente');
+      Toast.show({ type: 'success', text1: 'Éxito', text2: 'Location creada correctamente' });
       setSelectedImage(null);
     } catch (err: any) {
-      Alert.alert('Error', 'No se pudo crear la ubicación.');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo crear la ubicación.' });
     }
   };
 

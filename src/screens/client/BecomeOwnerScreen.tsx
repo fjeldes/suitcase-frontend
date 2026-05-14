@@ -7,7 +7,6 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Dimensions,
   Modal,
@@ -19,6 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
 
@@ -144,15 +144,12 @@ export default function BecomeOwnerScreen() {
     } catch {
       becomeOwner(undefined, {
         onSuccess: () => {
-          Alert.alert(
-            '🎉 Welcome, Partner!',
-            "You're now a Secure Custodian host. Let's create your first storage location.",
-            [{ text: 'Create my location', onPress: () => router.replace(ROUTES.OWNER.CREATE_LOCATION) }],
-          );
+          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a Secure Custodian host. Let's create your first storage location." });
+          router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
           const msg = err?.response?.data?.message || 'Something went wrong. Please try again.';
-          Alert.alert('Error', msg);
+          Toast.show({ type: 'error', text1: 'Error', text2: msg });
         },
       });
     } finally {
@@ -167,19 +164,16 @@ export default function BecomeOwnerScreen() {
       setTermsModal(false);
       becomeOwner(undefined, {
         onSuccess: () => {
-          Alert.alert(
-            '🎉 Welcome, Partner!',
-            "You're now a Secure Custodian host. Let's create your first storage location.",
-            [{ text: 'Create my location', onPress: () => router.replace(ROUTES.OWNER.CREATE_LOCATION) }],
-          );
+          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a Secure Custodian host. Let's create your first storage location." });
+          router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
           const msg = err?.response?.data?.message || 'Something went wrong. Please try again.';
-          Alert.alert('Error', msg);
+          Toast.show({ type: 'error', text1: 'Error', text2: msg });
         },
       });
     } catch {
-      Alert.alert('Error', 'Could not accept terms. Please try again.');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Could not accept terms. Please try again.' });
     }
   };
 

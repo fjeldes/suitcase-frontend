@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
     ActivityIndicator,
-    Alert,
     Image,
     SafeAreaView,
     ScrollView,
@@ -13,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 import { ROUTES } from '@/constants/routes'
 import { useProcessBooking } from '@/hooks/useProcessBooking'
@@ -43,7 +43,7 @@ export default function BookingValidated() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Camera access is required to take luggage photos.')
+      Toast.show({ type: 'error', text1: 'Permission needed', text2: 'Camera access is required to take luggage photos.' })
       return
     }
 
@@ -59,7 +59,7 @@ export default function BookingValidated() {
         const url = await uploadService.uploadImage(result.assets[0].uri, 'check-in-photos')
         setPhotos((prev) => [...prev, url])
       } catch {
-        Alert.alert('Upload failed', 'Could not save the photo.')
+        Toast.show({ type: 'error', text1: 'Upload failed', text2: 'Could not save the photo.' })
       } finally {
         setUploadingPhoto(false)
       }
@@ -81,7 +81,7 @@ export default function BookingValidated() {
       },
       onError: (err: any) => {
         const errorMsg = err.response?.data?.message || 'Action could not be completed.'
-        Alert.alert('Transaction Failed', errorMsg)
+        Toast.show({ type: 'error', text1: 'Transaction Failed', text2: errorMsg })
       },
     })
   }

@@ -82,9 +82,9 @@ export const ProfileScreen = () => {
   }
 
   const handleChangePassword = async () => {
-    if (!currentPw || !newPw) { Alert.alert(t('common.error'), t('settings.error_fields_required')); return }
-    if (newPw.length < 6) { Alert.alert(t('common.error'), t('settings.password_min')); return }
-    if (newPw !== confirmPw) { Alert.alert(t('common.error'), t('settings.password_mismatch')); return }
+    if (!currentPw || !newPw) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.error_fields_required') }); return }
+    if (newPw.length < 6) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_min') }); return }
+    if (newPw !== confirmPw) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_mismatch') }); return }
     setChangingPw(true)
     try {
       await api.patch('/auth/password', { currentPassword: currentPw, newPassword: newPw })

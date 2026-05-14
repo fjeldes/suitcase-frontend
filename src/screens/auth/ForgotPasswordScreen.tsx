@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { api } from '@/services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,7 @@ export default function ForgotPasswordScreen() {
 
   const handleSendCode = async () => {
     if (!email) {
-      Alert.alert(t('common.error'), t('auth.error_email_required'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('auth.error_email_required') });
       return;
     }
 
@@ -33,7 +33,7 @@ export default function ForgotPasswordScreen() {
       await api.post('/auth/forgot-password', { email });
       router.push({ pathname: '/(auth)/reset-password', params: { email } });
     } catch (err: any) {
-      Alert.alert(t('common.error'), err.response?.data?.message || t('auth.error_something_wrong'));
+      Toast.show({ type: 'error', text1: t('common.error'), text2: err.response?.data?.message || t('auth.error_something_wrong') });
     } finally {
       setIsSending(false);
     }

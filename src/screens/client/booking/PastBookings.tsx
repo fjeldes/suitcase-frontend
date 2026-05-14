@@ -2,27 +2,38 @@ import { BookingSummary } from '@/components/booking/BookingSummary';
 import { ReviewModal } from '@/components/booking/ReviewModal';
 import { SurfaceCard } from '@/components/ui/SurfaceCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { BottomSheetModal } from '@/components/ui/BottomSheetModal';
 import { useBookingDetail } from '@/hooks/useBookingDetail';
 import { useTheme } from '@/hooks/useTheme';
+import { claimService, type ClaimType } from '@/services/claimService';
+import { uploadService } from '@/services/uploadService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Image,
-    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
 
 export default function BookingDetailsScreen({ bookingId }: { bookingId?: string }) {
     const router = useRouter();
     const { colors } = useTheme();
     const [showReview, setShowReview] = useState(false);
     const [reviewSubmitted, setReviewSubmitted] = useState(false);
+    const [showClaim, setShowClaim] = useState(false);
+    const [claimSubject, setClaimSubject] = useState('');
+    const [claimDesc, setClaimDesc] = useState('');
+    const [claimType, setClaimType] = useState<ClaimType>('damage');
+    const [claimPhotos, setClaimPhotos] = useState<string[]>([]);
+    const [submittingClaim, setSubmittingClaim] = useState(false);
     const { data: booking, isLoading, refetch, isRefetching } = useBookingDetail(bookingId as string);
     const s = useMemo(() => createStyles(colors), [colors]);
 
@@ -179,7 +190,12 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                     </SurfaceCard>
                 )}
 
-                <PrimaryButton style={{ marginTop: 24 }} accessibilityLabel="Contact support">
+                <PrimaryButton variant="secondary" style={{ marginTop: 24 }} onPress={() => setShowClaim(true)} accessibilityLabel="Report an issue">
+                    <Ionicons name="alert-circle-outline" size={20} color={colors.iconColor} />
+                    <Text style={{ fontWeight: '700', fontSize: 16 }}>Report an Issue</Text>
+                </PrimaryButton>
+
+                <PrimaryButton style={{ marginTop: 12 }} accessibilityLabel="Contact support">
                     <Ionicons name="chatbubble-ellipses-outline" size={20} color="#FFF" />
                     <Text style={s.primaryBtnText}>Contact Support</Text>
                 </PrimaryButton>
@@ -200,6 +216,84 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
             </View>
 
             <ReviewModal isVisible={showReview} onClose={() => setShowReview(false)} booking={booking} onSuccess={() => setReviewSubmitted(true)} />
+
+            <BottomSheetModal visible={showClaim} onClose={() => setShowClaim(false)}>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 4 }}>Report an Issue</Text>
+                <Text style={{ fontSize: 14, color: colors.textMuted, marginBottom: 20, lineHeight: 20 }}>
+                    Describe what happened and add photos as evidence. We'll review and get back to you.
+                </Text>
+
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Issue Type</Text>
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                    {(['damage', 'loss', 'theft', 'other'] as ClaimType[]).map((t) => (
+                        <TouchableOpacity key={t} onPress={() => setClaimType(t)}
+                            style={[{
+                                paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
+                                borderWidth: 1.5, borderColor: colors.border,
+                            }, claimType === t && { backgroundColor: colors.primary, borderColor: colors.primary }]}>
+                            <Text style={{ fontSize: 13, fontWeight: '700', color: claimType === t ? '#FFF' : colors.textMuted }}>
+                                {t.charAt(0).toUpperCase() + t.slice(1)}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Subject</Text>
+                <TextInput style={s.claimInput} placeholder="e.g. Damaged suitcase handle" placeholderTextColor={colors.iconMuted}
+                    value={claimSubject} onChangeText={setClaimSubject} />
+
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Description</Text>
+                <TextInput style={[s.claimInput, { height: 100, textAlignVertical: 'top' }]} placeholder="Describe what happened in detail..."
+                    placeholderTextColor={colors.iconMuted} multiline value={claimDesc} onChangeText={setClaimDesc} />
+
+                {claimPhotos.length > 0 && (
+                    <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                        {claimPhotos.map((uri, i) => (
+                            <View key={i} style={{ width: 64, height: 64, borderRadius: 12, overflow: 'hidden' }}>
+                                <Image source={{ uri }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                                <TouchableOpacity style={{ position: 'absolute', top: -4, right: -4 }}
+                                    onPress={() => setClaimPhotos((p) => p.filter((_, idx) => idx !== i))}>
+                                    <Ionicons name="close-circle" size={20} color={colors.dotRed} />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                )}
+
+                <TouchableOpacity style={s.claimPhotoBtn} onPress={async () => {
+                    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                    if (status !== 'granted') { Toast.show({ type: 'error', text1: 'Permission needed', text2: 'Camera access is required.' }); return; }
+                    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [4, 3], quality: 0.7 });
+                    if (!result.canceled && result.assets[0]) {
+                        const url = await uploadService.uploadImage(result.assets[0].uri, 'claims');
+                        setClaimPhotos((p) => [...p, url]);
+                    }
+                }} disabled={claimPhotos.length >= 4}>
+                    <Ionicons name="camera-outline" size={20} color={colors.iconColor} />
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: colors.iconColor }}>
+                        {claimPhotos.length >= 4 ? 'Max 4 photos' : 'Add Photo'}
+                    </Text>
+                </TouchableOpacity>
+
+                <PrimaryButton style={{ marginTop: 20 }} loading={submittingClaim}
+                    disabled={!claimSubject.trim() || !claimDesc.trim() || submittingClaim}
+                    onPress={async () => {
+                        setSubmittingClaim(true);
+                        try {
+                            await claimService.create({
+                                bookingId: booking.id, subject: claimSubject, description: claimDesc,
+                                type: claimType, photos: claimPhotos.length > 0 ? claimPhotos : undefined,
+                            });
+                            setShowClaim(false);
+                            setClaimSubject(''); setClaimDesc(''); setClaimType('damage'); setClaimPhotos([]);
+                            Toast.show({ type: 'success', text1: 'Report Submitted', text2: 'We have received your report and will review it shortly.' });
+                        } catch (e: any) {
+                            Toast.show({ type: 'error', text1: 'Error', text2: e?.response?.data?.message || 'Could not submit report' });
+                        } finally { setSubmittingClaim(false); }
+                    }}>
+                    <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>Submit Report</Text>
+                </PrimaryButton>
+            </BottomSheetModal>
         </ScrollView>
     );
 }
@@ -238,4 +332,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     reviewPromptLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
     reviewPromptTitle: { fontSize: 16, fontWeight: '700', color: '#92400E' },
     reviewPromptSub: { fontSize: 13, color: '#B45309', marginTop: 2 },
+    claimInput: {
+        backgroundColor: colors.surfaceLight, borderRadius: 14, padding: 16, fontSize: 15,
+        color: colors.textPrimary, borderWidth: 1, borderColor: colors.border, marginBottom: 16,
+    },
+    claimPhotoBtn: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+        backgroundColor: colors.surfaceLight, borderRadius: 14, padding: 14,
+        borderWidth: 1.5, borderColor: colors.border, borderStyle: 'dashed',
+    },
 });

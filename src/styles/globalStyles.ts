@@ -14,9 +14,9 @@ export const theme = {
     primary: [Brand.primaryStart, Brand.primaryEnd] as const,
     secondary: [Brand.secondary, Brand.secondaryDark] as const,
   },
-  shadow: {
+    shadow: {
     diffusion: {
-      shadowColor: '#1a237e',
+      shadowColor: Brand.primaryStart,
       shadowOffset: { width: 0, height: 20 },
       shadowOpacity: 0.06,
       shadowRadius: 40,

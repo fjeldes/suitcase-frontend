@@ -2,9 +2,9 @@ import { Brand, Colors, DarkColors } from '@/styles/colors';
 
 describe('Brand', () => {
   it('has required brand tokens', () => {
-    expect(Brand.primaryStart).toBe('#000666');
-    expect(Brand.secondary).toBe('#fd6c00');
-    expect(Brand.surface).toBe('#f9f9f9');
+    expect(Brand.primaryStart).toBe('#1A237E');
+    expect(Brand.secondary).toBe('#FF6D00');
+    expect(Brand.surface).toBe('#F9FAFB');
   });
 });
 
@@ -38,8 +38,8 @@ describe('DarkColors', () => {
   });
 
   it('uses dark palette values', () => {
-    expect(DarkColors.background).toBe('#0F0F23');
-    expect(DarkColors.textPrimary).toBe('#ECEDEE');
-    expect(DarkColors.surfaceCard).toBe('#1A1A2E');
+    expect(DarkColors.background).toBe('#0F172A');
+    expect(DarkColors.textPrimary).toBe('#F9FAFB');
+    expect(DarkColors.surfaceCard).toBe('#1E293B');
   });
 });

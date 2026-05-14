@@ -6,7 +6,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     ImageBackground,
     KeyboardAvoidingView,
     Platform,
@@ -18,6 +17,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function EditStoreScreen() {
     const router = useRouter();
@@ -73,10 +73,10 @@ export default function EditStoreScreen() {
                 imageUrl: image, // Incluimos la imagen (local uri o url remota)
                 currency: form.currency.toUpperCase()
             });
-            Alert.alert("Éxito", "Tienda actualizada correctamente");
+            Toast.show({ type: 'success', text1: 'Éxito', text2: 'Tienda actualizada correctamente' });
             router.back();
         } catch (error) {
-            Alert.alert("Error", "No se pudo actualizar la tienda");
+            Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo actualizar la tienda' });
         }
     };
 

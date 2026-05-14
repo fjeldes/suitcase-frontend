@@ -4,7 +4,8 @@ import { useBookingStore } from '@/store/useBookingStore'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 export default function ScannerScreen() {
   const router = useRouter()
@@ -57,9 +58,8 @@ export default function ScannerScreen() {
       },
       onError: (error: any) => {
         const message = error.response?.data?.message || 'QR Code invalid or expired'
-        Alert.alert('Invalid QR', message, [
-          { text: 'Try Again', onPress: () => setScanned(false) },
-        ])
+        Toast.show({ type: 'error', text1: 'Invalid QR', text2: message });
+        setScanned(false)
       },
     })
   }
