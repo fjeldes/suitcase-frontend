@@ -2,13 +2,14 @@ import { api } from './api';
 
 export interface CreateBookingPayload {
     locationId: string;
-    startDate: string; // ISO String
-    endDate: string;   // ISO String
+    startDate: string;
+    endDate: string;
     items: {
         small: number;
         medium: number;
         large: number;
     };
+    declaredValue?: number;
 }
 
 // services/bookingService.ts
@@ -40,6 +41,11 @@ export const bookingService = {
 
     processBookingAction: async (qrCode: string) => {
         const { data } = await api.patch(`/bookings/process-qr/${qrCode}`);
+        return data;
+    },
+
+    saveCheckInPhotos: async (bookingId: string, photos: string[]) => {
+        const { data } = await api.patch(`/bookings/${bookingId}/photos`, { photos });
         return data;
     },
 };

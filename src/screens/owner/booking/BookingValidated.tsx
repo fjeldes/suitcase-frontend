@@ -1,8 +1,10 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React from 'react'
+import React, { useState } from 'react'
 import {
     ActivityIndicator,
+    Alert,
+    Image,
     SafeAreaView,
     ScrollView,
     StatusBar,
@@ -12,21 +14,20 @@ import {
     View,
 } from 'react-native'
 
-// Hooks y Store
 import { ROUTES } from '@/constants/routes'
 import { useProcessBooking } from '@/hooks/useProcessBooking'
 import { useBookingStore } from '@/store/useBookingStore'
+import { bookingService } from '@/services/bookingService'
+import { uploadService } from '@/services/uploadService'
+import * as ImagePicker from 'expo-image-picker'
 
 export default function BookingValidated() {
   const router = useRouter()
-
-  // 1. Obtener datos y funciones del Store Unificado
   const { currentBooking, clearCurrentBooking } = useBookingStore()
-
-  // 2. Hook para procesar el cambio de estado (PATCH)
   const { mutate: processBooking, isPending } = useProcessBooking()
+  const [photos, setPhotos] = useState<string[]>([])
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
-  // Pantalla de carga/error si no hay datos en el store
   if (!currentBooking) {
     return (
       <View style={styles.center}>
@@ -36,13 +37,44 @@ export default function BookingValidated() {
     )
   }
 
-  // Lógica de UI basada en el estado actual de la reserva
-  // confirmed -> Toca hacer Check-in
-  // in_storage -> Toca hacer Check-out
   const isCheckIn = currentBooking.status === 'confirmed'
   const bookingIdDisplay = currentBooking.id?.slice(0, 8).toUpperCase()
 
-  const handleConfirm = () => {
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera access is required to take luggage photos.')
+      return
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.7,
+    })
+
+    if (!result.canceled && result.assets[0]) {
+      setUploadingPhoto(true)
+      try {
+        const url = await uploadService.uploadImage(result.assets[0].uri, 'check-in-photos')
+        setPhotos((prev) => [...prev, url])
+      } catch {
+        Alert.alert('Upload failed', 'Could not save the photo.')
+      } finally {
+        setUploadingPhoto(false)
+      }
+    }
+  }
+
+  const handleConfirm = async () => {
+    if (isCheckIn && photos.length > 0) {
+      try {
+        await bookingService.saveCheckInPhotos(currentBooking.id, photos)
+      } catch {
+        // non-blocking: photos are optional
+      }
+    }
+
     processBooking(currentBooking.qrCode, {
       onSuccess: () => {
         router.replace(ROUTES.OWNER.CHECKIN_SUCCESS)
@@ -55,15 +87,18 @@ export default function BookingValidated() {
   }
 
   const handleCancel = () => {
-    clearCurrentBooking() // Limpiamos para que el scanner esté fresco
+    clearCurrentBooking()
     router.back()
   }
-  console.log('Current Booking in Store:', currentBooking) // Debug para verificar datos
+
+  const removePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index))
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
@@ -73,7 +108,6 @@ export default function BookingValidated() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Success Icon Section */}
         <View style={styles.successContainer}>
           <View style={styles.outerCircle}>
             <View style={styles.innerCircle}>
@@ -87,7 +121,6 @@ export default function BookingValidated() {
           QR code verified. Please confirm the details below before proceeding.
         </Text>
 
-        {/* Status Badge Dinámico */}
         <View style={styles.badgeContainer}>
           <View style={[styles.readyBadge, !isCheckIn && styles.readyBadgeOut]}>
             <Ionicons
@@ -101,11 +134,9 @@ export default function BookingValidated() {
           </View>
         </View>
 
-        {/* Customer Info Card */}
         <View style={styles.card}>
           <View>
             <Text style={styles.label}>CUSTOMER</Text>
-            {/* EL ERROR ESTABA AQUÍ: El nombre debe estar dentro de <Text> */}
             <Text style={styles.customerName}>
               {currentBooking.user?.profile
                 ? `${currentBooking.user.profile.firstName} ${currentBooking.user.profile.lastName}`
@@ -117,7 +148,6 @@ export default function BookingValidated() {
           </View>
         </View>
 
-        {/* Items Detail Card */}
         <View style={[styles.card, { flexDirection: 'column', alignItems: 'flex-start' }]}>
           <View style={styles.bookingIdRow}>
             <View>
@@ -127,11 +157,22 @@ export default function BookingValidated() {
             <MaterialCommunityIcons name="qrcode" size={26} color="black" />
           </View>
 
+          {currentBooking.declaredValue > 0 && (
+            <>
+              <View style={styles.divider} />
+              <View style={styles.declaredValueRow}>
+                <Ionicons name="shield-checkmark" size={18} color="#B45309" />
+                <Text style={styles.declaredValueText}>
+                  Declared value: ${Number(currentBooking.declaredValue).toLocaleString()}
+                </Text>
+              </View>
+            </>
+          )}
+
           <View style={styles.divider} />
 
           <Text style={[styles.label, { marginBottom: 12 }]}>STORAGE ITEMS</Text>
 
-          {/* Renderizado dinámico de maletas */}
           {Object.entries(currentBooking.items || {}).map(([key, value]) => {
             if (!value || value === 0) return null
             return (
@@ -154,7 +195,46 @@ export default function BookingValidated() {
           })}
         </View>
 
-        {/* Footer Actions */}
+        {/* PHOTOS SECTION - only during check-in */}
+        {isCheckIn && (
+          <View style={styles.photosSection}>
+            <Text style={styles.photosLabel}>LUGGAGE PHOTOS (optional)</Text>
+            <Text style={styles.photosDesc}>
+              Take photos of the items for their protection and yours.
+            </Text>
+
+            {photos.length > 0 && (
+              <View style={styles.photoGrid}>
+                {photos.map((uri, index) => (
+                  <View key={index} style={styles.photoThumb}>
+                    <Image source={{ uri }} style={styles.photoImage} />
+                    <TouchableOpacity style={styles.photoRemove} onPress={() => removePhoto(index)}>
+                      <Ionicons name="close-circle" size={22} color="#E53E3E" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.addPhotoBtn}
+              onPress={takePhoto}
+              disabled={uploadingPhoto || photos.length >= 4}
+            >
+              {uploadingPhoto ? (
+                <ActivityIndicator color="#0A0E5E" size="small" />
+              ) : (
+                <>
+                  <Ionicons name="camera-outline" size={20} color="#0A0E5E" />
+                  <Text style={styles.addPhotoText}>
+                    {photos.length >= 4 ? 'Max 4 photos' : 'Take Photo'}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.footer}>
           <TouchableOpacity
             style={[styles.confirmButton, isPending && { opacity: 0.7 }]}
@@ -194,111 +274,74 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 25, paddingBottom: 40 },
   successContainer: { alignItems: 'center', marginTop: 20, marginBottom: 25 },
   outerCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#DCF7E8',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 90, height: 90, borderRadius: 45, backgroundColor: '#DCF7E8',
+    justifyContent: 'center', alignItems: 'center',
   },
   innerCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#22C55E',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 60, height: 60, borderRadius: 30, backgroundColor: '#22C55E',
+    justifyContent: 'center', alignItems: 'center',
   },
-  mainTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#111827',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subTitle: {
-    fontSize: 15,
-    color: '#6B7280',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    lineHeight: 22,
-  },
+  mainTitle: { fontSize: 28, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 8 },
+  subTitle: { fontSize: 15, color: '#6B7280', textAlign: 'center', paddingHorizontal: 20, lineHeight: 22 },
   badgeContainer: { alignItems: 'center', marginVertical: 25 },
   readyBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFEDD5',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFEDD5',
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
   },
   readyBadgeOut: { backgroundColor: '#D1FAE5' },
   readyBadgeText: { color: '#9A3412', fontWeight: '700', fontSize: 13 },
   readyBadgeTextOut: { color: '#065F46' },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 2,
-    width: '100%',
+    backgroundColor: '#FFFFFF', borderRadius: 24, padding: 20, marginBottom: 16,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05,
+    shadowRadius: 15, elevation: 2, width: '100%',
   },
   label: { fontSize: 11, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1, marginBottom: 4 },
   customerName: { fontSize: 20, fontWeight: '700', color: '#0A0E5E' },
   avatarPlaceholder: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 45, height: 45, borderRadius: 22.5, backgroundColor: '#F3F4F6',
+    justifyContent: 'center', alignItems: 'center',
   },
   bookingIdRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    width: '100%',
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%',
   },
   bookingIdText: { fontSize: 22, fontWeight: '800', color: '#0A0E5E' },
   divider: { height: 1, backgroundColor: '#F3F4F6', marginVertical: 20, width: '100%' },
+  declaredValueRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -10, marginBottom: 5,
+  },
+  declaredValueText: {
+    fontSize: 14, fontWeight: '700', color: '#92400E',
+  },
   itemBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 18,
-    padding: 15,
-    marginBottom: 12,
-    width: '100%',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6',
+    borderRadius: 18, padding: 15, marginBottom: 12, width: '100%',
   },
   itemIconContainer: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
+    width: 48, height: 48, borderRadius: 12, backgroundColor: '#FFFFFF',
+    justifyContent: 'center', alignItems: 'center', marginRight: 15,
   },
   itemTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
   itemSubtitle: { fontSize: 12, color: '#6B7280', marginTop: 2 },
+  photosSection: { marginBottom: 16 },
+  photosLabel: { fontSize: 11, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1, marginBottom: 4 },
+  photosDesc: { fontSize: 13, color: '#6B7280', marginBottom: 12, lineHeight: 18 },
+  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
+  photoThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
+  photoImage: { width: '100%', height: '100%', resizeMode: 'cover' },
+  photoRemove: { position: 'absolute', top: -6, right: -6 },
+  addPhotoBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#F3F4F6', borderRadius: 14,
+    padding: 16, gap: 8, borderWidth: 1.5, borderColor: '#E2E8F0', borderStyle: 'dashed',
+  },
+  addPhotoText: { fontSize: 14, fontWeight: '600', color: '#0A0E5E' },
   footer: { marginTop: 30, gap: 15 },
   confirmButton: {
-    backgroundColor: '#0A0E5E',
-    borderRadius: 16,
-    paddingVertical: 18,
-    alignItems: 'center',
-    shadowColor: '#0A0E5E',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
+    backgroundColor: '#0A0E5E', borderRadius: 16, paddingVertical: 18, alignItems: 'center',
+    shadowColor: '#0A0E5E', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2,
+    shadowRadius: 10, elevation: 5,
   },
   confirmButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
   cancelButton: { paddingVertical: 10, alignItems: 'center' },

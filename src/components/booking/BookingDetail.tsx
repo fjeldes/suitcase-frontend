@@ -12,6 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -60,6 +61,8 @@ export default function BookingDetail({ storeId }: Props) {
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
   const [showHours, setShowHours] = useState(false);
+  const [showValueDeclare, setShowValueDeclare] = useState(false);
+  const [declaredValue, setDeclaredValue] = useState(0);
 
   // Determinar si la tienda está abierta ahora
   const isStoreOpen = useMemo(() => {
@@ -112,6 +115,7 @@ export default function BookingDetail({ storeId }: Props) {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       items: bags,
+      declaredValue: declaredValue > 0 ? declaredValue : undefined,
     })
   }
 
@@ -284,6 +288,33 @@ export default function BookingDetail({ storeId }: Props) {
               </Text>
             </View>
           </View>
+
+          {/* VALUE DECLARATION */}
+          <TouchableOpacity style={styles.valueDeclareBtn} onPress={() => setShowValueDeclare(!showValueDeclare)}>
+            <Ionicons name={showValueDeclare ? 'shield-checkmark' : 'shield-outline'} size={20} color="#B45309" />
+            <Text style={styles.valueDeclareBtnText}>
+              {showValueDeclare ? 'Declared value: $' + declaredValue : 'Declare valuable items?'}
+            </Text>
+            <Ionicons name={showValueDeclare ? 'chevron-up' : 'chevron-down'} size={18} color="#B45309" style={{ marginLeft: 'auto' }} />
+          </TouchableOpacity>
+          {showValueDeclare && (
+            <View style={styles.valueDeclareCard}>
+              <Text style={styles.valueDeclareDesc}>
+                If your luggage contains items worth more than $500, declaring them provides extra coverage up to the declared amount.
+              </Text>
+              <View style={styles.valueInputRow}>
+                <Text style={styles.valueCurrency}>$</Text>
+                <TextInput
+                  style={styles.valueInput}
+                  keyboardType="numeric"
+                  value={declaredValue > 0 ? String(declaredValue) : ''}
+                  onChangeText={(v) => setDeclaredValue(Number(v) || 0)}
+                  placeholder="0"
+                  placeholderTextColor="#94A3B8"
+                />
+              </View>
+            </View>
+          )}
 
           {/* PRICE BREAKDOWN */}
           {totalPrice > 0 && (
@@ -591,6 +622,60 @@ const styles = StyleSheet.create({
     color: '#0A0E5E',
   },
 
+  // Value Declaration
+  valueDeclareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFBEB',
+    padding: 16,
+    borderRadius: 14,
+    marginTop: 20,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  valueDeclareBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#92400E',
+    flex: 1,
+  },
+  valueDeclareCard: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: 16,
+    padding: 18,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  valueDeclareDesc: {
+    fontSize: 13,
+    color: '#92400E',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  valueInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  valueCurrency: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#92400E',
+    marginRight: 8,
+  },
+  valueInput: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A0E5E',
+  },
   // Payment Section
   paymentSection: {
     marginTop: 24,
