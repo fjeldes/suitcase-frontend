@@ -144,7 +144,7 @@ export default function BecomeOwnerScreen() {
     } catch {
       becomeOwner(undefined, {
         onSuccess: () => {
-          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a Secure Custodian host. Let's create your first storage location." });
+          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a KipGo host. Let's create your first storage location." });
           router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
@@ -164,7 +164,7 @@ export default function BecomeOwnerScreen() {
       setTermsModal(false);
       becomeOwner(undefined, {
         onSuccess: () => {
-          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a Secure Custodian host. Let's create your first storage location." });
+          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a KipGo host. Let's create your first storage location." });
           router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
@@ -203,7 +203,7 @@ export default function BecomeOwnerScreen() {
 
           <View style={styles.heroBadge}>
             <MaterialCommunityIcons name="shield-check" size={14} color="#22C55E" />
-            <Text style={styles.heroBadgeText}>Secure Custodian Partner</Text>
+            <Text style={styles.heroBadgeText}>KipGo Partner</Text>
           </View>
 
           <Text style={styles.heroTitle}>

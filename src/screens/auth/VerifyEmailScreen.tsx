@@ -142,7 +142,7 @@ export default function VerifyEmailScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Secure Custodian</Text>
+          <Text style={styles.headerTitle}>KipGo</Text>
           <View style={{ width: 40 }} />
         </View>
 

@@ -130,7 +130,7 @@ export default function CreateLocationScreen() {
         <TouchableOpacity onPress={handleBack} style={s.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
         </TouchableOpacity>
-        <Text style={s.headerTitle}>SECURE CUSTODIAN</Text>
+        <Text style={s.headerTitle}>KIPGO</Text>
         <View style={s.avatarPlaceholder} />
       </View>
 

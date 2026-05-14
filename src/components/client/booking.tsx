@@ -64,7 +64,7 @@ export default function BookingsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="lock-closed" size={20} color="#0A0E5E" />
-        <Text style={styles.headerTitle}>Secure Custodian</Text>
+        <Text style={styles.headerTitle}>KipGo</Text>
       </View>
 
       <Text style={styles.pageTitle}>My Bookings</Text>

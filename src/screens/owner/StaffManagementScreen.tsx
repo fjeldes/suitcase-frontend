@@ -229,10 +229,7 @@ export default function StaffManagementScreen() {
               <TouchableOpacity style={s.closeLinkBtn} onPress={() => setInviteLink(null)}>
                 <Text style={s.closeLinkBtnText}>{t('common.done')}</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+      </BottomSheetModal>
     </SafeAreaView>
   );
 }
