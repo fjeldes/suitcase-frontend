@@ -58,7 +58,7 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <Image source={require('@/assets/images/icon.png')} style={{ width: 32, height: 32 }} />
+              <Image source={require('@/assets/images/icon-light.png')} style={{ width: 32, height: 32 }} />
               <Text style={s.logoText}>
                 Kip<Text style={s.bold}>Go</Text>
               </Text>
