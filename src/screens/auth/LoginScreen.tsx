@@ -58,7 +58,7 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <Image source={require('@/assets/images/login-logo.png')} style={{ width: 120, height: 120 }} resizeMode="contain" />
+              <Image source={require('@/assets/images/login-logo.png')} style={{ width: 240, height: 115 }} resizeMode="contain" />
             </View>
             <Text style={s.title}>Welcome Back</Text>
             <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>
