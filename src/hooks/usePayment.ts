@@ -124,11 +124,13 @@ export function usePayment() {
   const setupPaymentSheet = async () => {
     try {
       setLoading(true);
-      const { clientSecret } = await paymentService.fetchSetupIntentParams();
+      const { clientSecret, customer, ephemeralKey } = await paymentService.fetchSetupIntentParams();
 
       const { error } = await initPaymentSheet({
         merchantDisplayName: 'Suitcase Chile',
         setupIntentClientSecret: clientSecret,
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
         allowsDelayedPaymentMethods: false,
         appearance: {
           colors: { primary: '#0A0E5E' },

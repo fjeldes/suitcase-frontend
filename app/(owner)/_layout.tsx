@@ -1,24 +1,21 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-const activeBlue = '#0A0E5E';
-const inactiveGray = '#8E8E93';
-const activeBackground = '#EEF2FF';
-
 export default function OwnerLayout() {
+  const { colors } = useTheme();
   const router = useRouter();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: activeBlue,
-        tabBarInactiveTintColor: inactiveGray,
+        tabBarActiveTintColor: colors.iconColor,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: 'rgba(255,255,255,0.85)',
+          backgroundColor: colors.tabBarBg,
           borderTopWidth: 0,
           elevation: 20,
           shadowColor: '#1a237e',
@@ -40,7 +37,7 @@ export default function OwnerLayout() {
         options={{
           title: 'DASHBOARD',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="grid" size={22} color={color} />
             </View>
           ),
@@ -51,7 +48,7 @@ export default function OwnerLayout() {
         options={{
           title: 'BOOKINGS',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="briefcase" size={22} color={color} />
             </View>
           ),
@@ -62,7 +59,7 @@ export default function OwnerLayout() {
         options={{
           title: 'PROFILE',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="person" size={22} color={color} />
             </View>
           ),

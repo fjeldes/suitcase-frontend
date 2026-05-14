@@ -22,7 +22,7 @@ export const paymentService = {
   /**
    * Solicita un SetupIntent para guardar una tarjeta sin cobrar.
    */
-  fetchSetupIntentParams: async (): Promise<{ clientSecret: string }> => {
+  fetchSetupIntentParams: async (): Promise<{ clientSecret: string; customer: string; ephemeralKey: string; publishableKey: string }> => {
     const response = await api.post('/payments/create-setup-intent');
     return response.data;
   },

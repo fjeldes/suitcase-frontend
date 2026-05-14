@@ -1,7 +1,8 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { styles } from "./Notifications.style";
+import { createStyles } from "./Notifications.style";
 
 interface NotificationItemProps {
   type: 'CRITICAL' | 'LOG' | 'SYSTEM';
@@ -24,8 +25,9 @@ export const NotificationItem = ({
   onPrimaryPress,
   onSecondaryPress
 }: NotificationItemProps) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-  // Determinamos el icono según el tipo
   const getIcon = () => {
     switch (type) {
       case 'CRITICAL': return 'shield-checkmark';
@@ -37,7 +39,6 @@ export const NotificationItem = ({
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemHeader}>
-        {/* Contenedor del Icono */}
         <View style={[
           styles.iconBg,
           type === 'CRITICAL' ? styles.criticalIcon : styles.logIcon
@@ -45,11 +46,10 @@ export const NotificationItem = ({
           <Ionicons
             name={getIcon()}
             size={22}
-            color={type === 'CRITICAL' ? '#E53E3E' : '#94A3B8'}
+            color={type === 'CRITICAL' ? colors.dotRed : colors.iconMuted}
           />
         </View>
 
-        {/* Contenido de Texto */}
         <View style={styles.textMainContainer}>
           <View style={styles.rowBetween}>
             <Text style={styles.itemTitle} numberOfLines={2}>{title}</Text>
@@ -58,11 +58,9 @@ export const NotificationItem = ({
           <Text style={styles.itemDescription}>{description}</Text>
         </View>
 
-        {/* Indicador de "No leído" - La barrita roja lateral de la imagen */}
         {isUnread && <View style={styles.unreadIndicator} />}
       </View>
 
-      {/* Fila de Botones */}
       {showButtons && (
         <View style={styles.buttonRow}>
           <TouchableOpacity

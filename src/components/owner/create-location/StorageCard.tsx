@@ -1,5 +1,6 @@
+import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface Props {
@@ -21,16 +22,18 @@ export const StorageCard = ({
   onPriceChange, 
   onCapacityChange 
 }: Props) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.card}>
       <View style={styles.iconContainer}>
-        <MaterialCommunityIcons name={icon} size={24} color="#0A0E5E" />
+        <MaterialCommunityIcons name={icon} size={24} color={colors.iconColor} />
       </View>
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.subLabel}>{subLabel}</Text>
 
       <View style={styles.row}>
-        {/* Lado Izquierdo: Precio */}
         <View style={styles.fieldColumn}>
           <Text style={styles.fieldHeader}>PRICE / DAY</Text>
           <View style={styles.inputWrapper}>
@@ -41,15 +44,13 @@ export const StorageCard = ({
               value={priceValue}
               onChangeText={onPriceChange}
               placeholder="0.00"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.iconMuted}
             />
           </View>
         </View>
 
-        {/* Separador usando margen en lugar de un View vacío con comentarios */}
         <View style={styles.separator} />
 
-        {/* Lado Derecho: Capacidad */}
         <View style={styles.fieldColumn}>
           <Text style={styles.fieldHeader}>CAPACITY</Text>
           <View style={styles.inputWrapper}>
@@ -59,7 +60,7 @@ export const StorageCard = ({
               value={capacityValue}
               onChangeText={onCapacityChange}
               placeholder="0"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.iconMuted}
             />
           </View>
         </View>
@@ -68,9 +69,9 @@ export const StorageCard = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   card: { 
-    backgroundColor: '#fff', 
+    backgroundColor: colors.surfaceCard, 
     borderRadius: 24, 
     padding: 24, 
     alignItems: 'center', 
@@ -85,13 +86,13 @@ const styles = StyleSheet.create({
     width: 50, 
     height: 50, 
     borderRadius: 14, 
-    backgroundColor: '#F0F2F8', 
+    backgroundColor: colors.surfaceLight, 
     justifyContent: 'center', 
     alignItems: 'center', 
     marginBottom: 12 
   },
-  label: { fontSize: 18, fontWeight: 'bold', color: '#0A0E5E' },
-  subLabel: { fontSize: 13, color: '#64748B', marginBottom: 20 },
+  label: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary },
+  subLabel: { fontSize: 13, color: colors.textMuted, marginBottom: 20 },
   row: { 
     flexDirection: 'row', 
     width: '100%',
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
   fieldHeader: { 
     fontSize: 10, 
     fontWeight: 'bold', 
-    color: '#94A3B8', 
+    color: colors.iconMuted, 
     textAlign: 'center', 
     marginBottom: 8,
     textTransform: 'uppercase'
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   inputWrapper: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#F1F5F9', 
+    backgroundColor: colors.surfaceLight, 
     borderRadius: 12, 
     paddingHorizontal: 12, 
     height: 48 
@@ -122,15 +123,15 @@ const styles = StyleSheet.create({
   currency: { 
     fontSize: 16, 
     fontWeight: '600', 
-    color: '#64748B', 
+    color: colors.textMuted, 
     marginRight: 2 
   },
   input: { 
     flex: 1, 
     fontSize: 16, 
     fontWeight: '600',
-    color: '#0A0E5E', 
+    color: colors.textPrimary, 
     textAlign: 'center',
-    padding: 0 // Importante en Android para evitar saltos
+    padding: 0
   }
 });

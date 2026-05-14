@@ -1,12 +1,10 @@
 import { StyleSheet } from 'react-native';
+import type { ColorsType } from '@/styles/colors';
 
-export const styles = StyleSheet.create({
-    // ==========================================
-    // 1. ESTILOS DE LA PANTALLA (SCREEN)
-    // ==========================================
+export const createStyles = (colors: ColorsType) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FE', // Fondo ligeramente azulado
+        backgroundColor: colors.surfaceCardLow,
     },
     header: {
         flexDirection: 'row',
@@ -14,7 +12,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         height: 70,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surfaceCard,
     },
     menuButton: {
         width: 40,
@@ -24,15 +22,15 @@ export const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '800',
-        color: '#0A0E5E',
+        color: colors.textPrimary,
     },
     avatarMini: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: colors.surfaceLight,
         borderWidth: 1.5,
-        borderColor: '#0A0E5E',
+        borderColor: colors.iconColor,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -47,19 +45,19 @@ export const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#0A0E5E',
+        color: colors.textPrimary,
         marginBottom: 8,
     },
     sectionSubtitle: {
         fontSize: 15,
-        color: '#64748B',
+        color: colors.textMuted,
         lineHeight: 22,
         marginBottom: 15,
     },
     markAllButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F1F5F9', // Gris suave del botón de la imagen
+        backgroundColor: colors.surfaceLight,
         alignSelf: 'flex-start',
         paddingHorizontal: 16,
         paddingVertical: 10,
@@ -68,7 +66,7 @@ export const styles = StyleSheet.create({
     markAllText: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#0A0E5E',
+        color: colors.iconColor,
         marginLeft: 8,
     },
     filterContainer: {
@@ -80,16 +78,16 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderRadius: 25,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: colors.surfaceLight,
         marginRight: 8,
     },
     filterTabActive: {
-        backgroundColor: '#0A0E5E',
+        backgroundColor: colors.primary,
     },
     filterTabText: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#64748B',
+        color: colors.textMuted,
     },
     filterTabTextActive: {
         color: '#FFFFFF',
@@ -137,14 +135,10 @@ export const styles = StyleSheet.create({
     loadMoreText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#0A0E5E',
+        color: colors.iconColor,
     },
-
-    // ==========================================
-    // 2. ESTILOS DEL ITEM (NOTIFICATION ITEM)
-    // ==========================================
     itemContainer: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surfaceCard,
         borderRadius: 24,
         padding: 20,
         marginBottom: 16,
@@ -166,10 +160,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
     criticalIcon: {
-        backgroundColor: '#FEE2E2', // Fondo rojo suave para alertas
+        backgroundColor: colors.errorLight,
     },
     logIcon: {
-        backgroundColor: '#F1F5F9', // Fondo gris para logs
+        backgroundColor: colors.surfaceLight,
     },
     textMainContainer: {
         flex: 1,
@@ -184,25 +178,25 @@ export const styles = StyleSheet.create({
     itemTitle: {
         fontSize: 16,
         fontWeight: '800',
-        color: '#0A0E5E',
+        color: colors.textPrimary,
         flex: 0.8,
         lineHeight: 20,
     },
     itemTime: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#94A3B8',
+        color: colors.iconMuted,
         textTransform: 'uppercase',
     },
     itemDescription: {
         fontSize: 14,
-        color: '#64748B',
+        color: colors.textMuted,
         lineHeight: 20,
     },
     unreadIndicator: {
         width: 4,
         height: 12,
-        backgroundColor: '#E53E3E', // La barrita roja lateral de la imagen
+        backgroundColor: colors.dotRed,
         borderRadius: 2,
         marginLeft: 8,
         marginTop: 4,
@@ -214,13 +208,13 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
     primaryBtn: {
-        backgroundColor: '#0A0E5E',
+        backgroundColor: colors.primary,
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,
     },
     primaryBtnText: {
-        color: '#FFFFFF',
+        color: colors.textInverse,
         fontSize: 14,
         fontWeight: '700',
     },
@@ -229,7 +223,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     secondaryBtnText: {
-        color: '#0A0E5E',
+        color: colors.iconColor,
         fontSize: 14,
         fontWeight: '700',
     },

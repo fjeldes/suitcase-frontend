@@ -1,9 +1,13 @@
 import BookingsScreen from '@/components/owner/booking/Bookings'
+import { useUnreadCount } from '@/hooks/useUnreadCount'
+import { useTheme } from '@/hooks/useTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { Stack } from 'expo-router'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 export default function BookingsRoute() {
+  const { hasUnread } = useUnreadCount();
+  const { colors } = useTheme();
   return (
     <>
       <Stack.Screen
@@ -11,17 +15,17 @@ export default function BookingsRoute() {
           headerTitle: 'Current Bookings',
           headerTitleAlign: 'center',
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: '#F9FAFB' },
+          headerStyle: { backgroundColor: colors.surfaceCard },
           headerLeft: () => (
             <TouchableOpacity style={styles.headerBtn}>
-              <Ionicons name="menu" size={24} color="#0A0E5E" />
+              <Ionicons name="menu" size={24} color={colors.iconColor} />
             </TouchableOpacity>
           ),
           headerRight: () => (
             <TouchableOpacity style={styles.headerBtn}>
               <View>
-                <Ionicons name="notifications-outline" size={24} color="#0A0E5E" />
-                <View style={styles.dot} />
+                <Ionicons name="notifications-outline" size={24} color={colors.iconColor} />
+                {hasUnread && <View style={[styles.dot, { backgroundColor: colors.dotRed, borderColor: colors.surfaceCard }]} />}
               </View>
             </TouchableOpacity>
           ),
@@ -42,9 +46,7 @@ const styles = StyleSheet.create({
     top: 2,
     width: 10,
     height: 10,
-    backgroundColor: '#E74C3C',
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#F9FAFB',
   },
 })

@@ -58,5 +58,10 @@ export const notificationService = {
   markAllAsRead: async () => {
     const { data } = await api.post('/notifications/mark-all-read');
     return data;
+  },
+
+  getUnreadCount: async (): Promise<{ count: number }> => {
+    const { data } = await api.get('/notifications/unread-count');
+    return data;
   }
 };

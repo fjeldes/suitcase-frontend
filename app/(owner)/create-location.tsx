@@ -2,10 +2,13 @@ import { StorageCard } from '@/components/owner/create-location/StorageCard'
 import { ROUTES } from '@/constants/routes'
 import { locationService } from '@/services/locationServices'
 import { useLocationStore } from '@/store/useLocationStore'
+import { useTheme } from '@/hooks/useTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -21,12 +24,10 @@ import Toast from 'react-native-toast-message'
 
 export default function CreateLocationScreen() {
   const router = useRouter()
-  // Obtenemos los datos del store global
+  const { colors } = useTheme()
   const { address, lat, lng } = useLocationStore()
 
   const [loading, setLoading] = useState(false);
-  // Si quieres que el store se limpie al salir definitivamente al dashboard
-  // 1. Recibimos los parámetros que inyectamos desde el MapSelector
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -50,7 +51,6 @@ export default function CreateLocationScreen() {
     ]
   })
 
-  // 2. Efecto para actualizar el formulario cuando volvemos del mapa
   useEffect(() => {
     if (address) {
       setForm((prev) => ({
@@ -60,22 +60,18 @@ export default function CreateLocationScreen() {
         lng: lng as string,
       }))
     }
-  }, [address, lat, lng]) // <-- Asegúrate de tener estas 3 dependencias
+  }, [address, lat, lng])
 
   const handleBack = () => {
-    // router.navigate(ROUTES.OWNER.DASHBOARD);
     router.back()
   }
 
-  
-  
     const handleSubmit = async () => {
-      if (loading) return; // Evita doble click
+      if (loading) return;
       
       try {
         setLoading(true);
         
-        // Llamamos al servicio reutilizable
         const response = await locationService.create(form);
         
         console.log('Success:', response);
@@ -125,192 +121,195 @@ export default function CreateLocationScreen() {
         }
       }
     };
-  
+
+  const s = useMemo(() => createStyles(colors), [colors])
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        {/* Cambiamos a handleBack para mayor seguridad */}
-        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
+    <SafeAreaView style={s.safe}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={handleBack} style={s.backBtn}>
+          <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>SECURE CUSTODIAN</Text>
-        <View style={styles.avatarPlaceholder} />
+        <Text style={s.headerTitle}>SECURE CUSTODIAN</Text>
+        <View style={s.avatarPlaceholder} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.mainTitle}>Add Storage Location</Text>
-        <Text style={styles.description}>
-          Expand your network. Provide a secure vault for travelers and earn more...
-        </Text>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <Text style={s.mainTitle}>Add Storage Location</Text>
+          <Text style={s.description}>
+            Expand your network. Provide a secure vault for travelers and earn more...
+          </Text>
 
-        {/* Store Photo Section */}
-        <View style={styles.sectionHeader}>
-          <Ionicons name="camera" size={20} color="#B45309" />
-          <Text style={styles.sectionTitle}>Store Photo</Text>
-        </View>
-
-        <TouchableOpacity 
-          style={[styles.imageUploadCard, form.imageUrl ? styles.imageActive : null]} 
-          onPress={pickImage}
-          disabled={loading}
-        >
-          {form.imageUrl ? (
-            <View style={styles.imagePreviewContainer}>
-              <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <Image 
-                  source={{ uri: form.imageUrl }} 
-                  style={styles.previewImage} 
-                />
-                <View style={styles.imageOverlay}>
-                  <Ionicons name="create" size={24} color="#FFF" />
-                  <Text style={styles.overlayText}>Change Photo</Text>
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.uploadPlaceholder}>
-              <Ionicons name="cloud-upload-outline" size={40} color="#64748B" />
-              <Text style={styles.uploadTitle}>Upload Main Photo</Text>
-              <Text style={styles.uploadSubtitle}>Showcase your storage space</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.sectionHeader}>
-          <Ionicons name="location" size={20} color="#B45309" />
-          <Text style={styles.sectionTitle}>Location Details</Text>
-        </View>
-
-        <Text style={styles.inputLabel}>Location Name</Text>
-        <TextInput
-          style={styles.textField}
-          placeholder="e.g. Grand Central Secure Storage"
-          value={form.name}
-          onChangeText={(val) => setForm({ ...form, name: val })}
-        />
-
-        <Text style={styles.inputLabel}>Full Address</Text>
-        <TextInput
-          style={styles.textField}
-          placeholder="Select address on map"
-          value={form.address}
-          editable={false} // Forzamos el uso del mapa para geolocalización
-        />
-
-        <TouchableOpacity
-          style={[styles.mapPlaceholder, form.lat ? styles.mapPinned : null]}
-          onPress={() => router.push(ROUTES.OWNER.MAP_SELECTOR)}
-        >
-          <View style={styles.mapButton}>
-            <Ionicons name={form.lat ? 'checkmark-circle' : 'navigate'} size={18} color="#0A0E5E" />
-            <Text style={styles.mapButtonText}>
-              {form.lat ? 'Location Pinned' : 'Pin Location on Map'}
-            </Text>
+          <View style={s.sectionHeader}>
+            <Ionicons name="camera" size={20} color="#B45309" />
+            <Text style={s.sectionTitle}>Store Photo</Text>
           </View>
-        </TouchableOpacity>
 
-        <View style={styles.sectionHeader}>
-          <Ionicons name="cash" size={20} color="#B45309" />
-          <Text style={styles.sectionTitle}>Luggage Pricing</Text>
-        </View>
-
-        <View style={styles.priceContainer}>
-          <StorageCard
-            icon="bag-personal"
-            label="Small"
-            subLabel="Backpacks, Handbags"
-            priceValue={form.smallPrice}
-            capacityValue={form.smallCapacity}
-            onPriceChange={(v) => setForm({ ...form, smallPrice: v })}
-            onCapacityChange={(v) => setForm({ ...form, smallCapacity: v })}
-          />
-          {/* MEDIUM */}
-          <StorageCard
-            icon="bag-suitcase"
-            label="Medium"
-            subLabel="Carry-ons, Standard Suitcases"
-            priceValue={form.mediumPrice}
-            capacityValue={form.mediumCapacity}
-            onPriceChange={(v) => setForm({ ...form, mediumPrice: v })}
-            onCapacityChange={(v) => setForm({ ...form, mediumCapacity: v })}
-          />
-
-          {/* LARGE */}
-          <StorageCard
-            icon="suitcase"
-            label="Large"
-            subLabel="Large Check-in Bags, Trunk"
-            priceValue={form.largePrice}
-            capacityValue={form.largeCapacity}
-            onPriceChange={(v) => setForm({ ...form, largePrice: v })}
-            onCapacityChange={(v) => setForm({ ...form, largeCapacity: v })}
-          />
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Ionicons name="time" size={20} color="#B45309" />
-          <Text style={styles.sectionTitle}>Business Hours</Text>
-        </View>
-
-        <View style={styles.hoursContainer}>
-          {form.workingHours.map((item, index) => (
-            <View key={item.day} style={styles.hourRow}>
-              <View style={styles.dayInfo}>
-                <Text style={styles.dayLabel}>{item.label}</Text>
-                <TouchableOpacity 
-                  onPress={() => {
-                    const newHours = [...form.workingHours];
-                    newHours[index].isClosed = !newHours[index].isClosed;
-                    setForm({ ...form, workingHours: newHours });
-                  }}
-                  style={[styles.statusBadge, item.isClosed ? styles.closedBadge : styles.openBadge]}
-                >
-                  <Text style={styles.statusText}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
-                </TouchableOpacity>
-              </View>
-
-              {!item.isClosed && (
-                <View style={styles.timeInputs}>
-                  <TextInput
-                    style={styles.timeInput}
-                    value={item.open}
-                    onChangeText={(val) => {
-                      const newHours = [...form.workingHours];
-                      newHours[index].open = val;
-                      setForm({ ...form, workingHours: newHours });
-                    }}
-                    placeholder="09:00"
-                    maxLength={5}
+          <TouchableOpacity 
+            style={[s.imageUploadCard, form.imageUrl ? s.imageActive : null]} 
+            onPress={pickImage}
+            disabled={loading}
+          >
+            {form.imageUrl ? (
+              <View style={s.imagePreviewContainer}>
+                <View style={{ position: 'relative', width: '100%', height: '100%' }}>
+                  <Image 
+                    source={{ uri: form.imageUrl }} 
+                    style={s.previewImage} 
                   />
-                  <Text style={styles.timeDivider}>to</Text>
-                  <TextInput
-                    style={styles.timeInput}
-                    value={item.close}
-                    onChangeText={(val) => {
-                      const newHours = [...form.workingHours];
-                      newHours[index].close = val;
-                      setForm({ ...form, workingHours: newHours });
-                    }}
-                    placeholder="18:00"
-                    maxLength={5}
-                  />
+                  <View style={s.imageOverlay}>
+                    <Ionicons name="create" size={24} color="#FFF" />
+                    <Text style={s.overlayText}>Change Photo</Text>
+                  </View>
                 </View>
-              )}
-            </View>
-          ))}
-        </View>
+              </View>
+            ) : (
+              <View style={s.uploadPlaceholder}>
+                <Ionicons name="cloud-upload-outline" size={40} color={colors.textMuted} />
+                <Text style={s.uploadTitle}>Upload Main Photo</Text>
+                <Text style={s.uploadSubtitle}>Showcase your storage space</Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.submitBtn} onPress={() => handleSubmit()} disabled={loading}>
-          <Text style={styles.submitBtnText}>Create Storage Location</Text>
-          <Ionicons name="chevron-forward" size={20} color="#fff" />
-        </TouchableOpacity>
-      </ScrollView>
+          <View style={s.sectionHeader}>
+            <Ionicons name="location" size={20} color="#B45309" />
+            <Text style={s.sectionTitle}>Location Details</Text>
+          </View>
+
+          <Text style={s.inputLabel}>Location Name</Text>
+          <TextInput
+            style={s.textField}
+            placeholder="e.g. Grand Central Secure Storage"
+            placeholderTextColor={colors.iconMuted}
+            value={form.name}
+            onChangeText={(val) => setForm({ ...form, name: val })}
+          />
+
+          <Text style={s.inputLabel}>Full Address</Text>
+          <TextInput
+            style={s.textField}
+            placeholder="Select address on map"
+            placeholderTextColor={colors.iconMuted}
+            value={form.address}
+            editable={false}
+          />
+
+          <TouchableOpacity
+            style={[s.mapPlaceholder, form.lat ? s.mapPinned : null]}
+            onPress={() => router.push(ROUTES.OWNER.MAP_SELECTOR)}
+          >
+            <View style={s.mapButton}>
+              <Ionicons name={form.lat ? 'checkmark-circle' : 'navigate'} size={18} color={colors.iconColor} />
+              <Text style={s.mapButtonText}>
+                {form.lat ? 'Location Pinned' : 'Pin Location on Map'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={s.sectionHeader}>
+            <Ionicons name="cash" size={20} color="#B45309" />
+            <Text style={s.sectionTitle}>Luggage Pricing</Text>
+          </View>
+
+          <View style={s.priceContainer}>
+            <StorageCard
+              icon="bag-personal"
+              label="Small"
+              subLabel="Backpacks, Handbags"
+              priceValue={form.smallPrice}
+              capacityValue={form.smallCapacity}
+              onPriceChange={(v) => setForm({ ...form, smallPrice: v })}
+              onCapacityChange={(v) => setForm({ ...form, smallCapacity: v })}
+            />
+            <StorageCard
+              icon="bag-suitcase"
+              label="Medium"
+              subLabel="Carry-ons, Standard Suitcases"
+              priceValue={form.mediumPrice}
+              capacityValue={form.mediumCapacity}
+              onPriceChange={(v) => setForm({ ...form, mediumPrice: v })}
+              onCapacityChange={(v) => setForm({ ...form, mediumCapacity: v })}
+            />
+            <StorageCard
+              icon="suitcase"
+              label="Large"
+              subLabel="Large Check-in Bags, Trunk"
+              priceValue={form.largePrice}
+              capacityValue={form.largeCapacity}
+              onPriceChange={(v) => setForm({ ...form, largePrice: v })}
+              onCapacityChange={(v) => setForm({ ...form, largeCapacity: v })}
+            />
+          </View>
+
+          <View style={s.sectionHeader}>
+            <Ionicons name="time" size={20} color="#B45309" />
+            <Text style={s.sectionTitle}>Business Hours</Text>
+          </View>
+
+          <View style={s.hoursContainer}>
+            {form.workingHours.map((item, index) => (
+              <View key={item.day} style={s.hourRow}>
+                <View style={s.dayInfo}>
+                  <Text style={s.dayLabel}>{item.label}</Text>
+                  <TouchableOpacity 
+                    onPress={() => {
+                      const newHours = [...form.workingHours];
+                      newHours[index].isClosed = !newHours[index].isClosed;
+                      setForm({ ...form, workingHours: newHours });
+                    }}
+                    style={[s.statusBadge, item.isClosed ? s.closedBadge : s.openBadge]}
+                  >
+                    <Text style={s.statusText}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {!item.isClosed && (
+                  <View style={s.timeInputs}>
+                    <TextInput
+                      style={s.timeInput}
+                      value={item.open}
+                      onChangeText={(val) => {
+                        const newHours = [...form.workingHours];
+                        newHours[index].open = val;
+                        setForm({ ...form, workingHours: newHours });
+                      }}
+                      placeholder="09:00"
+                      placeholderTextColor={colors.iconMuted}
+                      maxLength={5}
+                    />
+                    <Text style={s.timeDivider}>to</Text>
+                    <TextInput
+                      style={s.timeInput}
+                      value={item.close}
+                      onChangeText={(val) => {
+                        const newHours = [...form.workingHours];
+                        newHours[index].close = val;
+                        setForm({ ...form, workingHours: newHours });
+                      }}
+                      placeholder="18:00"
+                      placeholderTextColor={colors.iconMuted}
+                      maxLength={5}
+                    />
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity style={s.submitBtn} onPress={() => handleSubmit()} disabled={loading}>
+            <Text style={s.submitBtnText}>Create Storage Location</Text>
+            <Ionicons name="chevron-forward" size={20} color="#fff" />
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F8F9FE' },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.surfaceCardLow },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -318,56 +317,56 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 14, fontWeight: 'bold', color: '#0A0E5E', letterSpacing: 1 },
-  avatarPlaceholder: { width: 35, height: 35, borderRadius: 18, backgroundColor: '#E2E8F0' },
+  headerTitle: { fontSize: 14, fontWeight: 'bold', color: colors.textPrimary, letterSpacing: 1 },
+  avatarPlaceholder: { width: 35, height: 35, borderRadius: 18, backgroundColor: colors.border },
   scroll: { padding: 20 },
-  mainTitle: { fontSize: 32, fontWeight: 'bold', color: '#0A0E5E', marginBottom: 10 },
-  description: { fontSize: 15, color: '#64748B', lineHeight: 22, marginBottom: 25 },
+  mainTitle: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 10 },
+  description: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 25 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#0A0E5E' },
-  inputLabel: { fontSize: 14, fontWeight: '600', color: '#334155', marginBottom: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary },
+  inputLabel: { fontSize: 14, fontWeight: '600', color: colors.textLabel, marginBottom: 8 },
   textField: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceLight,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     fontSize: 15,
-    color: '#0A0E5E',
+    color: colors.textPrimary,
   },
   mapPlaceholder: {
     height: 160,
-    backgroundColor: '#94A3B8',
+    backgroundColor: colors.iconMuted,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
   },
-  mapPinned: { backgroundColor: '#CBD5E1', borderWidth: 2, borderColor: '#0A0E5E' },
+  mapPinned: { backgroundColor: colors.border, borderWidth: 2, borderColor: colors.iconColor },
   mapButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
     elevation: 3,
   },
-  mapButtonText: { fontWeight: 'bold', color: '#0A0E5E' },
+  mapButtonText: { fontWeight: 'bold', color: colors.iconColor },
   priceContainer: { gap: 12 },
   imageUploadCard: {
     height: 180,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
     borderStyle: 'dashed',
     marginBottom: 25,
     overflow: 'hidden',
   },
   imageActive: {
     borderStyle: 'solid',
-    borderColor: '#0A0E5E',
+    borderColor: colors.iconColor,
   },
   uploadPlaceholder: {
     flex: 1,
@@ -378,11 +377,11 @@ const styles = StyleSheet.create({
   uploadTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0A0E5E',
+    color: colors.textPrimary,
   },
   uploadSubtitle: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: colors.iconMuted,
   },
   imagePreviewContainer: {
     flex: 1,
@@ -405,7 +404,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   hoursContainer: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 20,
     padding: 16,
     gap: 12,
@@ -429,7 +428,7 @@ const styles = StyleSheet.create({
   dayLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0A0E5E',
+    color: colors.textPrimary,
     width: 40,
   },
   statusBadge: {
@@ -438,15 +437,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   openBadge: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: colors.successLight,
   },
   closedBadge: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceLight,
   },
   statusText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#10B981',
+    color: colors.success,
   },
   timeInputs: {
     flexDirection: 'row',
@@ -454,23 +453,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   timeInput: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceLight,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 6,
     width: 60,
     textAlign: 'center',
     fontSize: 14,
-    color: '#0A0E5E',
+    color: colors.textPrimary,
   },
   timeDivider: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: colors.iconMuted,
   },
   submitBtn: {
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     borderRadius: 18,
     height: 62,
     flexDirection: 'row',

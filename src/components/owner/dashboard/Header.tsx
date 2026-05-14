@@ -3,10 +3,12 @@ import { staffService } from '@/services/staffService';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useMyLocations } from '@/hooks/useDashboard'
 import { useOwnerStore } from '@/store/useOwnerStore'
+import { useUnreadCount } from '@/hooks/useUnreadCount'
+import { useTheme } from '@/hooks/useTheme'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { theme } from '@/styles/globalStyles';
 
@@ -20,7 +22,9 @@ export const HeaderDashboard = ({
   const router = useRouter()
   const { data: stores } = useMyLocations();
   const { user } = useAuthStore();
+  const { colors } = useTheme();
   const isStaff = user?.roles?.includes('staff');
+  const { hasUnread } = useUnreadCount();
   const { data: staffLocations } = useQuery({
     queryKey: ['staff-locations'],
     queryFn: () => staffService.getMyLocations(),
@@ -35,53 +39,55 @@ export const HeaderDashboard = ({
     }
   }, [stores, assignedLocations, activeLocationId, isStaff]);
 
+  const s = useMemo(() => createStyles(colors), [colors])
+
   return (
-    <View style={styles.header}>
-      <TouchableOpacity style={styles.headerLeft} onPress={onPress} disabled={!onPress} activeOpacity={0.7}>
-        <View style={styles.storeIconBg}>
-          <MaterialCommunityIcons name="storefront" size={20} color="#000666" />
+    <View style={s.header}>
+      <TouchableOpacity style={s.headerLeft} onPress={onPress} disabled={!onPress} activeOpacity={0.7}>
+        <View style={s.storeIconBg}>
+          <MaterialCommunityIcons name="storefront" size={20} color={colors.iconColor} />
         </View>
         <View>
-          <Text style={styles.headerSubtitle}>ACTIVE HUB</Text>
+          <Text style={s.headerSubtitle}>ACTIVE HUB</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Text style={styles.headerTitle}>{activeLocationName}</Text>
+            <Text style={s.headerTitle}>{activeLocationName}</Text>
             {showChevron && <Ionicons name="chevron-down" size={14} color="#6366F1" />}
           </View>
         </View>
       </TouchableOpacity>
-      <View style={styles.headerRight}>
-        <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
-          <Ionicons name="qr-code-outline" size={22} color="#000666" />
+      <View style={s.headerRight}>
+        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
+          <Ionicons name="qr-code-outline" size={22} color={colors.iconColor} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
-          <Ionicons name="notifications" size={22} color="#000666" />
-          <View style={styles.notificationDot} />
+        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
+          <Ionicons name="notifications" size={22} color={colors.iconColor} />
+          {hasUnread && <View style={s.notificationDot} />}
         </TouchableOpacity>
       </View>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: colors.headerBg,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   storeIconBg: {
-    width: 40, height: 40, backgroundColor: '#f3f3f3', borderRadius: theme.borderRadius.lg,
+    width: 40, height: 40, backgroundColor: colors.surfaceLight, borderRadius: theme.borderRadius.lg,
     justifyContent: 'center', alignItems: 'center',
   },
-  headerSubtitle: { fontSize: 10, fontWeight: '800', color: '#454652', letterSpacing: 1 },
-  headerTitle: { fontSize: 17, fontWeight: '800', color: '#1a1c1c' },
+  headerSubtitle: { fontSize: 10, fontWeight: '800', color: colors.textSecondary, letterSpacing: 1 },
+  headerTitle: { fontSize: 17, fontWeight: '800', color: colors.textPrimary },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 15 },
   iconCircle: { position: 'relative' },
   notificationDot: {
     position: 'absolute', top: 2, right: 2, width: 8, height: 8, borderRadius: 4,
-    backgroundColor: '#fd6c00', borderWidth: 1.5, borderColor: '#FFF',
+    backgroundColor: colors.warning, borderWidth: 1.5, borderColor: colors.surfaceCard,
   },
 })

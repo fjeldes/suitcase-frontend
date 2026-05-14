@@ -1,10 +1,11 @@
 import { GoogleButton } from '@/components/auth/GoogleButton'
 import { ROUTES } from '@/constants/routes'
 import { useLoginMutation } from '@/hooks/useAuth'
+import { useTheme } from '@/hooks/useTheme'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   ActivityIndicator,
@@ -19,7 +20,6 @@ import {
 } from 'react-native'
 import { z } from 'zod'
 
-// 1. Esquema de validación
 const loginSchema = z.object({
   email: z.string().email('Ingresa un email válido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
@@ -29,10 +29,10 @@ type LoginForm = z.infer<typeof loginSchema>
 
 export const LoginScreen = () => {
   const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
+  const { colors } = useTheme()
+  const [showPassword, setShowPassword] = React.useState(false)
   const loginMutation = useLoginMutation()
 
-  // 2. React Hook Form
   const {
     control,
     handleSubmit,
@@ -46,41 +46,43 @@ export const LoginScreen = () => {
     loginMutation.mutate(data)
   }
 
+  const s = useMemo(() => createStyles(colors), [colors])
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={s.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.flex}
+        style={s.flex}
       >
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.logoRow}>
-              <MaterialCommunityIcons name="shield-lock" size={28} color="#0A0E5E" />
-              <Text style={styles.logoText}>
-                Secure<Text style={styles.bold}>Transit</Text>
+        <View style={s.content}>
+          <View style={s.header}>
+            <View style={s.logoRow}>
+              <MaterialCommunityIcons name="shield-lock" size={28} color={colors.iconColor} />
+              <Text style={s.logoText}>
+                Secure<Text style={s.bold}>Transit</Text>
               </Text>
             </View>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Please enter your details to access your dashboard.</Text>
+            <Text style={s.title}>Welcome Back</Text>
+            <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>
           </View>
 
-          <View style={styles.form}>
-            {/* INPUT DE EMAIL */}
-            <Text style={styles.label}>Email Address</Text>
+          <View style={s.form}>
+            <Text style={s.label}>Email Address</Text>
             <Controller
               control={control}
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
-                <View style={[styles.inputContainer, errors.email && styles.inputError]}>
+                <View style={[s.inputContainer, errors.email && s.inputError]}>
                   <Ionicons
                     name="mail-outline"
                     size={20}
-                    color="#64748B"
-                    style={styles.inputIcon}
+                    color={colors.textMuted}
+                    style={s.inputIcon}
                   />
                   <TextInput
-                    style={styles.input}
+                    style={s.input}
                     placeholder="name@company.com"
+                    placeholderTextColor={colors.iconMuted}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -91,29 +93,29 @@ export const LoginScreen = () => {
                 </View>
               )}
             />
-            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+            {errors.email && <Text style={s.errorText}>{errors.email.message}</Text>}
 
-            {/* INPUT DE PASSWORD */}
-            <View style={styles.labelRow}>
-              <Text style={styles.label}>Password</Text>
+            <View style={s.labelRow}>
+              <Text style={s.label}>Password</Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-                <Text style={styles.forgotPassword}>Forgot password?</Text>
+                <Text style={s.forgotPassword}>Forgot password?</Text>
               </TouchableOpacity>
             </View>
             <Controller
               control={control}
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
-                <View style={[styles.inputContainer, errors.password && styles.inputError]}>
+                <View style={[s.inputContainer, errors.password && s.inputError]}>
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
-                    color="#64748B"
-                    style={styles.inputIcon}
+                    color={colors.textMuted}
+                    style={s.inputIcon}
                   />
                   <TextInput
-                    style={styles.input}
+                    style={s.input}
                     placeholder="••••••••"
+                    placeholderTextColor={colors.iconMuted}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -124,17 +126,16 @@ export const LoginScreen = () => {
                     <Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
-                      color="#64748B"
+                      color={colors.textMuted}
                     />
                   </TouchableOpacity>
                 </View>
               )}
             />
-            {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
+            {errors.password && <Text style={s.errorText}>{errors.password.message}</Text>}
 
-            {/* BOTÓN LOGIN */}
             <TouchableOpacity
-              style={[styles.loginBtn, loginMutation.isPending && styles.disabledBtn]}
+              style={[s.loginBtn, loginMutation.isPending && s.disabledBtn]}
               onPress={handleSubmit(onSubmit)}
               disabled={loginMutation.isPending}
             >
@@ -142,32 +143,25 @@ export const LoginScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={styles.loginBtnText}>Login</Text>
+                  <Text style={s.loginBtnText}>Login</Text>
                   <Ionicons name="arrow-forward" size={20} color="#fff" />
                 </>
               )}
             </TouchableOpacity>
           </View>
 
-          <View style={styles.dividerContainer}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
+          <View style={s.dividerContainer}>
+            <View style={s.dividerLine} />
+            <Text style={s.dividerText}>or</Text>
+            <View style={s.dividerLine} />
           </View>
 
           <GoogleButton />
 
-          {/* 
-          <TouchableOpacity style={styles.socialBtn}>
-            <Ionicons name="logo-apple" size={20} color="#000" />
-            <Text style={styles.socialBtnText}>Continue with Apple</Text>
-          </TouchableOpacity>
-          */}
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+          <View style={s.footer}>
+            <Text style={s.footerText}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => router.push(ROUTES.AUTH.SIGNUP)}>
-              <Text style={styles.signUpLink}>Sign up</Text>
+              <Text style={s.signUpLink}>Sign up</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -176,14 +170,13 @@ export const LoginScreen = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  // ... mantén tus estilos y agrega estos:
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
     borderWidth: 1,
   },
   errorText: {
-    color: '#EF4444',
+    color: colors.error,
     fontSize: 12,
     marginTop: -15,
     marginBottom: 15,
@@ -192,33 +185,32 @@ const styles = StyleSheet.create({
   disabledBtn: {
     opacity: 0.7,
   },
-  // (asegúrate de incluir el resto de estilos que ya tenías)
-  container: { flex: 1, backgroundColor: '#F8F9FE' },
+  container: { flex: 1, backgroundColor: colors.surfaceCardLow },
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
   header: { marginBottom: 32 },
   logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24, gap: 8 },
-  logoText: { fontSize: 20, color: '#0A0E5E', fontWeight: '300' },
+  logoText: { fontSize: 20, color: colors.iconColor, fontWeight: '300' },
   bold: { fontWeight: '700' },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#1E293B', marginBottom: 12 },
-  subtitle: { fontSize: 16, color: '#64748B', lineHeight: 24 },
+  title: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 12 },
+  subtitle: { fontSize: 16, color: colors.textMuted, lineHeight: 24 },
   form: { marginBottom: 24 },
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  label: { fontSize: 14, fontWeight: '600', color: '#334155', marginBottom: 8 },
-  forgotPassword: { fontSize: 14, fontWeight: '600', color: '#0A0E5E', marginBottom: 8 },
+  label: { fontSize: 14, fontWeight: '600', color: colors.textLabel, marginBottom: 8 },
+  forgotPassword: { fontSize: 14, fontWeight: '600', color: colors.iconColor, marginBottom: 8 },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceLight,
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 56,
     marginBottom: 20,
   },
   inputIcon: { marginRight: 12 },
-  input: { flex: 1, fontSize: 16, color: '#1E293B' },
+  input: { flex: 1, fontSize: 16, color: colors.textPrimary },
   loginBtn: {
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     borderRadius: 16,
     height: 56,
     flexDirection: 'row',
@@ -229,22 +221,22 @@ const styles = StyleSheet.create({
   },
   loginBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
-  dividerText: { marginHorizontal: 16, color: '#64748B', fontWeight: '500' },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  dividerText: { marginHorizontal: 16, color: colors.textMuted, fontWeight: '500' },
   socialBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 16,
     height: 56,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
     marginBottom: 12,
     gap: 12,
   },
-  socialBtnText: { fontSize: 16, fontWeight: '600', color: '#1E293B' },
+  socialBtnText: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
-  footerText: { color: '#64748B', fontSize: 14 },
-  signUpLink: { color: '#0A0E5E', fontSize: 14, fontWeight: 'bold' },
+  footerText: { color: colors.textMuted, fontSize: 14 },
+  signUpLink: { color: colors.iconColor, fontSize: 14, fontWeight: 'bold' },
 })

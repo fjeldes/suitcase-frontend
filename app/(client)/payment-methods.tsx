@@ -19,7 +19,7 @@ export default function PaymentMethodsScreen() {
   const queryClient = useQueryClient();
   const { setupPaymentSheet, loading: isSettingUp } = usePayment();
 
-  const { data: cards, isLoading } = useQuery({
+  const { data: cards, isLoading, isFetching } = useQuery({
     queryKey: ['payment-methods'],
     queryFn: () => paymentService.getSavedCards(),
   });
@@ -61,7 +61,7 @@ export default function PaymentMethodsScreen() {
     <SafeAreaView style={styles.safeArea}>
       {/* HEADER TOP BAR */}
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.push('/(client)/profile')} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
         <Text style={styles.topBarTitle}>Payment Methods</Text>
@@ -75,7 +75,7 @@ export default function PaymentMethodsScreen() {
           Manage your payment methods securely. All transactions are encrypted with bank-level security.
         </Text>
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#0A0E5E" />
           </View>
