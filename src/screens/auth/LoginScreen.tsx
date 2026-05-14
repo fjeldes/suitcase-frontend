@@ -1,5 +1,4 @@
 import { GoogleButton } from '@/components/auth/GoogleButton'
-import { KipGoLogo } from '@/components/ui/KipGoLogo'
 import { ROUTES } from '@/constants/routes'
 import { useLoginMutation } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
@@ -10,6 +9,7 @@ import React, { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -58,7 +58,7 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <KipGoLogo width={180} height={54} />
+              <Image source={require('@/assets/images/login-logo.png')} style={{ width: 120, height: 120 }} resizeMode="contain" />
             </View>
             <Text style={s.title}>Welcome Back</Text>
             <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>
@@ -191,7 +191,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
   header: { marginBottom: 32 },
-  logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
+  logoRow: { marginBottom: 24 },
   title: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 12 },
   subtitle: { fontSize: 16, color: colors.textMuted, lineHeight: 24 },
   form: { marginBottom: 24 },
