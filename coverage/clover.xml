@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1778795891674" clover="3.2.0">
-  <project timestamp="1778795891674" name="All files">
+<coverage generated="1778796482209" clover="3.2.0">
+  <project timestamp="1778796482209" name="All files">
     <metrics statements="1656" coveredstatements="31" conditionals="1231" coveredconditionals="4" methods="567" coveredmethods="13" elements="3454" coveredelements="48" complexity="0" loc="1656" ncloc="1656" packages="31" files="129" classes="129"/>
     <package name="components">
       <metrics statements="23" coveredstatements="0" conditionals="17" coveredconditionals="0" methods="9" coveredmethods="0"/>
@@ -2107,7 +2107,7 @@
       <file name="globalStyles.ts" path="/Users/felipejeldesramirez/Desktop/Suitcase/luggage-app/src/styles/globalStyles.ts">
         <metrics statements="2" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="4" count="0" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
       </file>
     </package>
     <package name="types">

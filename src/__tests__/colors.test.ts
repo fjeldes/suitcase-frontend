@@ -4,7 +4,7 @@ describe('Brand', () => {
   it('has required brand tokens', () => {
     expect(Brand.primaryStart).toBe('#1A237E');
     expect(Brand.secondary).toBe('#FF6D00');
-    expect(Brand.surface).toBe('#F9FAFB');
+    expect(Brand.surface).toBe('#F5F7FA');
   });
 });
 
@@ -38,8 +38,8 @@ describe('DarkColors', () => {
   });
 
   it('uses dark palette values', () => {
-    expect(DarkColors.background).toBe('#0F172A');
-    expect(DarkColors.textPrimary).toBe('#F9FAFB');
-    expect(DarkColors.surfaceCard).toBe('#1E293B');
+    expect(DarkColors.background).toBe('#0E1225');
+    expect(DarkColors.textPrimary).toBe('#DEE1FC');
+    expect(DarkColors.surfaceCard).toBe('#1B1E32');
   });
 });
