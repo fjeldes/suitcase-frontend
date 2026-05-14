@@ -64,7 +64,6 @@ export default function BookingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="lock-closed" size={20} color="#0A0E5E" />
         <Image source={require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
       </View>
 
