@@ -1,4 +1,5 @@
 import { StorageCard } from '@/components/owner/create-location/StorageCard'
+import { KipGoLogo } from '@/components/ui/KipGoLogo'
 import { ROUTES } from '@/constants/routes'
 import { locationService } from '@/services/locationServices'
 import { useLocationStore } from '@/store/useLocationStore'
@@ -130,7 +131,7 @@ export default function CreateLocationScreen() {
         <TouchableOpacity onPress={handleBack} style={s.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
         </TouchableOpacity>
-        <Text style={s.headerTitle}>KIPGO</Text>
+        <KipGoLogo width={100} height={30} />
         <View style={s.avatarPlaceholder} />
       </View>
 

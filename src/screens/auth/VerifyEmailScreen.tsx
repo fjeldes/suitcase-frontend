@@ -1,3 +1,4 @@
+import { KipGoLogo } from '@/components/ui/KipGoLogo'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useRef, useEffect } from 'react';
@@ -142,7 +143,7 @@ export default function VerifyEmailScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>KipGo</Text>
+          <KipGoLogo width={100} height={30} />
           <View style={{ width: 40 }} />
         </View>
 

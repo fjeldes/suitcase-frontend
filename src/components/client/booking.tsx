@@ -2,6 +2,7 @@ import { useBookingsQuery } from '@/hooks/useMyBookings';
 import type { BookingData } from '@/types/booking.types';
 import { api } from '@/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { KipGoLogo } from '@/components/ui/KipGoLogo';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -64,7 +65,7 @@ export default function BookingsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="lock-closed" size={20} color="#0A0E5E" />
-        <Text style={styles.headerTitle}>KipGo</Text>
+        <KipGoLogo width={100} height={30} />
       </View>
 
       <Text style={styles.pageTitle}>My Bookings</Text>
