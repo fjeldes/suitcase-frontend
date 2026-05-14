@@ -58,10 +58,7 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <Image source={require('@/assets/images/icon-light.png')} style={{ width: 32, height: 32 }} />
-              <Text style={s.logoText}>
-                Kip<Text style={s.bold}>Go</Text>
-              </Text>
+              <Image source={require('@/assets/images/kipgo-logo.png')} style={{ width: 120, height: 68 }} resizeMode="contain" />
             </View>
             <Text style={s.title}>Welcome Back</Text>
             <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>
@@ -194,9 +191,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
   header: { marginBottom: 32 },
-  logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24, gap: 8 },
-  logoText: { fontSize: 20, color: colors.iconColor, fontWeight: '300' },
-  bold: { fontWeight: '700' },
+  logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
   title: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 12 },
   subtitle: { fontSize: 16, color: colors.textMuted, lineHeight: 24 },
   form: { marginBottom: 24 },
