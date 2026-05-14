@@ -59,7 +59,7 @@ export const LoginScreen = () => {
             <View style={s.logoRow}>
               <MaterialCommunityIcons name="shield-lock" size={28} color={colors.iconColor} />
               <Text style={s.logoText}>
-                Secure<Text style={s.bold}>Transit</Text>
+                Kip<Text style={s.bold}>Go</Text>
               </Text>
             </View>
             <Text style={s.title}>Welcome Back</Text>
