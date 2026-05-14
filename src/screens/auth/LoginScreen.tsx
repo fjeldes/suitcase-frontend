@@ -191,7 +191,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
   header: { marginBottom: 32 },
-  logoRow: { marginBottom: 24 },
+  logoRow: { alignItems: 'center', marginBottom: 24 },
   title: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 12 },
   subtitle: { fontSize: 16, color: colors.textMuted, lineHeight: 24 },
   form: { marginBottom: 24 },

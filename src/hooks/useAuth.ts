@@ -30,7 +30,6 @@ export const useLoginMutation = () => {
             position: 'bottom',
         });
       });
-      console.error("Error al iniciar sesión:", message);
     }
   });
 };
