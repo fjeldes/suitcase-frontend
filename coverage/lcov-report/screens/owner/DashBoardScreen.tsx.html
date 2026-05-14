@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -314,7 +314,13 @@
 <a name='L249'></a><a href='#L249'>249</a>
 <a name='L250'></a><a href='#L250'>250</a>
 <a name='L251'></a><a href='#L251'>251</a>
-<a name='L252'></a><a href='#L252'>252</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -334,6 +340,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -421,23 +429,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -574,6 +586,7 @@ import { staffService } from "@/services/staffService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useDashboardStats, useMyLocations } from "@/hooks/useDashboard";
 import { useOwnerStore } from "@/store/useOwnerStore";
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -586,6 +599,7 @@ import { LoadingDashboard } from "./LoadingDashboard";
 &nbsp;
 export default function <span class="fstat-no" title="function not covered" >DashboardScreen(</span>) {
     const { t } = <span class="cstat-no" title="statement not covered" >useTranslation();</span>
+    const { colors } = <span class="cstat-no" title="statement not covered" >useTheme();</span>
     const router = <span class="cstat-no" title="statement not covered" >useRouter();</span>
     const { data: stores } = <span class="cstat-no" title="statement not covered" >useMyLocations();</span>
     const { data: staffLocations } = <span class="cstat-no" title="statement not covered" >useQuery({</span>
@@ -614,7 +628,7 @@ export default function <span class="fstat-no" title="function not covered" >Das
 <span class="cstat-no" title="statement not covered" >    if ((isStaff &amp;&amp; !staffLocations) || (!isStaff &amp;&amp; !stores)) <span class="cstat-no" title="statement not covered" >return &lt;LoadingDashboard /&gt;;</span></span>
 <span class="cstat-no" title="statement not covered" >    if (isStaff &amp;&amp; assignedLocations.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >        return (</span>
-            &lt;SafeAreaView style={{ flex: 1, backgroundColor: '#F8F9FE', justifyContent: 'center', alignItems: 'center', padding: 24 }}&gt;
+            &lt;SafeAreaView style={{ flex: 1, backgroundColor: colors.surfaceCardLow, justifyContent: 'center', alignItems: 'center', padding: 24 }}&gt;
                 &lt;Ionicons name="business-outline" size={64} color="#CBD5E0" /&gt;
                 &lt;Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginTop: 16, textAlign: 'center' }}&gt;
                     {t('owner.no_store')}
@@ -629,7 +643,7 @@ export default function <span class="fstat-no" title="function not covered" >Das
 <span class="cstat-no" title="statement not covered" >    if (isLoading || !dashboardData) <span class="cstat-no" title="statement not covered" >return &lt;LoadingDashboard /&gt;;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
-        &lt;SafeAreaView style={styles.safeArea}&gt;
+        &lt;SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surfaceCardLow }]}&gt;
             &lt;HeaderDashboard
                 onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >stores &amp;&amp; stores.length &gt; 1 ? setShowSelector(true) : null}</span>
                 showChevron={stores &amp;&amp; stores.length &gt; 1}
@@ -646,6 +660,8 @@ export default function <span class="fstat-no" title="function not covered" >Das
                             style={{ flex: 1 }}
                             activeOpacity={1}
                             onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowSelector(false)}</span>
+                            accessibilityLabel="Close store selector"
+                            accessibilityRole="button"
                         /&gt;
                         &lt;View style={{
                             backgroundColor: '#fff',
@@ -690,6 +706,8 @@ export default function <span class="fstat-no" title="function not covered" >Das
 <span class="cstat-no" title="statement not covered" >                                                        setActiveLocation(item.id, item.name);</span>
 <span class="cstat-no" title="statement not covered" >                                                        setShowSelector(false);</span>
                                                     }}
+                                                    accessibilityLabel={`Select store ${item.name}`}
+                                                    accessibilityRole="button"
                                         &gt;
                                             &lt;View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}&gt;
                                                 &lt;View style={{
@@ -775,7 +793,7 @@ export default function <span class="fstat-no" title="function not covered" >Das
                                 &lt;Text style={{ fontSize: 14, color: '#94A3B8' }}&gt;{t('owner.no_upcoming')}&lt;/Text&gt;
                             &lt;/View&gt;
                         )}
-                        &lt;TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.BOOKINGS)}</span>&gt;
+                        &lt;TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.BOOKINGS)}</span> accessibilityLabel="View all bookings" accessibilityRole="button"&gt;
                             &lt;Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}&gt;{t('owner.view_all_bookings')}&lt;/Text&gt;
                         &lt;/TouchableOpacity&gt;
                     &lt;/View&gt;
@@ -787,20 +805,20 @@ export default function <span class="fstat-no" title="function not covered" >Das
                         {t('owner.quick_actions')}
                     &lt;/Text&gt;
                     &lt;View style={{ flexDirection: 'row', gap: 10 }}&gt;
-                        &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.OWNER.SCANNER)}</span>&gt;
+                        &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.OWNER.SCANNER)}</span> accessibilityLabel="Scan QR code" accessibilityRole="button"&gt;
                             &lt;View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}&gt;
                                 &lt;Ionicons name="qr-code-outline" size={24} color="#0A0E5E" /&gt;
                             &lt;/View&gt;
                             &lt;Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}&gt;{t('owner.scan_qr')}&lt;/Text&gt;
                         &lt;/TouchableOpacity&gt;
-                        &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.BOOKINGS)}</span>&gt;
+                        &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.BOOKINGS)}</span> accessibilityLabel="View bookings" accessibilityRole="button"&gt;
                             &lt;View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}&gt;
                                 &lt;Ionicons name="briefcase-outline" size={24} color="#0A0E5E" /&gt;
                             &lt;/View&gt;
                             &lt;Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}&gt;{t('owner.bookings')}&lt;/Text&gt;
                         &lt;/TouchableOpacity&gt;
                         {!isStaff &amp;&amp; (
-                            &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.STORES)}</span>&gt;
+                            &lt;TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.navigate(ROUTES.OWNER.STORES)}</span> accessibilityLabel="View stores" accessibilityRole="button"&gt;
                                 &lt;View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}&gt;
                                     &lt;Ionicons name="storefront-outline" size={24} color="#0A0E5E" /&gt;
                                 &lt;/View&gt;
@@ -823,7 +841,7 @@ export default function <span class="fstat-no" title="function not covered" >Das
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

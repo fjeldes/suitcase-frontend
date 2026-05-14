@@ -44,7 +44,7 @@ export default function ForgotPasswordScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton} accessibilityLabel="Go back" accessibilityRole="button">
             <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
           </TouchableOpacity>
         </View>
@@ -64,6 +64,7 @@ export default function ForgotPasswordScreen() {
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              accessibilityLabel="Email address input"
             />
           </View>
 
@@ -71,6 +72,8 @@ export default function ForgotPasswordScreen() {
             style={[styles.primaryButton, isSending && styles.disabledButton]}
             onPress={handleSendCode}
             disabled={isSending}
+            accessibilityLabel="Send reset code"
+            accessibilityRole="button"
           >
             {isSending ? (
               <ActivityIndicator color="#FFF" />

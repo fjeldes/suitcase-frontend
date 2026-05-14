@@ -1,4 +1,5 @@
 import { useBookingsQuery } from '@/hooks/useMyBookings';
+import type { BookingData } from '@/types/booking.types';
 import { api } from '@/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,7 +20,7 @@ import { ReviewModal } from '../booking/ReviewModal';
 
 export default function BookingsScreen() {
   const [activeTab, setActiveTab] = useState<'Active' | 'Past'>('Active');
-  const [selectedBookingForReview, setSelectedBookingForReview] = useState<any>(null);
+  const [selectedBookingForReview, setSelectedBookingForReview] = useState<BookingData | null>(null);
   const { data: bookings, isLoading, refetch } = useBookingsQuery();
 
   // Auto-prompt review when switching to Past tab
@@ -42,7 +43,7 @@ export default function BookingsScreen() {
 
   const filteredBookings = useMemo(() => {
     if (!bookings) return [];
-    return bookings.filter((b: any) => {
+    return bookings.filter((b: BookingData) => {
       if (activeTab === 'Active') {
         // B-03: Incluir in_storage para que la reserva no "desaparezca" tras el check-in
         return b.status === 'confirmed' || b.status === 'pending' || b.status === 'in_storage';

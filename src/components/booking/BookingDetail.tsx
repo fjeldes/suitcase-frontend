@@ -136,7 +136,7 @@ export default function BookingDetail({ storeId }: Props) {
         {/* HEADER */}
         <View style={styles.header}>
           <Image source={{ uri: store?.imageUrl || 'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?q=80&w=1000&auto=format&fit=crop' }} style={styles.bannerImage} />
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}><Ionicons name="chevron-back" size={28} color="#0A0E5E" /></TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button"><Ionicons name="chevron-back" size={28} color="#0A0E5E" /></TouchableOpacity>
           <View style={styles.headerInfoCard}>
             <Text style={styles.storeName}>{store?.name || 'Loading...'}</Text>
             <Text style={styles.subInfo}><Ionicons name="navigate" size={14} color="#0A0E5E" /> {store?.address?.split(',')[0]} • {isStoreOpen ? 'Open Now' : 'Closed'}</Text>
@@ -145,7 +145,7 @@ export default function BookingDetail({ storeId }: Props) {
 
         {/* HORARIOS */}
         <View style={styles.sectionCard}>
-          <TouchableOpacity style={styles.sectionHeader} onPress={() => setShowHours(!showHours)}>
+          <TouchableOpacity style={styles.sectionHeader} onPress={() => setShowHours(!showHours)} accessibilityLabel={showHours ? 'Hide opening hours' : 'Show opening hours'} accessibilityRole="button">
             <Ionicons name="time" size={20} color="#0A0E5E" /><Text style={styles.sectionTitle}> Opening Hours</Text>
             <Ionicons name={showHours ? "chevron-up" : "chevron-down"} size={20} color="#CBD5E0" style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
@@ -256,6 +256,8 @@ export default function BookingDetail({ storeId }: Props) {
                   <TouchableOpacity
                     onPress={() => updateQuantity(type, -1)}
                     style={styles.counterBtn}
+                    accessibilityLabel={`Decrease ${type} luggage count`}
+                    accessibilityRole="button"
                   >
                     <Ionicons
                       name="remove-outline"
@@ -268,6 +270,8 @@ export default function BookingDetail({ storeId }: Props) {
                     onPress={() => updateQuantity(type, 1)}
                     style={styles.counterBtn}
                     disabled={remaining <= 0}
+                    accessibilityLabel={`Increase ${type} luggage count`}
+                    accessibilityRole="button"
                   >
                     <Ionicons
                       name="add-outline"
@@ -290,7 +294,7 @@ export default function BookingDetail({ storeId }: Props) {
           </View>
 
           {/* VALUE DECLARATION */}
-          <TouchableOpacity style={styles.valueDeclareBtn} onPress={() => setShowValueDeclare(!showValueDeclare)}>
+          <TouchableOpacity style={styles.valueDeclareBtn} onPress={() => setShowValueDeclare(!showValueDeclare)} accessibilityLabel={showValueDeclare ? 'Hide value declaration' : 'Declare valuable items'} accessibilityRole="button">
             <Ionicons name={showValueDeclare ? 'shield-checkmark' : 'shield-outline'} size={20} color="#B45309" />
             <Text style={styles.valueDeclareBtnText}>
               {showValueDeclare ? 'Declared value: $' + declaredValue : 'Declare valuable items?'}
@@ -311,6 +315,7 @@ export default function BookingDetail({ storeId }: Props) {
                   onChangeText={(v) => setDeclaredValue(Number(v) || 0)}
                   placeholder="0"
                   placeholderTextColor="#94A3B8"
+                  accessibilityLabel="Declared value input"
                 />
               </View>
             </View>
@@ -350,7 +355,7 @@ export default function BookingDetail({ storeId }: Props) {
               <View style={styles.addCardPrompt}>
                 <Ionicons name="alert-circle-outline" size={24} color="#E53E3E" />
                 <Text style={[styles.addCardPromptText, { color: '#E53E3E' }]}>Error loading cards</Text>
-                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}>
+                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add a card instead" accessibilityRole="button">
                   <Text style={styles.addCardBtnText}>Add a card instead</Text>
                 </TouchableOpacity>
               </View>
@@ -368,6 +373,8 @@ export default function BookingDetail({ storeId }: Props) {
                       <TouchableOpacity
                         style={[styles.cardOption, isSelected && styles.cardOptionSelected]}
                         onPress={() => setSelectedCardId(item.id)}
+                        accessibilityLabel={`Select card ending in ${item.last4}`}
+                        accessibilityRole="button"
                       >
                         <View style={styles.cardOptionLeft}>
                           <Ionicons
@@ -391,13 +398,13 @@ export default function BookingDetail({ storeId }: Props) {
                     );
                   }}
                 />
-                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}>
+                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add another card" accessibilityRole="button">
                   <Ionicons name="add-circle-outline" size={18} color="#0A0E5E" />
                   <Text style={styles.addCardBtnText}>Add another card</Text>
                 </TouchableOpacity>
               </>
             ) : (
-              <TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard}>
+              <TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard} accessibilityLabel="Add payment method" accessibilityRole="button">
                 <Ionicons name="card-outline" size={24} color="#0A0E5E" />
                 <Text style={styles.addCardPromptText}>Add Payment Method</Text>
                 <Text style={styles.addCardPromptSub}>Secure checkout with Stripe</Text>
@@ -415,6 +422,8 @@ export default function BookingDetail({ storeId }: Props) {
               style={[styles.confirmButton, (totalPrice === 0 || isPending) && styles.disabledBtn]}
               disabled={totalPrice === 0 || isPending}
               onPress={handleConfirm}
+              accessibilityLabel="Confirm booking"
+              accessibilityRole="button"
             >
               {isPending ? (
                 <ActivityIndicator color="white" />

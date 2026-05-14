@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
@@ -37,9 +37,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -100,8 +100,10 @@
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
 <a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -137,37 +139,44 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { StyleSheet } from 'react-native';
-import { Colors } from '@/styles/colors';
-import { globalStyles } from '@/styles/globalStyles';
+import type { ColorsType } from '@/styles/colors';
 &nbsp;
-export const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.create({</span>
+export const createStyles = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>olors: ColorsType) =&gt; <span class="cstat-no" title="statement not covered" >StyleSheet.create({</span></span>
   container: { marginTop: 25, paddingHorizontal: 4 },
-  sectionTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.primary, marginBottom: 20 },
-  emptyCard: { 
-    backgroundColor: Colors.white, 
-    borderRadius: 24, 
-    paddingVertical: 30, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    ...globalStyles.cardShadow 
+  sectionTitle: { fontSize: 24, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 20 },
+  emptyCard: {
+    backgroundColor: colors.surfaceCard,
+    borderRadius: 24,
+    paddingVertical: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.06,
+    shadowRadius: 40,
+    elevation: 8,
   },
-  emptyTextTitle: { fontSize: 16, fontWeight: 'bold', color: '#475569', marginTop: 10, marginBottom: 4 },
-  emptyText: { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', paddingHorizontal: 20 },
-  listCard: { backgroundColor: Colors.background, paddingVertical: 10 },
+  emptyTextTitle: { fontSize: 16, fontWeight: 'bold', color: colors.textMuted, marginTop: 10, marginBottom: 4 },
+  emptyText: { fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingHorizontal: 20 },
+  listCard: { backgroundColor: colors.surfaceCard, paddingVertical: 10, borderRadius: 24 },
   itemWrapper: { flexDirection: 'row', minHeight: 80 },
   timelineContainer: { alignItems: 'center', width: 20, marginRight: 15 },
   dot: { width: 14, height: 14, borderRadius: 7, zIndex: 1 },
-  line: { flex: 1, width: 2, backgroundColor: Colors.lightGray, marginVertical: 4 },
+  line: { flex: 1, width: 2, backgroundColor: colors.border, marginVertical: 4 },
   contentContainer: { flex: 1, paddingBottom: 25 },
-  activityTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.textPrimary, marginBottom: 4 },
-  activitySubtitle: { fontSize: 14, color: Colors.textSecondary, marginBottom: 10 },
-  badge: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  activityTitle: { fontSize: 16, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 4 },
+  activitySubtitle: { fontSize: 14, color: colors.textMuted, marginBottom: 10 },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-start',
-    paddingHorizontal: 12, 
-    paddingVertical: 6, 
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 10,
     gap: 6
   },
@@ -181,7 +190,7 @@ export const styles = <span class="cstat-no" title="statement not covered" >Styl
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

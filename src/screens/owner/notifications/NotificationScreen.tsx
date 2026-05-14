@@ -45,7 +45,7 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.menuButton} onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="chevron-back" size={28} color={colors.iconColor} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
@@ -70,6 +70,8 @@ export default function NotificationsScreen() {
             style={styles.markAllButton}
             activeOpacity={0.7}
             onPress={() => markAllRead()}
+            accessibilityLabel="Mark all notifications as read"
+            accessibilityRole="button"
           >
             <Ionicons name="checkmark-done-outline" size={18} color={colors.iconColor} />
             <Text style={styles.markAllText}>Mark all as read</Text>
@@ -91,6 +93,8 @@ export default function NotificationsScreen() {
                 ]}
                 onPress={() => setActiveTab(cat)}
                 activeOpacity={0.8}
+                accessibilityLabel={`Filter by ${cat}`}
+                accessibilityRole="button"
               >
                 <Text style={[
                   styles.filterTabText,
@@ -138,6 +142,8 @@ export default function NotificationsScreen() {
             style={styles.loadMore}
             activeOpacity={0.6}
             onPress={() => refetch()}
+            accessibilityLabel="Refresh notifications"
+            accessibilityRole="button"
           >
             <Text style={styles.loadMoreText}>Refresh history</Text>
             <Ionicons name="refresh-outline" size={20} color={colors.iconColor} />

@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/54</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -412,7 +412,11 @@
 <a name='L347'></a><a href='#L347'>347</a>
 <a name='L348'></a><a href='#L348'>348</a>
 <a name='L349'></a><a href='#L349'>349</a>
-<a name='L350'></a><a href='#L350'>350</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -623,6 +627,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -863,7 +871,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
       &lt;StatusBar barStyle="dark-content" /&gt;
 &nbsp;
       &lt;View style={styles.header}&gt;
-        &lt;TouchableOpacity onPress={handleCancel} style={styles.backButton}&gt;
+        &lt;TouchableOpacity onPress={handleCancel} style={styles.backButton} accessibilityLabel="Go back" accessibilityRole="button"&gt;
           &lt;Ionicons name="arrow-back" size={24} color="#0A0E5E" /&gt;
         &lt;/TouchableOpacity&gt;
         &lt;Text style={styles.headerTitle}&gt;Verification&lt;/Text&gt;
@@ -920,13 +928,13 @@ export default function <span class="fstat-no" title="function not covered" >Boo
             &lt;MaterialCommunityIcons name="qrcode" size={26} color="black" /&gt;
           &lt;/View&gt;
 &nbsp;
-          {currentBooking.declaredValue &gt; 0 &amp;&amp; (
+          {(currentBooking.declaredValue ?? 0) &gt; 0 &amp;&amp; (
             &lt;&gt;
               &lt;View style={styles.divider} /&gt;
               &lt;View style={styles.declaredValueRow}&gt;
                 &lt;Ionicons name="shield-checkmark" size={18} color="#B45309" /&gt;
                 &lt;Text style={styles.declaredValueText}&gt;
-                  Declared value: ${Number(currentBooking.declaredValue).toLocaleString()}
+                  Declared value: ${Number(currentBooking.declaredValue ?? 0).toLocaleString()}
                 &lt;/Text&gt;
               &lt;/View&gt;
             &lt;/&gt;
@@ -971,7 +979,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                 {photos.map(<span class="fstat-no" title="function not covered" >(u</span>ri, index) =&gt; (
 <span class="cstat-no" title="statement not covered" >                  &lt;View key={index} style={styles.photoThumb}&gt;</span>
                     &lt;Image source={{ uri }} style={styles.photoImage} /&gt;
-                    &lt;TouchableOpacity style={styles.photoRemove} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >removePhoto(index)}</span>&gt;
+                    &lt;TouchableOpacity style={styles.photoRemove} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >removePhoto(index)}</span> accessibilityLabel="Remove photo" accessibilityRole="button"&gt;
                       &lt;Ionicons name="close-circle" size={22} color="#E53E3E" /&gt;
                     &lt;/TouchableOpacity&gt;
                   &lt;/View&gt;
@@ -983,6 +991,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
               style={styles.addPhotoBtn}
               onPress={takePhoto}
               disabled={uploadingPhoto || photos.length &gt;= 4}
+              accessibilityLabel="Take luggage photo"
+              accessibilityRole="button"
             &gt;
               {uploadingPhoto ? (
                 &lt;ActivityIndicator color="#0A0E5E" size="small" /&gt;
@@ -1003,6 +1013,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
             style={[styles.confirmButton, isPending &amp;&amp; { opacity: 0.7 }]}
             onPress={handleConfirm}
             disabled={isPending}
+            accessibilityLabel={isCheckIn ? 'Confirm check-in' : 'Confirm check-out'}
+            accessibilityRole="button"
           &gt;
             {isPending ? (
               &lt;ActivityIndicator color="white" /&gt;
@@ -1013,7 +1025,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
             )}
           &lt;/TouchableOpacity&gt;
 &nbsp;
-          &lt;TouchableOpacity style={styles.cancelButton} onPress={handleCancel}&gt;
+          &lt;TouchableOpacity style={styles.cancelButton} onPress={handleCancel} accessibilityLabel="Cancel and go back" accessibilityRole="button"&gt;
             &lt;Text style={styles.cancelText}&gt;Cancel and Go Back&lt;/Text&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/View&gt;
@@ -1117,7 +1129,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

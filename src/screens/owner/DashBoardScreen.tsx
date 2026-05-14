@@ -7,6 +7,7 @@ import { staffService } from "@/services/staffService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useDashboardStats, useMyLocations } from "@/hooks/useDashboard";
 import { useOwnerStore } from "@/store/useOwnerStore";
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -19,6 +20,7 @@ import { LoadingDashboard } from "./LoadingDashboard";
 
 export default function DashboardScreen() {
     const { t } = useTranslation();
+    const { colors } = useTheme();
     const router = useRouter();
     const { data: stores } = useMyLocations();
     const { data: staffLocations } = useQuery({
@@ -47,7 +49,7 @@ export default function DashboardScreen() {
     if ((isStaff && !staffLocations) || (!isStaff && !stores)) return <LoadingDashboard />;
     if (isStaff && assignedLocations.length === 0) {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#F8F9FE', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surfaceCardLow, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
                 <Ionicons name="business-outline" size={64} color="#CBD5E0" />
                 <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginTop: 16, textAlign: 'center' }}>
                     {t('owner.no_store')}
@@ -62,7 +64,7 @@ export default function DashboardScreen() {
     if (isLoading || !dashboardData) return <LoadingDashboard />;
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surfaceCardLow }]}>
             <HeaderDashboard
                 onPress={() => stores && stores.length > 1 ? setShowSelector(true) : null}
                 showChevron={stores && stores.length > 1}
@@ -79,6 +81,8 @@ export default function DashboardScreen() {
                             style={{ flex: 1 }}
                             activeOpacity={1}
                             onPress={() => setShowSelector(false)}
+                            accessibilityLabel="Close store selector"
+                            accessibilityRole="button"
                         />
                         <View style={{
                             backgroundColor: '#fff',
@@ -123,6 +127,8 @@ export default function DashboardScreen() {
                                                         setActiveLocation(item.id, item.name);
                                                         setShowSelector(false);
                                                     }}
+                                                    accessibilityLabel={`Select store ${item.name}`}
+                                                    accessibilityRole="button"
                                         >
                                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                                                 <View style={{
@@ -208,7 +214,7 @@ export default function DashboardScreen() {
                                 <Text style={{ fontSize: 14, color: '#94A3B8' }}>{t('owner.no_upcoming')}</Text>
                             </View>
                         )}
-                        <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
+                        <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)} accessibilityLabel="View all bookings" accessibilityRole="button">
                             <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>{t('owner.view_all_bookings')}</Text>
                         </TouchableOpacity>
                     </View>
@@ -220,20 +226,20 @@ export default function DashboardScreen() {
                         {t('owner.quick_actions')}
                     </Text>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
-                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
+                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.push(ROUTES.OWNER.SCANNER)} accessibilityLabel="Scan QR code" accessibilityRole="button">
                             <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                 <Ionicons name="qr-code-outline" size={24} color="#0A0E5E" />
                             </View>
                             <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>{t('owner.scan_qr')}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)}>
+                        <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.BOOKINGS)} accessibilityLabel="View bookings" accessibilityRole="button">
                             <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                 <Ionicons name="briefcase-outline" size={24} color="#0A0E5E" />
                             </View>
                             <Text style={{ fontSize: 13, fontWeight: '700', color: '#1A202C' }}>{t('owner.bookings')}</Text>
                         </TouchableOpacity>
                         {!isStaff && (
-                            <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.STORES)}>
+                            <TouchableOpacity style={{ flex: 1, backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5, gap: 8 }} onPress={() => router.navigate(ROUTES.OWNER.STORES)} accessibilityLabel="View stores" accessibilityRole="button">
                                 <View style={{ width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 14, justifyContent: 'center', alignItems: 'center' }}>
                                     <Ionicons name="storefront-outline" size={24} color="#0A0E5E" />
                                 </View>

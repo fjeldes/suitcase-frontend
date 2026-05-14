@@ -38,6 +38,7 @@ export interface ItemsCount {
     pricePerDay: PriceData;
     isActive: boolean;
     image?: string;
+    imageUrl?: string;
     createdAt: string;
     updatedAt: string;
   }
@@ -55,6 +56,8 @@ export interface ItemsCount {
     updatedAt: string;
     checkedInAt: string | null;
     checkedOutAt: string | null;
+    declaredValue?: number | null;
+    checkInPhotos?: string[] | null;
   }
   
   /**
@@ -74,4 +77,5 @@ export interface ItemsCount {
   export interface BookingData extends BaseBooking {
     location: Location;
     user: User;
+    review?: unknown;
   }

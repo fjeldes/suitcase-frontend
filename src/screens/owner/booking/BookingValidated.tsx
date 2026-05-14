@@ -100,7 +100,7 @@ export default function BookingValidated() {
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
+        <TouchableOpacity onPress={handleCancel} style={styles.backButton} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Verification</Text>
@@ -157,13 +157,13 @@ export default function BookingValidated() {
             <MaterialCommunityIcons name="qrcode" size={26} color="black" />
           </View>
 
-          {currentBooking.declaredValue > 0 && (
+          {(currentBooking.declaredValue ?? 0) > 0 && (
             <>
               <View style={styles.divider} />
               <View style={styles.declaredValueRow}>
                 <Ionicons name="shield-checkmark" size={18} color="#B45309" />
                 <Text style={styles.declaredValueText}>
-                  Declared value: ${Number(currentBooking.declaredValue).toLocaleString()}
+                  Declared value: ${Number(currentBooking.declaredValue ?? 0).toLocaleString()}
                 </Text>
               </View>
             </>
@@ -208,7 +208,7 @@ export default function BookingValidated() {
                 {photos.map((uri, index) => (
                   <View key={index} style={styles.photoThumb}>
                     <Image source={{ uri }} style={styles.photoImage} />
-                    <TouchableOpacity style={styles.photoRemove} onPress={() => removePhoto(index)}>
+                    <TouchableOpacity style={styles.photoRemove} onPress={() => removePhoto(index)} accessibilityLabel="Remove photo" accessibilityRole="button">
                       <Ionicons name="close-circle" size={22} color="#E53E3E" />
                     </TouchableOpacity>
                   </View>
@@ -220,6 +220,8 @@ export default function BookingValidated() {
               style={styles.addPhotoBtn}
               onPress={takePhoto}
               disabled={uploadingPhoto || photos.length >= 4}
+              accessibilityLabel="Take luggage photo"
+              accessibilityRole="button"
             >
               {uploadingPhoto ? (
                 <ActivityIndicator color="#0A0E5E" size="small" />
@@ -240,6 +242,8 @@ export default function BookingValidated() {
             style={[styles.confirmButton, isPending && { opacity: 0.7 }]}
             onPress={handleConfirm}
             disabled={isPending}
+            accessibilityLabel={isCheckIn ? 'Confirm check-in' : 'Confirm check-out'}
+            accessibilityRole="button"
           >
             {isPending ? (
               <ActivityIndicator color="white" />
@@ -250,7 +254,7 @@ export default function BookingValidated() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} accessibilityLabel="Cancel and go back" accessibilityRole="button">
             <Text style={styles.cancelText}>Cancel and Go Back</Text>
           </TouchableOpacity>
         </View>

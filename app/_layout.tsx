@@ -18,6 +18,7 @@ import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
 import * as Linking from 'expo-linking'
 import '@/i18n'
+import { i18nReady } from '@/i18n'
 // Hooks y Stores
 import { toastConfig } from '@/config/toastConfig'
 import { ROUTES } from '@/constants/routes'
@@ -73,8 +74,7 @@ function RootLayoutNav() {
   useEffect(() => {
     async function prepare() {
       try {
-        await checkAuth()
-        // Delay cosmético para el Splash
+        await Promise.all([checkAuth(), i18nReady])
         await new Promise((resolve) => setTimeout(resolve, 2000))
       } catch (e) {
         console.warn('Error durante la carga inicial:', e)

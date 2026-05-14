@@ -43,7 +43,7 @@ export const HeaderDashboard = ({
 
   return (
     <View style={s.header}>
-      <TouchableOpacity style={s.headerLeft} onPress={onPress} disabled={!onPress} activeOpacity={0.7}>
+      <TouchableOpacity style={s.headerLeft} onPress={onPress} disabled={!onPress} activeOpacity={0.7} accessibilityLabel="Select active store location" accessibilityRole="button">
         <View style={s.storeIconBg}>
           <MaterialCommunityIcons name="storefront" size={20} color={colors.iconColor} />
         </View>
@@ -56,10 +56,10 @@ export const HeaderDashboard = ({
         </View>
       </TouchableOpacity>
       <View style={s.headerRight}>
-        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)}>
+        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.SCANNER)} accessibilityLabel="Open QR scanner" accessibilityRole="button">
           <Ionicons name="qr-code-outline" size={22} color={colors.iconColor} />
         </TouchableOpacity>
-        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}>
+        <TouchableOpacity style={s.iconCircle} onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)} accessibilityLabel="Open notifications" accessibilityRole="button">
           <Ionicons name="notifications" size={22} color={colors.iconColor} />
           {hasUnread && <View style={s.notificationDot} />}
         </TouchableOpacity>

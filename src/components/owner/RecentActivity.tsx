@@ -1,10 +1,11 @@
 import { ROUTES } from '@/constants/routes';
 import { useActivityLogs } from '@/hooks/useActivityLogs';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { styles } from './RecentActivity.styles';
+import { createStyles } from './RecentActivity.styles';
 
 interface ActivityProps {
   type: 'BOOKING' | 'COLLECTION' | 'REVIEW' | 'CANCELLED';
@@ -16,25 +17,25 @@ interface ActivityProps {
 }
 
 const ActivityItem = ({ type, title, location, time, statusText, isLast }: ActivityProps) => {
-  // Configuración según el tipo de actividad
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const config = {
-    BOOKING: { color: '#B45309', icon: 'time-outline', badgeBg: '#F1F5F9', badgeText: '#1E293B' },
-    COLLECTION: { color: '#818CF8', icon: 'checkmark-circle-outline', badgeBg: '#F0FDF4', badgeText: '#166534' },
-    REVIEW: { color: '#CBD5E1', icon: 'star', badgeBg: 'transparent', badgeText: '' },
-    CANCELLED: { color: '#F87171', icon: 'close-circle-outline', badgeBg: '#FEF2F2', badgeText: '#991B1B' },
+    BOOKING: { color: '#B45309', icon: 'time-outline' as const, badgeBg: colors.surfaceLight, badgeText: colors.textPrimary },
+    COLLECTION: { color: '#818CF8', icon: 'checkmark-circle-outline' as const, badgeBg: '#F0FDF4', badgeText: '#166534' },
+    REVIEW: { color: '#CBD5E1', icon: 'star' as const, badgeBg: 'transparent', badgeText: '' },
+    CANCELLED: { color: '#F87171', icon: 'close-circle-outline' as const, badgeBg: '#FEF2F2', badgeText: '#991B1B' },
   };
 
   const current = config[type];
 
   return (
     <View style={styles.itemWrapper}>
-      {/* Línea de tiempo y Círculo */}
       <View style={styles.timelineContainer}>
         <View style={[styles.dot, { backgroundColor: current.color }]} />
         {!isLast && <View style={styles.line} />}
       </View>
 
-      {/* Contenido */}
       <View style={styles.contentContainer}>
         <Text style={styles.activityTitle}>{title}</Text>
         <Text style={styles.activitySubtitle}>{location} · {time}</Text>
@@ -58,6 +59,8 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
 
 export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: logs, isLoading } = useActivityLogs(10);
 
   const formatTime = (dateString: string) => {
@@ -81,7 +84,7 @@ export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
     return (
       <View style={styles.container}>
         <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <ActivityIndicator color="#0A0E5E" style={{ marginTop: 20 }} />
+        <ActivityIndicator color={colors.iconColor} style={{ marginTop: 20 }} />
       </View>
     );
   }
@@ -91,7 +94,7 @@ export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
       <View style={styles.container}>
         <Text style={styles.sectionTitle}>Recent Activity</Text>
         <View style={styles.emptyCard}>
-          <Ionicons name="list-circle-outline" size={32} color="#94A3B8" />
+          <Ionicons name="list-circle-outline" size={32} color={colors.iconMuted} />
           <Text style={styles.emptyTextTitle}>No activity yet</Text>
           <Text style={styles.emptyText}>When bookings are made, they will appear here.</Text>
         </View>
@@ -123,7 +126,7 @@ export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
 
       {logs.length > maxItems && (
         <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.push(ROUTES.OWNER.ACTIVITY_LOGS)}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: '#0A0E5E' }}>View All Activity</Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.iconColor }}>View All Activity</Text>
         </TouchableOpacity>
       )}
     </View>

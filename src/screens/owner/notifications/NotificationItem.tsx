@@ -67,6 +67,8 @@ export const NotificationItem = ({
             style={styles.primaryBtn}
             onPress={onPrimaryPress}
             activeOpacity={0.8}
+            accessibilityLabel="Review notification"
+            accessibilityRole="button"
           >
             <Text style={styles.primaryBtnText}>Review Feed</Text>
           </TouchableOpacity>
@@ -75,6 +77,8 @@ export const NotificationItem = ({
             style={styles.secondaryBtn}
             onPress={onSecondaryPress}
             activeOpacity={0.6}
+            accessibilityLabel="Dismiss notification"
+            accessibilityRole="button"
           >
             <Text style={styles.secondaryBtnText}>Dismiss</Text>
           </TouchableOpacity>

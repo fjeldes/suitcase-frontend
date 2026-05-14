@@ -6,8 +6,8 @@ import es from './locales/es.json';
 
 const resources = { en: { translation: en }, es: { translation: es } };
 
-AsyncStorage.getItem('app_language').then((lang) => {
-  i18n.use(initReactI18next).init({
+export const i18nReady = AsyncStorage.getItem('app_language').then((lang) => {
+  return i18n.use(initReactI18next).init({
     resources,
     lng: lang || 'es',
     fallbackLng: 'en',

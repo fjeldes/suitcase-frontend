@@ -82,7 +82,7 @@ export default function ResetPasswordScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton} accessibilityLabel="Go back" accessibilityRole="button">
             <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
           </TouchableOpacity>
         </View>
@@ -106,6 +106,7 @@ export default function ResetPasswordScreen() {
                 onChangeText={(text) => handleCodeChange(text, idx)}
                 onKeyPress={(e) => handleKeyPress(e, idx)}
                 selectTextOnFocus
+                accessibilityLabel={`Digit ${idx + 1} of verification code`}
               />
             ))}
           </View>
@@ -119,8 +120,9 @@ export default function ResetPasswordScreen() {
               secureTextEntry={!showPassword}
               value={newPassword}
               onChangeText={setNewPassword}
+              accessibilityLabel="New password input"
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} accessibilityLabel={showPassword ? 'Hide password' : 'Show password'} accessibilityRole="button">
               <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={20} color="#64748B" />
             </TouchableOpacity>
           </View>
@@ -129,6 +131,8 @@ export default function ResetPasswordScreen() {
             style={[styles.primaryButton, isResetting && styles.disabledButton]}
             onPress={handleReset}
             disabled={isResetting}
+            accessibilityLabel="Reset password"
+            accessibilityRole="button"
           >
             {isResetting ? (
               <ActivityIndicator color="#FFF" />

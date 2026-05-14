@@ -1,4 +1,5 @@
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { BottomSheetModal } from '@/components/ui/BottomSheetModal'
 import { ROUTES } from '@/constants/routes'
 import { api } from '@/services/api'
 import { useSwitchMode } from '@/hooks/useSwitchMode'
@@ -10,10 +11,7 @@ import React, { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
   Linking,
-  Modal,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -106,7 +104,7 @@ export const ProfileScreen = () => {
   const MenuItem = ({ icon, title, family = 'Ionicons', onPress }: any) => {
     const IconComponent = family === 'Ionicons' ? Ionicons : family === 'Material' ? MaterialCommunityIcons : FontAwesome5
     return (
-      <TouchableOpacity style={s.menuItem} onPress={onPress}>
+      <TouchableOpacity style={s.menuItem} onPress={onPress} accessibilityLabel={title} accessibilityRole="button">
         <View style={s.menuItemLeft}>
           <View style={s.iconContainer}><IconComponent name={icon} size={20} color={colors.iconColor} /></View>
           <Text style={s.menuItemText}>{title}</Text>
@@ -121,31 +119,23 @@ export const ProfileScreen = () => {
       <Text style={{ fontSize: 11, fontWeight: '700', color: colors.iconColor, letterSpacing: 0.5 }}>{label}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceLight, borderRadius: 12, paddingHorizontal: 14, height: 50, borderWidth: 1, borderColor: colors.border }}>
         <TextInput style={{ flex: 1, fontSize: 15, color: colors.textPrimary }} value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.iconMuted} secureTextEntry={secure && !onToggle} />
-        {showToggle && <TouchableOpacity onPress={onToggle}><Ionicons name={secure ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.iconMuted} /></TouchableOpacity>}
+        {showToggle && <TouchableOpacity onPress={onToggle} accessibilityLabel={secure ? 'Show password' : 'Hide password'} accessibilityRole="button"><Ionicons name={secure ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.iconMuted} /></TouchableOpacity>}
       </View>
     </View>
   )
 
   const renderModal = (visible: boolean, onClose: () => void, children: React.ReactNode) => (
-    <Modal visible={visible} transparent animationType="slide">
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <View style={s.modalOverlay}>
-          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-          <View style={s.modalContent}>
-            <View style={s.modalHandle} />
-            {children}
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-    </Modal>
+    <BottomSheetModal visible={visible} onClose={onClose}>
+      {children}
+    </BottomSheetModal>
   )
 
   return (
     <SafeAreaView style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}><Ionicons name="arrow-back" size={24} color={colors.iconColor} /></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button"><Ionicons name="arrow-back" size={24} color={colors.iconColor} /></TouchableOpacity>
         <Text style={s.headerTitle}>{t('profile.title')}</Text>
-        <TouchableOpacity onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)}><Ionicons name="settings-sharp" size={24} color={colors.iconColor} /></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push(ROUTES.OWNER.NOTIFICATIONS)} accessibilityLabel="Open settings" accessibilityRole="button"><Ionicons name="settings-sharp" size={24} color={colors.iconColor} /></TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scrollContent}>
@@ -181,7 +171,7 @@ export const ProfileScreen = () => {
         {(isOwner || isStaff) && isClient && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>{t('profile.mode')}</Text>
-            <TouchableOpacity style={s.switchCard} onPress={handleSwitchToClient}>
+            <TouchableOpacity style={s.switchCard} onPress={handleSwitchToClient} accessibilityLabel="Switch to client mode" accessibilityRole="button">
               <View style={s.switchIconBox}><Ionicons name="swap-horizontal-outline" size={22} color={colors.iconColor} /></View>
               <View style={{ flex: 1 }}>
                 <Text style={s.switchTitle}>{t('profile.switch_to_client')}</Text>
@@ -201,7 +191,7 @@ export const ProfileScreen = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={s.logoutBtn} onPress={logout}>
+        <TouchableOpacity style={s.logoutBtn} onPress={logout} accessibilityLabel="Logout" accessibilityRole="button">
           <Ionicons name="log-out-outline" size={24} color="#E11D48" />
           <Text style={s.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
@@ -212,10 +202,10 @@ export const ProfileScreen = () => {
           <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 16 }}>{t('settings.edit_profile')}</Text>
           <InputField label={t('settings.full_name')} value={profileName} onChange={setProfileName} placeholder={t('settings.placeholder_full_name')} />
           <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
-            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowProfile(false)}>
+            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowProfile(false)} accessibilityLabel="Cancel editing profile" accessibilityRole="button">
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}>{t('common.cancel')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: savingProfile ? 0.6 : 1 }} onPress={handleSaveProfile} disabled={savingProfile}>
+            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: savingProfile ? 0.6 : 1 }} onPress={handleSaveProfile} disabled={savingProfile} accessibilityLabel="Save profile changes" accessibilityRole="button">
               {savingProfile ? <ActivityIndicator color="white" size="small" /> : <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textInverse }}>{t('common.save')}</Text>}
             </TouchableOpacity>
           </View>
@@ -229,10 +219,10 @@ export const ProfileScreen = () => {
           <InputField label={t('settings.new_password')} value={newPw} onChange={setNewPw} placeholder={t('settings.placeholder_new_password')} secure showToggle={showNew} onToggle={() => setShowNew(!showNew)} />
           <InputField label={t('settings.confirm_new_password')} value={confirmPw} onChange={setConfirmPw} placeholder={t('settings.placeholder_confirm_password')} secure showToggle={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} />
           <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
-            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowPassword(false)}>
+            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowPassword(false)} accessibilityLabel="Cancel password change" accessibilityRole="button">
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}>{t('common.cancel')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: changingPw ? 0.6 : 1 }} onPress={handleChangePassword} disabled={changingPw}>
+            <TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: changingPw ? 0.6 : 1 }} onPress={handleChangePassword} disabled={changingPw} accessibilityLabel="Update password" accessibilityRole="button">
               {changingPw ? <ActivityIndicator color="white" size="small" /> : <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textInverse }}>{t('settings.update')}</Text>}
             </TouchableOpacity>
           </View>
@@ -252,7 +242,7 @@ export const ProfileScreen = () => {
               <Switch value={item.value} onValueChange={item.set} trackColor={{ false: colors.border, true: colors.primary }} thumbColor="white" />
             </View>
           ))}
-          <TouchableOpacity style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowNotif(false)}>
+          <TouchableOpacity style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowNotif(false)} accessibilityLabel="Close notifications settings" accessibilityRole="button">
             <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}>{t('common.done')}</Text>
           </TouchableOpacity>
         </>
@@ -262,7 +252,7 @@ export const ProfileScreen = () => {
         <>
           <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 8 }}>{t('profile.contact_title')}</Text>
           <Text style={{ fontSize: 14, color: colors.textMuted, marginBottom: 24, lineHeight: 20 }}>{t('profile.contact_desc')}</Text>
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, backgroundColor: colors.surfaceLight, borderRadius: 14 }} onPress={() => Linking.openURL('mailto:support@suitcase.app')}>
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, backgroundColor: colors.surfaceLight, borderRadius: 14 }} onPress={() => Linking.openURL('mailto:support@suitcase.app')} accessibilityLabel="Send email to support" accessibilityRole="button">
             <View style={{ width: 44, height: 44, backgroundColor: colors.surfaceCard, borderRadius: 12, justifyContent: 'center', alignItems: 'center' }}>
               <Ionicons name="mail-outline" size={22} color={colors.iconColor} />
             </View>
@@ -271,7 +261,7 @@ export const ProfileScreen = () => {
               <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 2 }}>support@suitcase.app</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={{ marginTop: 16, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowContact(false)}>
+          <TouchableOpacity style={{ marginTop: 16, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={() => setShowContact(false)} accessibilityLabel="Close contact modal" accessibilityRole="button">
             <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}>{t('common.close')}</Text>
           </TouchableOpacity>
         </>
@@ -304,6 +294,4 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   logoutBtn: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 40, gap: 10 },
   logoutText: { color: '#E11D48', fontSize: 18, fontWeight: 'bold' },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 40 },
-  modalHandle: { width: 40, height: 5, backgroundColor: colors.border, borderRadius: 3, alignSelf: 'center', marginBottom: 20 },
 })

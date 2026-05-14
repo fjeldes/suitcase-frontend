@@ -26,7 +26,7 @@ export default function ScannerScreen() {
       <SafeAreaView style={styles.centerContainer}>
         <View style={styles.permissionBox}>
           <Text style={styles.permissionText}>Camera access is required to scan QR codes</Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission} accessibilityLabel="Grant camera permission" accessibilityRole="button">
             <Text style={styles.permissionButtonText}>Grant Permission</Text>
           </TouchableOpacity>
         </View>
@@ -96,6 +96,8 @@ export default function ScannerScreen() {
           <TouchableOpacity
             style={styles.mockButton}
             onPress={() => handleBarCodeScanned({ data: 'RESERVA-TEST-123' })}
+            accessibilityLabel="Simulate QR scan (development only)"
+            accessibilityRole="button"
           >
             <Text style={{ color: 'white', fontWeight: 'bold' }}>Simulate QR Scan</Text>
           </TouchableOpacity>

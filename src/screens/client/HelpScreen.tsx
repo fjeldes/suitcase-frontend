@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -20,7 +21,7 @@ export default function HelpScreen() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showContact, setShowContact] = useState(false);
 
-  const { data: faqs, isLoading } = useQuery({
+  const { data: faqs, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['faqs'],
     queryFn: () => faqService.getAll(),
   });
@@ -52,7 +53,11 @@ export default function HelpScreen() {
         <View style={{ width: 44 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+      >
         {/* Header */}
         <View style={styles.heroSection}>
           <View style={styles.heroIconBox}>

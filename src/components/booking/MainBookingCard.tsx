@@ -1,12 +1,14 @@
 import { ROUTES } from '@/constants/routes'
 import { useBookingStore } from '@/store/useBookingStore'
+import type { BookingData } from '@/types/booking.types'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface MainBookingCardProps {
-  booking: any
+  booking: BookingData
+  onReview?: () => void
 }
 
 export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
@@ -89,13 +91,13 @@ export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.qrButton} onPress={handleViewQR}>
+          <TouchableOpacity style={styles.qrButton} onPress={handleViewQR} accessibilityLabel="View QR code" accessibilityRole="button">
             <Ionicons name="qr-code-outline" size={18} color="white" />
             <Text style={styles.qrButtonText}> View QR Code</Text>
           </TouchableOpacity>
 
           {/* NUEVO BOTÓN PARA EL DETALLE QUE HICIMOS */}
-          <TouchableOpacity style={styles.detailButton} onPress={handleViewDetail}>
+          <TouchableOpacity style={styles.detailButton} onPress={handleViewDetail} accessibilityLabel="View booking details" accessibilityRole="button">
             <Ionicons name="list-outline" size={18} color="#0A0E5E" />
             <Text style={styles.detailButtonText}> View Booking Detail</Text>
           </TouchableOpacity>

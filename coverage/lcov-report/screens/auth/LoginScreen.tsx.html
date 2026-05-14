@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -305,7 +305,11 @@
 <a name='L240'></a><a href='#L240'>240</a>
 <a name='L241'></a><a href='#L241'>241</a>
 <a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -404,13 +408,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -420,6 +417,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -430,6 +436,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -638,6 +646,7 @@ export const LoginScreen = <span class="cstat-no" title="statement not covered" 
                     keyboardType="email-address"
                     autoCapitalize="none"
                     editable={!loginMutation.isPending}
+                    accessibilityLabel="Email address input"
                   /&gt;
                 &lt;/View&gt;
               )}
@@ -646,7 +655,7 @@ export const LoginScreen = <span class="cstat-no" title="statement not covered" 
 &nbsp;
             &lt;View style={s.labelRow}&gt;
               &lt;Text style={s.label}&gt;Password&lt;/Text&gt;
-              &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push('/(auth)/forgot-password')}</span>&gt;
+              &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push('/(auth)/forgot-password')}</span> accessibilityLabel="Forgot password" accessibilityRole="button"&gt;
                 &lt;Text style={s.forgotPassword}&gt;Forgot password?&lt;/Text&gt;
               &lt;/TouchableOpacity&gt;
             &lt;/View&gt;
@@ -670,8 +679,9 @@ export const LoginScreen = <span class="cstat-no" title="statement not covered" 
                     value={value}
                     secureTextEntry={!showPassword}
                     editable={!loginMutation.isPending}
+                    accessibilityLabel="Password input"
                   /&gt;
-                  &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowPassword(!showPassword)}</span>&gt;
+                  &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowPassword(!showPassword)}</span> accessibilityLabel={showPassword ? 'Hide password' : 'Show password'} accessibilityRole="button"&gt;
                     &lt;Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
@@ -687,6 +697,8 @@ export const LoginScreen = <span class="cstat-no" title="statement not covered" 
               style={[s.loginBtn, loginMutation.isPending &amp;&amp; s.disabledBtn]}
               onPress={handleSubmit(onSubmit)}
               disabled={loginMutation.isPending}
+              accessibilityLabel="Login"
+              accessibilityRole="button"
             &gt;
               {loginMutation.isPending ? (
                 &lt;ActivityIndicator color="#fff" /&gt;
@@ -709,7 +721,7 @@ export const LoginScreen = <span class="cstat-no" title="statement not covered" 
 &nbsp;
           &lt;View style={s.footer}&gt;
             &lt;Text style={s.footerText}&gt;Don't have an account? &lt;/Text&gt;
-            &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.AUTH.SIGNUP)}</span>&gt;
+            &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.AUTH.SIGNUP)}</span> accessibilityLabel="Sign up" accessibilityRole="button"&gt;
               &lt;Text style={s.signUpLink}&gt;Sign up&lt;/Text&gt;
             &lt;/TouchableOpacity&gt;
           &lt;/View&gt;
@@ -796,7 +808,7 @@ const createStyles = <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

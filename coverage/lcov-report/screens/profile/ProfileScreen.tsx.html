@@ -360,19 +360,7 @@
 <a name='L295'></a><a href='#L295'>295</a>
 <a name='L296'></a><a href='#L296'>296</a>
 <a name='L297'></a><a href='#L297'>297</a>
-<a name='L298'></a><a href='#L298'>298</a>
-<a name='L299'></a><a href='#L299'>299</a>
-<a name='L300'></a><a href='#L300'>300</a>
-<a name='L301'></a><a href='#L301'>301</a>
-<a name='L302'></a><a href='#L302'>302</a>
-<a name='L303'></a><a href='#L303'>303</a>
-<a name='L304'></a><a href='#L304'>304</a>
-<a name='L305'></a><a href='#L305'>305</a>
-<a name='L306'></a><a href='#L306'>306</a>
-<a name='L307'></a><a href='#L307'>307</a>
-<a name='L308'></a><a href='#L308'>308</a>
-<a name='L309'></a><a href='#L309'>309</a>
-<a name='L310'></a><a href='#L310'>310</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L298'></a><a href='#L298'>298</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -399,8 +387,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -502,18 +488,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -655,8 +633,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -682,6 +658,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { UserAvatar } from '@/components/ui/UserAvatar'
+import { BottomSheetModal } from '@/components/ui/BottomSheetModal'
 import { ROUTES } from '@/constants/routes'
 import { api } from '@/services/api'
 import { useSwitchMode } from '@/hooks/useSwitchMode'
@@ -693,10 +670,7 @@ import React, { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
   Linking,
-  Modal,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -789,7 +763,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
   const MenuItem = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> icon, title, family = <span class="branch-0 cbranch-no" title="branch not covered" >'Ionicons',</span> onPress }: any) =&gt; {</span>
     const IconComponent = <span class="cstat-no" title="statement not covered" >family === 'Ionicons' ? Ionicons : family === 'Material' ? MaterialCommunityIcons : FontAwesome5</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
-      &lt;TouchableOpacity style={s.menuItem} onPress={onPress}&gt;
+      &lt;TouchableOpacity style={s.menuItem} onPress={onPress} accessibilityLabel={title} accessibilityRole="button"&gt;
         &lt;View style={s.menuItemLeft}&gt;
           &lt;View style={s.iconContainer}&gt;&lt;IconComponent name={icon} size={20} color={colors.iconColor} /&gt;&lt;/View&gt;
           &lt;Text style={s.menuItemText}&gt;{title}&lt;/Text&gt;
@@ -804,31 +778,23 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
       &lt;Text style={{ fontSize: 11, fontWeight: '700', color: colors.iconColor, letterSpacing: 0.5 }}&gt;{label}&lt;/Text&gt;
       &lt;View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceLight, borderRadius: 12, paddingHorizontal: 14, height: 50, borderWidth: 1, borderColor: colors.border }}&gt;
         &lt;TextInput style={{ flex: 1, fontSize: 15, color: colors.textPrimary }} value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.iconMuted} secureTextEntry={secure &amp;&amp; !onToggle} /&gt;
-        {showToggle &amp;&amp; &lt;TouchableOpacity onPress={onToggle}&gt;&lt;Ionicons name={secure ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.iconMuted} /&gt;&lt;/TouchableOpacity&gt;}
+        {showToggle &amp;&amp; &lt;TouchableOpacity onPress={onToggle} accessibilityLabel={secure ? 'Show password' : 'Hide password'} accessibilityRole="button"&gt;&lt;Ionicons name={secure ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.iconMuted} /&gt;&lt;/TouchableOpacity&gt;}
       &lt;/View&gt;
     &lt;/View&gt;
   )
 &nbsp;
   const renderModal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>isible: boolean, onClose: () =&gt; void, children: React.ReactNode) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;Modal visible={visible} transparent animationType="slide"&gt;</span>
-      &lt;KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}&gt;
-        &lt;View style={s.modalOverlay}&gt;
-          &lt;TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} /&gt;
-          &lt;View style={s.modalContent}&gt;
-            &lt;View style={s.modalHandle} /&gt;
-            {children}
-          &lt;/View&gt;
-        &lt;/View&gt;
-      &lt;/KeyboardAvoidingView&gt;
-    &lt;/Modal&gt;
+<span class="cstat-no" title="statement not covered" >    &lt;BottomSheetModal visible={visible} onClose={onClose}&gt;</span>
+      {children}
+    &lt;/BottomSheetModal&gt;
   )
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;SafeAreaView style={s.container}&gt;
       &lt;View style={s.header}&gt;
-        &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.back()}</span>&gt;&lt;Ionicons name="arrow-back" size={24} color={colors.iconColor} /&gt;&lt;/TouchableOpacity&gt;
+        &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.back()}</span> accessibilityLabel="Go back" accessibilityRole="button"&gt;&lt;Ionicons name="arrow-back" size={24} color={colors.iconColor} /&gt;&lt;/TouchableOpacity&gt;
         &lt;Text style={s.headerTitle}&gt;{t('profile.title')}&lt;/Text&gt;
-        &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.OWNER.NOTIFICATIONS)}</span>&gt;&lt;Ionicons name="settings-sharp" size={24} color={colors.iconColor} /&gt;&lt;/TouchableOpacity&gt;
+        &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.push(ROUTES.OWNER.NOTIFICATIONS)}</span> accessibilityLabel="Open settings" accessibilityRole="button"&gt;&lt;Ionicons name="settings-sharp" size={24} color={colors.iconColor} /&gt;&lt;/TouchableOpacity&gt;
       &lt;/View&gt;
 &nbsp;
       &lt;ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scrollContent}&gt;
@@ -864,7 +830,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
         {(isOwner || isStaff) &amp;&amp; isClient &amp;&amp; (
           &lt;View style={s.section}&gt;
             &lt;Text style={s.sectionTitle}&gt;{t('profile.mode')}&lt;/Text&gt;
-            &lt;TouchableOpacity style={s.switchCard} onPress={handleSwitchToClient}&gt;
+            &lt;TouchableOpacity style={s.switchCard} onPress={handleSwitchToClient} accessibilityLabel="Switch to client mode" accessibilityRole="button"&gt;
               &lt;View style={s.switchIconBox}&gt;&lt;Ionicons name="swap-horizontal-outline" size={22} color={colors.iconColor} /&gt;&lt;/View&gt;
               &lt;View style={{ flex: 1 }}&gt;
                 &lt;Text style={s.switchTitle}&gt;{t('profile.switch_to_client')}&lt;/Text&gt;
@@ -884,7 +850,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
           &lt;/View&gt;
         &lt;/View&gt;
 &nbsp;
-        &lt;TouchableOpacity style={s.logoutBtn} onPress={logout}&gt;
+        &lt;TouchableOpacity style={s.logoutBtn} onPress={logout} accessibilityLabel="Logout" accessibilityRole="button"&gt;
           &lt;Ionicons name="log-out-outline" size={24} color="#E11D48" /&gt;
           &lt;Text style={s.logoutText}&gt;{t('profile.logout')}&lt;/Text&gt;
         &lt;/TouchableOpacity&gt;
@@ -895,10 +861,10 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
           &lt;Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 16 }}&gt;{t('settings.edit_profile')}&lt;/Text&gt;
           &lt;InputField label={t('settings.full_name')} value={profileName} onChange={setProfileName} placeholder={t('settings.placeholder_full_name')} /&gt;
           &lt;View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}&gt;
-            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowProfile(false)}</span>&gt;
+            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowProfile(false)}</span> accessibilityLabel="Cancel editing profile" accessibilityRole="button"&gt;
               &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}&gt;{t('common.cancel')}&lt;/Text&gt;
             &lt;/TouchableOpacity&gt;
-            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: savingProfile ? 0.6 : 1 }} onPress={handleSaveProfile} disabled={savingProfile}&gt;
+            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: savingProfile ? 0.6 : 1 }} onPress={handleSaveProfile} disabled={savingProfile} accessibilityLabel="Save profile changes" accessibilityRole="button"&gt;
               {savingProfile ? &lt;ActivityIndicator color="white" size="small" /&gt; : &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textInverse }}&gt;{t('common.save')}&lt;/Text&gt;}
             &lt;/TouchableOpacity&gt;
           &lt;/View&gt;
@@ -912,10 +878,10 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
           &lt;InputField label={t('settings.new_password')} value={newPw} onChange={setNewPw} placeholder={t('settings.placeholder_new_password')} secure showToggle={showNew} onToggle={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowNew(!showNew)}</span> /&gt;
           &lt;InputField label={t('settings.confirm_new_password')} value={confirmPw} onChange={setConfirmPw} placeholder={t('settings.placeholder_confirm_password')} secure showToggle={showConfirm} onToggle={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowConfirm(!showConfirm)}</span> /&gt;
           &lt;View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}&gt;
-            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowPassword(false)}</span>&gt;
+            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowPassword(false)}</span> accessibilityLabel="Cancel password change" accessibilityRole="button"&gt;
               &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}&gt;{t('common.cancel')}&lt;/Text&gt;
             &lt;/TouchableOpacity&gt;
-            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: changingPw ? 0.6 : 1 }} onPress={handleChangePassword} disabled={changingPw}&gt;
+            &lt;TouchableOpacity style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', opacity: changingPw ? 0.6 : 1 }} onPress={handleChangePassword} disabled={changingPw} accessibilityLabel="Update password" accessibilityRole="button"&gt;
               {changingPw ? &lt;ActivityIndicator color="white" size="small" /&gt; : &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textInverse }}&gt;{t('settings.update')}&lt;/Text&gt;}
             &lt;/TouchableOpacity&gt;
           &lt;/View&gt;
@@ -935,7 +901,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
               &lt;Switch value={item.value} onValueChange={item.set} trackColor={{ false: colors.border, true: colors.primary }} thumbColor="white" /&gt;
             &lt;/View&gt;
           ))}
-          &lt;TouchableOpacity style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowNotif(false)}</span>&gt;
+          &lt;TouchableOpacity style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowNotif(false)}</span> accessibilityLabel="Close notifications settings" accessibilityRole="button"&gt;
             &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}&gt;{t('common.done')}&lt;/Text&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/&gt;
@@ -945,7 +911,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
         &lt;&gt;
           &lt;Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 8 }}&gt;{t('profile.contact_title')}&lt;/Text&gt;
           &lt;Text style={{ fontSize: 14, color: colors.textMuted, marginBottom: 24, lineHeight: 20 }}&gt;{t('profile.contact_desc')}&lt;/Text&gt;
-          &lt;TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, backgroundColor: colors.surfaceLight, borderRadius: 14 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >Linking.openURL('mailto:support@suitcase.app')}</span>&gt;
+          &lt;TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, backgroundColor: colors.surfaceLight, borderRadius: 14 }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >Linking.openURL('mailto:support@suitcase.app')}</span> accessibilityLabel="Send email to support" accessibilityRole="button"&gt;
             &lt;View style={{ width: 44, height: 44, backgroundColor: colors.surfaceCard, borderRadius: 12, justifyContent: 'center', alignItems: 'center' }}&gt;
               &lt;Ionicons name="mail-outline" size={22} color={colors.iconColor} /&gt;
             &lt;/View&gt;
@@ -954,7 +920,7 @@ export const ProfileScreen = <span class="cstat-no" title="statement not covered
               &lt;Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 2 }}&gt;support@suitcase.app&lt;/Text&gt;
             &lt;/View&gt;
           &lt;/TouchableOpacity&gt;
-          &lt;TouchableOpacity style={{ marginTop: 16, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowContact(false)}</span>&gt;
+          &lt;TouchableOpacity style={{ marginTop: 16, padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center' }} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowContact(false)}</span> accessibilityLabel="Close contact modal" accessibilityRole="button"&gt;
             &lt;Text style={{ fontSize: 15, fontWeight: '700', color: colors.textMuted }}&gt;{t('common.close')}&lt;/Text&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/&gt;
@@ -987,8 +953,6 @@ const createStyles = <span class="cstat-no" title="statement not covered" ><span
   logoutBtn: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 40, gap: 10 },
   logoutText: { color: '#E11D48', fontSize: 18, fontWeight: 'bold' },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 40 },
-  modalHandle: { width: 40, height: 5, backgroundColor: colors.border, borderRadius: 3, alignSelf: 'center', marginBottom: 20 },
 })
 &nbsp;</pre></td></tr></table></pre>
 
@@ -997,7 +961,7 @@ const createStyles = <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

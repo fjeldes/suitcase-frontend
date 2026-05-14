@@ -11,15 +11,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { BookingData } from '@/types/booking.types';
 import { useReviews } from '@/hooks/useReviews';
 
 interface ReviewModalProps {
   isVisible: boolean;
   onClose: () => void;
-  booking: any;
+  booking: BookingData;
+  onSuccess?: () => void;
 }
 
-export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) => {
+export const ReviewModal = ({ isVisible, onClose, booking, onSuccess }: ReviewModalProps) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const { createReview, isPostingReview } = useReviews();
@@ -34,6 +36,7 @@ export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) =
         onClose();
         setComment('');
         setRating(5);
+        onSuccess?.();
       }
     });
   };
@@ -54,7 +57,7 @@ export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) =
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>Rate your experience</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn} accessibilityLabel="Close review modal" accessibilityRole="button">
                 <Ionicons name="close" size={24} color="#94A3B8" />
               </TouchableOpacity>
             </View>
@@ -69,6 +72,8 @@ export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) =
                 <TouchableOpacity
                   key={star}
                   onPress={() => setRating(star)}
+                  accessibilityLabel={`Rate ${star} stars`}
+                  accessibilityRole="button"
                 >
                   <Ionicons
                     name={star <= rating ? "star" : "star-outline"}
@@ -89,6 +94,7 @@ export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) =
               numberOfLines={4}
               value={comment}
               onChangeText={setComment}
+              accessibilityLabel="Review comment input"
             />
 
             {/* Submit Button */}
@@ -96,6 +102,8 @@ export const ReviewModal = ({ isVisible, onClose, booking }: ReviewModalProps) =
               style={[styles.submitBtn, isPostingReview && styles.disabledBtn]}
               onPress={handleSubmit}
               disabled={isPostingReview}
+              accessibilityLabel="Submit review"
+              accessibilityRole="button"
             >
               {isPostingReview ? (
                 <ActivityIndicator color="white" />

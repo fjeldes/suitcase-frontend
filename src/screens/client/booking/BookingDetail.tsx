@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -25,7 +26,7 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   const queryClient = useQueryClient();
 
   // 1. TODOS LOS HOOKS AL PRINCIPIO (Regla de oro de React)
-  const { data: booking, isLoading } = useBookingDetail(bookingId as string);
+  const { data: booking, isLoading, refetch, isRefetching } = useBookingDetail(bookingId as string);
 
   const { mutate: cancelBooking, isPending: isCanceling } = useMutation({
     mutationFn: bookingService.cancel,
@@ -115,7 +116,11 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+      >
         {/* QR Code Section */}
         <View style={styles.qrSection}>
           <QRGenerator value={qrCode || id} sizeScale={0.4} />

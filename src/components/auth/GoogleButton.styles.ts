@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/styles/colors';
-import { globalStyles } from '@/styles/globalStyles';
 
 export const styles = StyleSheet.create({
   button: {
@@ -15,7 +14,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
-    ...globalStyles.cardShadow,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 3,
   },
   content: {
     flexDirection: 'row',

@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/144</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
@@ -868,7 +868,16 @@
 <a name='L803'></a><a href='#L803'>803</a>
 <a name='L804'></a><a href='#L804'>804</a>
 <a name='L805'></a><a href='#L805'>805</a>
-<a name='L806'></a><a href='#L806'>806</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L806'></a><a href='#L806'>806</a>
+<a name='L807'></a><a href='#L807'>807</a>
+<a name='L808'></a><a href='#L808'>808</a>
+<a name='L809'></a><a href='#L809'>809</a>
+<a name='L810'></a><a href='#L810'>810</a>
+<a name='L811'></a><a href='#L811'>811</a>
+<a name='L812'></a><a href='#L812'>812</a>
+<a name='L813'></a><a href='#L813'>813</a>
+<a name='L814'></a><a href='#L814'>814</a>
+<a name='L815'></a><a href='#L815'>815</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1135,7 +1144,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1192,6 +1205,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1238,6 +1252,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1811,7 +1829,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
         {/* HEADER */}
         &lt;View style={styles.header}&gt;
           &lt;Image source={{ uri: store?.imageUrl || 'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?q=80&amp;w=1000&amp;auto=format&amp;fit=crop' }} style={styles.bannerImage} /&gt;
-          &lt;TouchableOpacity style={styles.backButton} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.back()}</span>&gt;&lt;Ionicons name="chevron-back" size={28} color="#0A0E5E" /&gt;&lt;/TouchableOpacity&gt;
+          &lt;TouchableOpacity style={styles.backButton} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >router.back()}</span> accessibilityLabel="Go back" accessibilityRole="button"&gt;&lt;Ionicons name="chevron-back" size={28} color="#0A0E5E" /&gt;&lt;/TouchableOpacity&gt;
           &lt;View style={styles.headerInfoCard}&gt;
             &lt;Text style={styles.storeName}&gt;{store?.name || 'Loading...'}&lt;/Text&gt;
             &lt;Text style={styles.subInfo}&gt;&lt;Ionicons name="navigate" size={14} color="#0A0E5E" /&gt; {store?.address?.split(',')[0]} • {isStoreOpen ? 'Open Now' : 'Closed'}&lt;/Text&gt;
@@ -1820,7 +1838,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
 &nbsp;
         {/* HORARIOS */}
         &lt;View style={styles.sectionCard}&gt;
-          &lt;TouchableOpacity style={styles.sectionHeader} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowHours(!showHours)}</span>&gt;
+          &lt;TouchableOpacity style={styles.sectionHeader} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowHours(!showHours)}</span> accessibilityLabel={showHours ? 'Hide opening hours' : 'Show opening hours'} accessibilityRole="button"&gt;
             &lt;Ionicons name="time" size={20} color="#0A0E5E" /&gt;&lt;Text style={styles.sectionTitle}&gt; Opening Hours&lt;/Text&gt;
             &lt;Ionicons name={showHours ? "chevron-up" : "chevron-down"} size={20} color="#CBD5E0" style={{ marginLeft: 'auto' }} /&gt;
           &lt;/TouchableOpacity&gt;
@@ -1931,6 +1949,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                   &lt;TouchableOpacity
                     onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >updateQuantity(type, -1)}</span>
                     style={styles.counterBtn}
+                    accessibilityLabel={`Decrease ${type} luggage count`}
+                    accessibilityRole="button"
                   &gt;
                     &lt;Ionicons
                       name="remove-outline"
@@ -1943,6 +1963,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                     onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >updateQuantity(type, 1)}</span>
                     style={styles.counterBtn}
                     disabled={remaining &lt;= 0}
+                    accessibilityLabel={`Increase ${type} luggage count`}
+                    accessibilityRole="button"
                   &gt;
                     &lt;Ionicons
                       name="add-outline"
@@ -1965,7 +1987,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
           &lt;/View&gt;
 &nbsp;
           {/* VALUE DECLARATION */}
-          &lt;TouchableOpacity style={styles.valueDeclareBtn} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowValueDeclare(!showValueDeclare)}</span>&gt;
+          &lt;TouchableOpacity style={styles.valueDeclareBtn} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowValueDeclare(!showValueDeclare)}</span> accessibilityLabel={showValueDeclare ? 'Hide value declaration' : 'Declare valuable items'} accessibilityRole="button"&gt;
             &lt;Ionicons name={showValueDeclare ? 'shield-checkmark' : 'shield-outline'} size={20} color="#B45309" /&gt;
             &lt;Text style={styles.valueDeclareBtnText}&gt;
               {showValueDeclare ? 'Declared value: $' + declaredValue : 'Declare valuable items?'}
@@ -1986,6 +2008,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                   onChangeText={<span class="fstat-no" title="function not covered" >(v</span>) =&gt; <span class="cstat-no" title="statement not covered" >setDeclaredValue(Number(v) || 0)}</span>
                   placeholder="0"
                   placeholderTextColor="#94A3B8"
+                  accessibilityLabel="Declared value input"
                 /&gt;
               &lt;/View&gt;
             &lt;/View&gt;
@@ -2025,7 +2048,7 @@ export default function <span class="fstat-no" title="function not covered" >Boo
               &lt;View style={styles.addCardPrompt}&gt;
                 &lt;Ionicons name="alert-circle-outline" size={24} color="#E53E3E" /&gt;
                 &lt;Text style={[styles.addCardPromptText, { color: '#E53E3E' }]}&gt;Error loading cards&lt;/Text&gt;
-                &lt;TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}&gt;
+                &lt;TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add a card instead" accessibilityRole="button"&gt;
                   &lt;Text style={styles.addCardBtnText}&gt;Add a card instead&lt;/Text&gt;
                 &lt;/TouchableOpacity&gt;
               &lt;/View&gt;
@@ -2043,6 +2066,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                       &lt;TouchableOpacity
                         style={[styles.cardOption, isSelected &amp;&amp; styles.cardOptionSelected]}
                         onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setSelectedCardId(item.id)}</span>
+                        accessibilityLabel={`Select card ending in ${item.last4}`}
+                        accessibilityRole="button"
                       &gt;
                         &lt;View style={styles.cardOptionLeft}&gt;
                           &lt;Ionicons
@@ -2066,13 +2091,13 @@ export default function <span class="fstat-no" title="function not covered" >Boo
                     );
                   }}
                 /&gt;
-                &lt;TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard}&gt;
+                &lt;TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add another card" accessibilityRole="button"&gt;
                   &lt;Ionicons name="add-circle-outline" size={18} color="#0A0E5E" /&gt;
                   &lt;Text style={styles.addCardBtnText}&gt;Add another card&lt;/Text&gt;
                 &lt;/TouchableOpacity&gt;
               &lt;/&gt;
             ) : (
-              &lt;TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard}&gt;
+              &lt;TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard} accessibilityLabel="Add payment method" accessibilityRole="button"&gt;
                 &lt;Ionicons name="card-outline" size={24} color="#0A0E5E" /&gt;
                 &lt;Text style={styles.addCardPromptText}&gt;Add Payment Method&lt;/Text&gt;
                 &lt;Text style={styles.addCardPromptSub}&gt;Secure checkout with Stripe&lt;/Text&gt;
@@ -2090,6 +2115,8 @@ export default function <span class="fstat-no" title="function not covered" >Boo
               style={[styles.confirmButton, (totalPrice === 0 || isPending) &amp;&amp; styles.disabledBtn]}
               disabled={totalPrice === 0 || isPending}
               onPress={handleConfirm}
+              accessibilityLabel="Confirm booking"
+              accessibilityRole="button"
             &gt;
               {isPending ? (
                 &lt;ActivityIndicator color="white" /&gt;
@@ -2485,7 +2512,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-14T01:33:29.003Z
+                at 2026-05-14T21:32:00.468Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

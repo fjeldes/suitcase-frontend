@@ -45,6 +45,8 @@ export const DateInput = ({
         style={styles.inputBox} 
         onPress={showPicker}
         activeOpacity={0.7}
+        accessibilityLabel={`Select ${label.toLowerCase()}`}
+        accessibilityRole="button"
       >
         <View style={styles.content}>
           <Ionicons name={icon as any} size={18} color="#0A0E5E" style={styles.icon} />

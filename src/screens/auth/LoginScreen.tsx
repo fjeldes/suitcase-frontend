@@ -89,6 +89,7 @@ export const LoginScreen = () => {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     editable={!loginMutation.isPending}
+                    accessibilityLabel="Email address input"
                   />
                 </View>
               )}
@@ -97,7 +98,7 @@ export const LoginScreen = () => {
 
             <View style={s.labelRow}>
               <Text style={s.label}>Password</Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
+              <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} accessibilityLabel="Forgot password" accessibilityRole="button">
                 <Text style={s.forgotPassword}>Forgot password?</Text>
               </TouchableOpacity>
             </View>
@@ -121,8 +122,9 @@ export const LoginScreen = () => {
                     value={value}
                     secureTextEntry={!showPassword}
                     editable={!loginMutation.isPending}
+                    accessibilityLabel="Password input"
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} accessibilityLabel={showPassword ? 'Hide password' : 'Show password'} accessibilityRole="button">
                     <Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
@@ -138,6 +140,8 @@ export const LoginScreen = () => {
               style={[s.loginBtn, loginMutation.isPending && s.disabledBtn]}
               onPress={handleSubmit(onSubmit)}
               disabled={loginMutation.isPending}
+              accessibilityLabel="Login"
+              accessibilityRole="button"
             >
               {loginMutation.isPending ? (
                 <ActivityIndicator color="#fff" />
@@ -160,7 +164,7 @@ export const LoginScreen = () => {
 
           <View style={s.footer}>
             <Text style={s.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => router.push(ROUTES.AUTH.SIGNUP)}>
+            <TouchableOpacity onPress={() => router.push(ROUTES.AUTH.SIGNUP)} accessibilityLabel="Sign up" accessibilityRole="button">
               <Text style={s.signUpLink}>Sign up</Text>
             </TouchableOpacity>
           </View>

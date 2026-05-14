@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { staffService } from '@/services/staffService';
 import { useOwnerStore } from '@/store/useOwnerStore';
 import { useTheme } from '@/hooks/useTheme';
+import { BottomSheetModal } from '@/components/ui/BottomSheetModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
@@ -11,9 +12,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
+  RefreshControl,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -44,7 +43,7 @@ export default function StaffManagementScreen() {
     return `exp://${hostUri}/--/${path}`;
   }, [inviteLink]);
 
-  const { data: staffList, isLoading } = useQuery({
+  const { data: staffList, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['staff', activeLocationId],
     queryFn: () => staffService.getByLocation(activeLocationId!),
     enabled: !!activeLocationId,
@@ -115,6 +114,7 @@ export default function StaffManagementScreen() {
           keyExtractor={(item: any) => item.id}
           contentContainerStyle={s.list}
           keyboardShouldPersistTaps="handled"
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
           ListEmptyComponent={
             <View style={s.empty}>
               <Ionicons name="people-outline" size={48} color={colors.iconMuted} />
@@ -145,87 +145,74 @@ export default function StaffManagementScreen() {
         />
       )}
 
-      <Modal visible={showAdd} transparent animationType="slide">
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <View style={s.modalOverlay}>
-            <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => { setShowAdd(false); setInviteName(''); setInviteEmail(''); }} />
-            <View style={s.modalContent}>
-              <View style={s.modalHandle} />
-              <Text style={s.modalTitle}>{t('staff.invite')}</Text>
-              <Text style={s.modalSub}>{t('staff.invite_desc')}</Text>
-              <View style={{ gap: 12 }}>
-                <TextInput
-                  style={s.emailInput}
-                  placeholder={t('staff.invite_name')}
-                  placeholderTextColor={colors.iconMuted}
-                  value={inviteName}
-                  onChangeText={setInviteName}
-                  autoCapitalize="words"
-                />
-                <TextInput
-                  style={s.emailInput}
-                  placeholder={t('staff.invite_email')}
-                  placeholderTextColor={colors.iconMuted}
-                  value={inviteEmail}
-                  onChangeText={setInviteEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-              <View style={s.modalButtons}>
-                <TouchableOpacity style={s.cancelBtn} onPress={() => { setShowAdd(false); setInviteName(''); setInviteEmail(''); }}>
-                  <Text style={s.cancelBtnText}>{t('common.cancel')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[s.addBtn, adding && { opacity: 0.6 }]}
-                  onPress={handleInvite}
-                  disabled={adding || !inviteName.trim() || !inviteEmail.trim()}
-                >
-                  {adding ? <ActivityIndicator color="white" size="small" /> : <Text style={s.addBtnText}>{t('staff.send_invitation')}</Text>}
-                </TouchableOpacity>
-              </View>
+      <BottomSheetModal visible={showAdd} onClose={() => { setShowAdd(false); setInviteName(''); setInviteEmail(''); }}>
+        <Text style={s.modalTitle}>{t('staff.invite')}</Text>
+        <Text style={s.modalSub}>{t('staff.invite_desc')}</Text>
+        <View style={{ gap: 12 }}>
+          <TextInput
+            style={s.emailInput}
+            placeholder={t('staff.invite_name')}
+            placeholderTextColor={colors.iconMuted}
+            value={inviteName}
+            onChangeText={setInviteName}
+            autoCapitalize="words"
+          />
+          <TextInput
+            style={s.emailInput}
+            placeholder={t('staff.invite_email')}
+            placeholderTextColor={colors.iconMuted}
+            value={inviteEmail}
+            onChangeText={setInviteEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={s.modalButtons}>
+          <TouchableOpacity style={s.cancelBtn} onPress={() => { setShowAdd(false); setInviteName(''); setInviteEmail(''); }}>
+            <Text style={s.cancelBtnText}>{t('common.cancel')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[s.addBtn, adding && { opacity: 0.6 }]}
+            onPress={handleInvite}
+            disabled={adding || !inviteName.trim() || !inviteEmail.trim()}
+          >
+            {adding ? <ActivityIndicator color="white" size="small" /> : <Text style={s.addBtnText}>{t('staff.send_invitation')}</Text>}
+          </TouchableOpacity>
+        </View>
+      </BottomSheetModal>
+
+      <BottomSheetModal visible={!!inviteLink} onClose={() => setInviteLink(null)}>
+        <Text style={s.modalTitle}>{t('staff.invitation_link')}</Text>
+        <Text style={s.modalSub}>
+          {t('staff.link_desc')}
+        </Text>
+
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5, marginBottom: 6 }}>
+          {t('staff.link_production_label')}
+        </Text>
+        <View style={s.linkBox}>
+          <Text style={s.linkText} selectable>{inviteLink}</Text>
+        </View>
+
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5, marginBottom: 6, marginTop: 12 }}>
+          {t('staff.link_expo_label')}
+        </Text>
+        {expoLink ? (
+          <>
+            <View style={s.linkBox}>
+              <Text style={s.linkText} selectable>{expoLink}</Text>
             </View>
+            <Text style={{ fontSize: 12, color: colors.iconMuted, marginBottom: 16 }}>
+              {t('staff.link_expo_hint')}
+            </Text>
+          </>
+        ) : (
+          <View style={s.linkBox}>
+            <Text style={s.linkText} selectable>
+              {`exp://TU_IP:8081/--/accept-staff?token=${inviteLink?.split('token=')[1] || 'TOKEN'}`}
+            </Text>
           </View>
-        </KeyboardAvoidingView>
-      </Modal>
-
-      <Modal visible={!!inviteLink} transparent animationType="slide">
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <View style={s.modalOverlay}>
-            <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setInviteLink(null)} />
-            <View style={s.modalContent}>
-              <View style={s.modalHandle} />
-              <Text style={s.modalTitle}>{t('staff.invitation_link')}</Text>
-              <Text style={s.modalSub}>
-                {t('staff.link_desc')}
-              </Text>
-
-              <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5, marginBottom: 6 }}>
-                {t('staff.link_production_label')}
-              </Text>
-              <View style={s.linkBox}>
-                <Text style={s.linkText} selectable>{inviteLink}</Text>
-              </View>
-
-              <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5, marginBottom: 6, marginTop: 12 }}>
-                {t('staff.link_expo_label')}
-              </Text>
-              {expoLink ? (
-                <>
-                  <View style={s.linkBox}>
-                    <Text style={s.linkText} selectable>{expoLink}</Text>
-                  </View>
-                  <Text style={{ fontSize: 12, color: colors.iconMuted, marginBottom: 16 }}>
-                    {t('staff.link_expo_hint')}
-                  </Text>
-                </>
-              ) : (
-                <View style={s.linkBox}>
-                  <Text style={s.linkText} selectable>
-                    {`exp://TU_IP:8081/--/accept-staff?token=${inviteLink?.split('token=')[1] || 'TOKEN'}`}
-                  </Text>
-                </View>
-              )}
+        )}
 
               <TouchableOpacity
                 style={s.copyBtn}
@@ -274,12 +261,6 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   staffName: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
   staffEmail: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
-  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  modalContent: {
-    backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32,
-    padding: 24, paddingBottom: 40,
-  },
-  modalHandle: { width: 40, height: 5, backgroundColor: colors.border, borderRadius: 3, alignSelf: 'center', marginBottom: 20 },
   modalTitle: { fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 8 },
   modalSub: { fontSize: 14, color: colors.textMuted, marginBottom: 20, lineHeight: 20 },
   emailInput: {

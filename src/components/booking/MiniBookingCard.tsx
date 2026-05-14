@@ -1,4 +1,5 @@
 import { ROUTES } from '@/constants/routes';
+import type { BookingData } from '@/types/booking.types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -8,7 +9,7 @@ export const MiniBookingCard = ({
   booking,
   onReview
 }: {
-  booking: any,
+  booking: BookingData,
   onReview?: () => void
 }) => {
   const dateStr = new Date(booking.startDate).toLocaleDateString('en-US', {
@@ -42,22 +43,26 @@ export const MiniBookingCard = ({
       <View style={styles.miniFooter}>
         <View>
           <Text style={styles.itemTotal}>{totalItems} Items Total</Text>
-          {booking.status === 'completed' && !booking.review && (
-            <TouchableOpacity
-              style={styles.reviewLink}
-              onPress={onReview}
-            >
-              <Ionicons name="star" size={14} color="#FBB142" />
-              <Text style={styles.reviewLinkText}> Review Store</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
-        <TouchableOpacity style={styles.modifyButton} onPress={() => router.push(ROUTES.CLIENT.PAST_BOOKING_DETAIL(booking.id))}>
+        <TouchableOpacity style={styles.modifyButton} onPress={() => router.push(ROUTES.CLIENT.PAST_BOOKING_DETAIL(booking.id))} accessibilityLabel="View booking details" accessibilityRole="button">
           <Text style={styles.modifyText}>Details </Text>
           <Ionicons name="chevron-forward" size={14} color="#A0522D" />
         </TouchableOpacity>
       </View>
+
+      {booking.status === 'completed' && !booking.review && onReview && (
+        <TouchableOpacity style={styles.reviewPrompt} onPress={onReview} activeOpacity={0.8} accessibilityLabel="Rate your experience" accessibilityRole="button">
+          <View style={styles.reviewPromptLeft}>
+            <Ionicons name="star" size={18} color="#FBB142" />
+            <View>
+              <Text style={styles.reviewPromptTitle}>How was your experience?</Text>
+              <Text style={styles.reviewPromptSub}>Tap to rate {booking.location?.name || 'this store'}</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#FBB142" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -73,14 +78,31 @@ const styles = StyleSheet.create({
   itemTotal: { color: '#0A0E5E', fontWeight: '500', fontSize: 13 },
   modifyButton: { flexDirection: 'row', alignItems: 'center' },
   modifyText: { color: '#A0522D', fontWeight: '700', fontSize: 13 },
-  reviewLink: {
+  reviewPrompt: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFBEB',
+    borderRadius: 14,
+    padding: 14,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
   },
-  reviewLinkText: {
-    color: '#FBB142',
+  reviewPromptLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  reviewPromptTitle: {
+    fontSize: 14,
     fontWeight: '700',
+    color: '#92400E',
+  },
+  reviewPromptSub: {
     fontSize: 12,
+    color: '#B45309',
+    marginTop: 1,
   },
 });

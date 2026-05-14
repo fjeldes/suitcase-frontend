@@ -1,11 +1,16 @@
 import { BookingSummary } from '@/components/booking/BookingSummary';
+import { ReviewModal } from '@/components/booking/ReviewModal';
+import { SurfaceCard } from '@/components/ui/SurfaceCard';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { useBookingDetail } from '@/hooks/useBookingDetail';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Image,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,29 +20,31 @@ import {
 
 export default function BookingDetailsScreen({ bookingId }: { bookingId?: string }) {
     const router = useRouter();
-    // El hook se encarga de todo: caché instantánea o fetch si no hay nada
-    const { data: booking, isLoading } = useBookingDetail(bookingId as string);
+    const { colors } = useTheme();
+    const [showReview, setShowReview] = useState(false);
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
+    const { data: booking, isLoading, refetch, isRefetching } = useBookingDetail(bookingId as string);
+    const s = useMemo(() => createStyles(colors), [colors]);
 
     if (isLoading) {
         return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color="#0A0E5E" />
+            <View style={s.center}>
+                <ActivityIndicator size="large" color={colors.iconColor} />
             </View>
         );
     }
 
     if (!booking) {
         return (
-            <View style={styles.center}>
-                <Text style={styles.errorText}>No pudimos encontrar la reserva.</Text>
-                <TouchableOpacity onPress={() => router.back()} style={styles.secondaryBtn}>
-                    <Text>Volver</Text>
+            <View style={s.center}>
+                <Text style={s.errorText}>No pudimos encontrar la reserva.</Text>
+                <TouchableOpacity onPress={() => router.back()} style={{ padding: 12 }} accessibilityLabel="Go back" accessibilityRole="button">
+                    <Text style={{ color: colors.iconColor, fontWeight: '600' }}>Volver</Text>
                 </TouchableOpacity>
             </View>
         );
     }
 
-    // --- Helpers de Formateo ---
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return {
@@ -48,86 +55,82 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
 
     const start = formatDate(booking.startDate);
     const end = formatDate(booking.endDate);
-
     const days = Math.max(1, Math.ceil((new Date(booking.endDate).getTime() - new Date(booking.startDate).getTime()) / (1000 * 60 * 60 * 24)));
 
+    const statusStyle = booking.status === 'completed' ? s.badgeCompleted
+        : booking.status === 'cancelled' ? s.badgeCancelled
+        : s.badgeActive;
+
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <View style={styles.navBar}>
-                <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
+        <ScrollView style={s.container} showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        >
+            <View style={s.navBar}>
+                <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+                    <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
                 </TouchableOpacity>
-                <Text style={styles.navTitle}>Booking Details</Text>
-                <TouchableOpacity>
-                    <Ionicons name="share-outline" size={24} color="#0A0E5E" />
-                </TouchableOpacity>
+                <Text style={s.navTitle}>Booking Details</Text>
+                <View style={{ width: 24 }} />
             </View>
 
-            <View style={styles.mainContent}>
-                {/* Status Badge Dinámico */}
-                <View style={[
-                    styles.activeBadge,
-                    booking.status === 'completed' ? styles.badgeCompleted : styles.badgeActive,
-                    booking.status === 'cancelled' && styles.badgeCancelled
-                ]}>
+            <View style={s.mainContent}>
+                <View style={[s.statusBadge, statusStyle]}>
                     <Ionicons
                         name={booking.status === 'completed' ? "checkmark-done" : "time-outline"}
                         size={16}
-                        color={booking.status === 'completed' ? "#475569" : "#FFF"}
+                        color={statusStyle.color || '#FFF'}
                     />
-                    <Text style={[
-                        styles.activeBadgeText,
-                        booking.status === 'completed' && { color: '#475569' }
-                    ]}>
+                    <Text style={[s.statusBadgeText, booking.status === 'completed' && { color: '#475569' }]}>
                         {booking.status.replace('_', ' ').toUpperCase()}
                     </Text>
                 </View>
 
-                <Text style={styles.bookingId}>{booking.qrCode || `BK-${booking.id.slice(-6)}`}</Text>
-                <Text style={styles.bookingDate}>Booked on {start.full}</Text>
+                <Text style={s.bookingId}>{booking.qrCode || `BK-${booking.id.slice(-6)}`}</Text>
+                <Text style={s.bookingDate}>Booked on {start.full}</Text>
 
-                {/* Store Card */}
-                <View style={styles.storeCard}>
+                <SurfaceCard variant="flat" padding={0} style={{ marginTop: 24 }}>
                     <Image
                         source={{ uri: booking.location?.image || 'https://images.unsplash.com/photo-1590274853856-f22d5ee3d228' }}
-                        style={styles.storeImage}
+                        style={s.storeImage}
                     />
-                    <View style={styles.storeInfo}>
-                        <Text style={styles.storeTitle}>{booking.location?.name}</Text>
-                        <Text style={styles.storeAddress}>{booking.location?.address}</Text>
-                        <View style={styles.storeButtons}>
-                            <TouchableOpacity style={styles.storeBtn}>
-                                <MaterialCommunityIcons name="near-me" size={18} color="#0A0E5E" />
-                                <Text style={styles.storeBtnText}>Maps</Text>
+                    <View style={{ padding: 20 }}>
+                        <Text style={s.storeTitle}>{booking.location?.name}</Text>
+                        <Text style={s.storeAddress}>{booking.location?.address}</Text>
+                        <View style={s.storeButtons}>
+                            <TouchableOpacity style={s.storeBtn} accessibilityLabel="Open store location in maps" accessibilityRole="button">
+                                <MaterialCommunityIcons name="near-me" size={18} color={colors.iconColor} />
+                                <Text style={s.storeBtnText}>Maps</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.storeBtn}>
-                                <Ionicons name="call-outline" size={18} color="#0A0E5E" />
-                                <Text style={styles.storeBtnText}>Contact</Text>
+                            <TouchableOpacity style={s.storeBtn} accessibilityLabel="Contact store" accessibilityRole="button">
+                                <Ionicons name="call-outline" size={18} color={colors.iconColor} />
+                                <Text style={s.storeBtnText}>Contact</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
+                </SurfaceCard>
 
-                {/* Times Container */}
-                <View style={styles.timesContainer}>
-                    <View style={styles.timeRow}>
-                        <View style={styles.timeIcon}><Ionicons name="log-in-outline" size={20} color="#92400E" /></View>
+                <SurfaceCard variant="elevated" style={{ marginTop: 24 }}>
+                    <View style={s.timeRow}>
+                        <View style={[s.timeIcon, { backgroundColor: '#FFF7ED' }]}>
+                            <Ionicons name="log-in-outline" size={20} color="#92400E" />
+                        </View>
                         <View>
-                            <Text style={styles.timeLabel}>CHECK-IN</Text>
-                            <Text style={styles.timeValue}>{start.full}</Text>
-                            <Text style={styles.timeHour}>{start.time}</Text>
+                            <Text style={s.timeLabel}>CHECK-IN</Text>
+                            <Text style={s.timeValue}>{start.full}</Text>
+                            <Text style={s.timeHour}>{start.time}</Text>
                         </View>
                     </View>
-                    <View style={[styles.timeRow, { marginTop: 16 }]}>
-                        <View style={[styles.timeIcon, { backgroundColor: '#F1F5F9' }]}><Ionicons name="log-out-outline" size={20} color="#475569" /></View>
+                    <View style={[s.timeRow, { marginTop: 16 }]}>
+                        <View style={[s.timeIcon, { backgroundColor: colors.surfaceLight }]}>
+                            <Ionicons name="log-out-outline" size={20} color="#475569" />
+                        </View>
                         <View>
-                            <Text style={styles.timeLabel}>CHECK-OUT</Text>
-                            <Text style={styles.timeValue}>{end.full}</Text>
-                            <Text style={styles.timeHour}>{end.time}</Text>
+                            <Text style={s.timeLabel}>CHECK-OUT</Text>
+                            <Text style={s.timeValue}>{end.full}</Text>
+                            <Text style={s.timeHour}>{end.time}</Text>
                         </View>
                     </View>
-                </View>
+                </SurfaceCard>
 
                 <BookingSummary
                     items={booking.items}
@@ -136,90 +139,103 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                     days={days}
                     currency="CLP"
                     status={booking.status}
-                    onViewReceipt={() => { /* lógica de recibo */ }}
+                    onViewReceipt={() => {}}
                 />
 
                 {(booking.surcharges || []).length > 0 && (
-                    <View style={{ marginTop: 16 }}>
+                    <SurfaceCard variant="flat" padding={12} style={{ marginTop: 16, backgroundColor: '#FFF5F5', borderColor: '#FECACA' }}>
                         <Text style={{ fontSize: 11, fontWeight: '800', color: '#E53E3E', letterSpacing: 1, marginBottom: 8 }}>EXTRA CHARGES</Text>
                         {(booking.surcharges || []).map((s: any, i: number) => (
-                            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF5F5', padding: 12, borderRadius: 12, marginBottom: 6 }}>
+                            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#1A202C' }}>{s.description}</Text>
-                                    <Text style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{new Date(s.createdAt).toLocaleDateString()}</Text>
+                                    <Text style={{ fontSize: 13, fontWeight: '600', color: colors.textPrimary }}>{s.description}</Text>
+                                    <Text style={{ fontSize: 11, color: colors.iconMuted, marginTop: 2 }}>{new Date(s.createdAt).toLocaleDateString()}</Text>
                                 </View>
                                 <Text style={{ fontSize: 15, fontWeight: '800', color: '#E53E3E' }}>+${Number(s.total).toLocaleString()}</Text>
                             </View>
                         ))}
-                    </View>
+                    </SurfaceCard>
                 )}
 
-                {/* Action Buttons */}
-                <TouchableOpacity style={styles.primaryBtn}>
-                    <Ionicons name="chatbubble-ellipses-outline" size={20} color="#FFF" />
-                    <Text style={styles.primaryBtnText}>Contact Support</Text>
-                </TouchableOpacity>
-
-                {booking.status === 'completed' && (
-                    <TouchableOpacity style={styles.secondaryBtn}>
-                        <Ionicons name="document-text-outline" size={20} color="#0A0E5E" />
-                        <Text style={styles.secondaryBtnText}>Get Receipt</Text>
+                {booking.status === 'completed' && !reviewSubmitted && !booking.review && (
+                    <TouchableOpacity style={s.reviewPrompt} onPress={() => setShowReview(true)} activeOpacity={0.8} accessibilityLabel="Rate your experience" accessibilityRole="button">
+                        <View style={s.reviewPromptLeft}>
+                            <Ionicons name="star" size={24} color="#FBB142" />
+                            <View style={{ flex: 1 }}>
+                                <Text style={s.reviewPromptTitle}>How was your experience?</Text>
+                                <Text style={s.reviewPromptSub}>Tap to rate {booking.location?.name}</Text>
+                            </View>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color="#FBB142" />
                     </TouchableOpacity>
                 )}
 
-                <View style={styles.insuranceBox}>
-                    <MaterialCommunityIcons name="shield-check" size={20} color="#0A0E5E" />
-                    <Text style={styles.insuranceText}>PROTECTED UP TO $2,500</Text>
-                </View>
+                {(reviewSubmitted || booking.review) && (
+                    <SurfaceCard variant="flat" padding={16} style={{ marginTop: 24, backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <Ionicons name="checkmark-circle" size={20} color="#22C55E" />
+                            <Text style={{ fontSize: 14, fontWeight: '600', color: '#166534', flex: 1 }}>You reviewed this store. Thank you!</Text>
+                        </View>
+                    </SurfaceCard>
+                )}
+
+                <PrimaryButton style={{ marginTop: 24 }} accessibilityLabel="Contact support">
+                    <Ionicons name="chatbubble-ellipses-outline" size={20} color="#FFF" />
+                    <Text style={s.primaryBtnText}>Contact Support</Text>
+                </PrimaryButton>
+
+                {booking.status === 'completed' && (
+                    <PrimaryButton variant="secondary" style={{ marginTop: 12 }} accessibilityLabel="Get receipt">
+                        <Ionicons name="document-text-outline" size={20} color={colors.iconColor} />
+                        <Text style={{ fontWeight: '700', fontSize: 16 }}>Get Receipt</Text>
+                    </PrimaryButton>
+                )}
+
+                <SurfaceCard variant="flat" padding={16} style={{ marginTop: 24, backgroundColor: '#DBEAFE', borderColor: '#93C5FD', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <MaterialCommunityIcons name="shield-check" size={20} color={colors.iconColor} />
+                        <Text style={{ fontSize: 11, fontWeight: '800', color: colors.iconColor, letterSpacing: 0.5 }}>PROTECTED UP TO $2,500</Text>
+                    </View>
+                </SurfaceCard>
             </View>
+
+            <ReviewModal isVisible={showReview} onClose={() => setShowReview(false)} booking={booking} onSuccess={() => setReviewSubmitted(true)} />
         </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FB' },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    errorText: { color: '#E53E3E', marginBottom: 10 },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.surfaceCardLow },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surfaceCardLow },
+    errorText: { color: colors.dotRed, marginBottom: 10 },
     navBar: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center', paddingTop: 60 },
-    navTitle: { fontSize: 18, fontWeight: 'bold', color: '#0A0E5E' },
+    navTitle: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary },
     mainContent: { paddingHorizontal: 20, paddingBottom: 40 },
-    activeBadge: { flexDirection: 'row', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, gap: 6, alignItems: 'center' },
-    badgeActive: { backgroundColor: '#FF6D00' },
-    badgeCompleted: { backgroundColor: '#E2E8F0' },
-    badgeCancelled: { backgroundColor: '#FEE2E2' },
-    activeBadgeText: { color: '#FFF', fontWeight: 'bold', fontSize: 12 },
-    bookingId: { fontSize: 32, fontWeight: 'bold', color: '#0A0E5E', marginTop: 10 },
-    bookingDate: { fontSize: 16, color: '#64748B', marginTop: 4 },
-    storeCard: { backgroundColor: '#FFF', borderRadius: 24, marginTop: 24, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10 },
+    statusBadge: { flexDirection: 'row', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, gap: 6, alignItems: 'center' },
+    badgeActive: { backgroundColor: '#FF6D00', color: '#FFF' },
+    badgeCompleted: { backgroundColor: colors.surfaceLight, color: '#475569' },
+    badgeCancelled: { backgroundColor: colors.errorLight, color: colors.error },
+    statusBadgeText: { color: '#FFF', fontWeight: 'bold', fontSize: 12 },
+    bookingId: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginTop: 10 },
+    bookingDate: { fontSize: 16, color: colors.textMuted, marginTop: 4 },
     storeImage: { width: '100%', height: 160 },
-    storeInfo: { padding: 20 },
-    storeTitle: { fontSize: 20, fontWeight: 'bold', color: '#0A0E5E' },
-    storeAddress: { fontSize: 14, color: '#64748B', marginTop: 4 },
+    storeTitle: { fontSize: 20, fontWeight: 'bold', color: colors.textPrimary },
+    storeAddress: { fontSize: 14, color: colors.textMuted, marginTop: 4 },
     storeButtons: { flexDirection: 'row', gap: 12, marginTop: 16 },
-    storeBtn: { flex: 1, flexDirection: 'row', backgroundColor: '#F1F5F9', padding: 12, borderRadius: 12, justifyContent: 'center', alignItems: 'center', gap: 6 },
-    storeBtnText: { fontSize: 12, fontWeight: 'bold', color: '#0A0E5E' },
-    timesContainer: { backgroundColor: '#FFF', borderRadius: 24, padding: 20, marginTop: 24 },
+    storeBtn: { flex: 1, flexDirection: 'row', backgroundColor: colors.surfaceLight, padding: 12, borderRadius: 12, justifyContent: 'center', alignItems: 'center', gap: 6 },
+    storeBtnText: { fontSize: 12, fontWeight: 'bold', color: colors.iconColor },
     timeRow: { flexDirection: 'row', gap: 16 },
-    timeIcon: { width: 40, height: 40, backgroundColor: '#FFF7ED', borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-    timeLabel: { fontSize: 10, fontWeight: '800', color: '#64748B', letterSpacing: 1 },
-    timeValue: { fontSize: 18, fontWeight: 'bold', color: '#0A0E5E' },
-    timeHour: { fontSize: 14, color: '#64748B' },
-    summaryCard: { backgroundColor: '#FFF', borderRadius: 24, padding: 24, marginTop: 24 },
-    summaryTitle: { fontSize: 18, fontWeight: 'bold', color: '#0A0E5E', marginBottom: 20 },
-    itemRow: { flexDirection: 'row', alignItems: 'center' },
-    itemIcon: { width: 48, height: 48, backgroundColor: '#EEF2FF', borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-    itemName: { fontSize: 16, fontWeight: 'bold', color: '#0A0E5E' },
-    itemQty: { fontSize: 14, color: '#64748B' },
-    itemPrice: { fontSize: 16, fontWeight: 'bold', color: '#0A0E5E' },
-    divider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 16 },
-    totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, alignItems: 'center' },
-    totalLabel: { fontSize: 20, fontWeight: 'bold', color: '#0A0E5E' },
-    totalValue: { fontSize: 24, fontWeight: 'bold', color: '#0A0E5E' },
-    paidText: { fontSize: 10, color: '#92400E', fontWeight: 'bold' },
-    primaryBtn: { backgroundColor: '#0A0E5E', padding: 18, borderRadius: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 24 },
+    timeIcon: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+    timeLabel: { fontSize: 10, fontWeight: '800', color: colors.textMuted, letterSpacing: 1 },
+    timeValue: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary },
+    timeHour: { fontSize: 14, color: colors.textMuted },
     primaryBtnText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-    secondaryBtn: { backgroundColor: '#F1F5F9', padding: 18, borderRadius: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 12 },
-    secondaryBtnText: { color: '#0A0E5E', fontWeight: 'bold', fontSize: 16 },
-    insuranceBox: { backgroundColor: '#DBEAFE', padding: 16, borderRadius: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 24 },
-    insuranceText: { fontSize: 11, fontWeight: '800', color: '#0A0E5E', letterSpacing: 0.5 }
+    reviewPrompt: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        backgroundColor: '#FFFBEB', borderRadius: 20, padding: 18, marginTop: 24,
+        borderWidth: 1, borderColor: '#FDE68A',
+    },
+    reviewPromptLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
+    reviewPromptTitle: { fontSize: 16, fontWeight: '700', color: '#92400E' },
+    reviewPromptSub: { fontSize: 13, color: '#B45309', marginTop: 2 },
 });

@@ -1,7 +1,9 @@
+import { useTheme } from '@/hooks/useTheme';
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
 
 export const LoadingDashboard = ({ message = "Loading dashboard..." }) => {
+  const { colors } = useTheme();
 
   const fadeAnim = useRef(new Animated.Value(0.5)).current;
 
@@ -15,9 +17,9 @@ export const LoadingDashboard = ({ message = "Loading dashboard..." }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surfaceCardLow }]}>
       {/* Header Skeleton */}
-      <View style={styles.headerSkeleton}>
+      <View style={[styles.headerSkeleton, { backgroundColor: colors.surfaceCard }]}>
         <View style={styles.circleSkeleton} />
         <View style={styles.textStack}>
           <Animated.View style={[styles.lineShort, { opacity: fadeAnim }]} />
@@ -32,10 +34,10 @@ export const LoadingDashboard = ({ message = "Loading dashboard..." }) => {
 
         {/* Cards Skeletons Visuales */}
         <View style={styles.row}>
-          <Animated.View style={[styles.miniCardSkeleton, { opacity: fadeAnim }]} />
-          <Animated.View style={[styles.miniCardSkeleton, { opacity: fadeAnim }]} />
+          <Animated.View style={[styles.miniCardSkeleton, { opacity: fadeAnim, backgroundColor: colors.surfaceCard }]} />
+          <Animated.View style={[styles.miniCardSkeleton, { opacity: fadeAnim, backgroundColor: colors.surfaceCard }]} />
         </View>
-        <Animated.View style={[styles.mainCardSkeleton, { opacity: fadeAnim }]} />
+        <Animated.View style={[styles.mainCardSkeleton, { opacity: fadeAnim, backgroundColor: colors.surfaceCard }]} />
       </View>
     </View>
   );
