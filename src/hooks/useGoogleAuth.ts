@@ -40,7 +40,7 @@ export const useGoogleAuth = () => {
                 // Guardar en Zustand
                 setTokens(data.accessToken, data.refreshToken, data.user);
 
-                // Alerta personalizada estilo SecureTransit
+                // Alerta personalizada estilo KipGo
                 Toast.show({
                     type: 'successCustom',
                     text1: 'Registration Successful!',
