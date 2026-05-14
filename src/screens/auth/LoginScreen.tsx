@@ -2,13 +2,14 @@ import { GoogleButton } from '@/components/auth/GoogleButton'
 import { ROUTES } from '@/constants/routes'
 import { useLoginMutation } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import React, { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -57,7 +58,7 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <MaterialCommunityIcons name="shield-lock" size={28} color={colors.iconColor} />
+              <Image source={require('@/assets/images/icon.png')} style={{ width: 32, height: 32 }} />
               <Text style={s.logoText}>
                 Kip<Text style={s.bold}>Go</Text>
               </Text>
