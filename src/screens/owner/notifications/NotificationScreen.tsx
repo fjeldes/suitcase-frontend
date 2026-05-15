@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -33,6 +33,10 @@ export default function NotificationsScreen() {
     refetch,
     isRefetching
   } = useNotifications(activeTab);
+
+  useEffect(() => {
+    markAllRead();
+  }, []);
 
   const handleNotificationPress = (item: any) => {
     if (item.metadata?.bookingId) {
