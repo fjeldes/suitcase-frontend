@@ -13,13 +13,13 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://dev.kipgo.app",
+        "EXPO_PUBLIC_API_URL": "https://api.dev.kipgo.app",
         "EXPO_PUBLIC_SENTRY_DSN": ""
       }
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://kipgo.app",
+        "EXPO_PUBLIC_API_URL": "https://api.kipgo.app",
         "EXPO_PUBLIC_SENTRY_DSN": ""
       }
     }
