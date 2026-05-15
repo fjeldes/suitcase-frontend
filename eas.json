@@ -11,12 +11,16 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://dev.kipgo.app",
+        "EXPO_PUBLIC_SENTRY_DSN": ""
       }
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.suitcase.app",
-        "EXPO_PUBLIC_SENTRY_DSN": "https://your_dsn@sentry.io/your_project"
+        "EXPO_PUBLIC_API_URL": "https://kipgo.app",
+        "EXPO_PUBLIC_SENTRY_DSN": ""
       }
     }
   },
