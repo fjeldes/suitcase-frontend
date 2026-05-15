@@ -57,11 +57,11 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
   );
 };
 
-export const RecentActivity = ({ maxItems = 3 }: { maxItems?: number }) => {
+export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number; locationId?: string }) => {
   const router = useRouter();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const { data: logs, isLoading } = useActivityLogs(10);
+  const { data: logs, isLoading } = useActivityLogs(10, locationId);
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);

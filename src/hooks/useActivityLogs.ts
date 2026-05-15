@@ -12,12 +12,15 @@ export interface ActivityLog {
   };
 }
 
-export const useActivityLogs = (limit = 10) => {
+export const useActivityLogs = (limit = 10, locationId?: string) => {
   return useQuery({
-    queryKey: ['owner', 'activityLogs', limit],
+    queryKey: ['owner', 'activityLogs', limit, locationId],
     queryFn: async () => {
-      const { data } = await api.get<ActivityLog[]>(`/activity-logs/owner?limit=${limit}`);
+      const params = new URLSearchParams({ limit: String(limit) });
+      if (locationId) params.append('locationId', locationId);
+      const { data } = await api.get<ActivityLog[]>(`/activity-logs/owner?${params}`);
       return data;
     },
+    enabled: !!locationId,
   });
 };

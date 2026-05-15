@@ -251,7 +251,7 @@ export default function DashboardScreen() {
 
                 {!isStaff && <CapacitySection data={dashboardData.occupancy} />}
 
-                {!isStaff && <RecentActivity maxItems={3} />}
+                {!isStaff && <RecentActivity maxItems={3} locationId={activeLocationId || undefined} />}
             </ScrollView>
         </SafeAreaView>
     );
