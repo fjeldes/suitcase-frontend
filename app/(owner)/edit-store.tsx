@@ -77,7 +77,7 @@ export default function EditStoreScreen() {
                 currency: form.currency.toUpperCase()
             });
             Toast.show({ type: 'success', text1: 'Éxito', text2: 'Tienda actualizada correctamente' });
-            router.back();
+            router.push('/(owner)/stores');
         } catch (error) {
             Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo actualizar la tienda' });
         }
@@ -88,7 +88,7 @@ export default function EditStoreScreen() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.loadingContainer}>
                     <Text style={{ color: colors.textMuted, fontSize: 16 }}>Store ID not found</Text>
-                    <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16, padding: 12 }}>
+                    <TouchableOpacity onPress={() => router.push('/(owner)/stores')} style={{ marginTop: 16, padding: 12 }}> 
                         <Text style={{ color: '#1A1F71', fontWeight: '600' }}>Go Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -117,7 +117,7 @@ export default function EditStoreScreen() {
                             imageStyle={{ borderRadius: 24 }}
                         >
                             <View style={styles.headerTopRow}>
-                                <TouchableOpacity onPress={() => router.back()} style={styles.backCircle}>
+                                <TouchableOpacity onPress={() => router.push('/(owner)/stores')} style={styles.backCircle}>
                                     <Ionicons name="chevron-back" size={24} color="#FFF" />
                                 </TouchableOpacity>
 
