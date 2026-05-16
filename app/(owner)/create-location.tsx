@@ -248,6 +248,13 @@ export default function CreateLocationScreen() {
             />
           </View>
 
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -10, marginBottom: 20, paddingHorizontal: 4 }}>
+            <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
+            <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }}>
+              Prices and capacity are estimates. You can update them anytime from your store settings.
+            </Text>
+          </View>
+
           <View style={s.sectionHeader}>
             <Ionicons name="time" size={20} color="#B45309" />
             <Text style={s.sectionTitle}>Business Hours</Text>
