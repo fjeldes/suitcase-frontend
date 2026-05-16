@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -21,6 +22,7 @@ import { MiniBookingCard } from '../booking/MiniBookingCard';
 import { ReviewModal } from '../booking/ReviewModal';
 
 export default function BookingsScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'Active' | 'Past'>('Active');
   const [selectedBookingForReview, setSelectedBookingForReview] = useState<BookingData | null>(null);
@@ -70,7 +72,7 @@ export default function BookingsScreen() {
         <Image source={isDark ? require('@/assets/images/light-icon.png') : require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
       </View>
 
-      <Text style={s.pageTitle}>My Bookings</Text>
+      <Text style={s.pageTitle}>{t('my_bookings')}</Text>
 
       <View style={s.tabContainer}>
         {(['Active', 'Past'] as const).map((tab) => (
@@ -79,7 +81,7 @@ export default function BookingsScreen() {
             style={[s.tabButton, activeTab === tab && s.tabButtonActive]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>
+            <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{t(tab === 'Active' ? 'active' : 'past')}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -94,7 +96,7 @@ export default function BookingsScreen() {
         ListEmptyComponent={
           <View style={s.emptyContainer}>
             <Ionicons name="archive-outline" size={60} color={colors.iconMuted} />
-            <Text style={s.emptyText}>No {activeTab.toLowerCase()} bookings found</Text>
+            <Text style={s.emptyText}>{t('no_bookings', { status: t(activeTab === 'Active' ? 'active' : 'past').toLowerCase() })}</Text>
           </View>
         }
         renderItem={({ item }) => (

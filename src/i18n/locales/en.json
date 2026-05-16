@@ -16,6 +16,10 @@
     "bookings": "BOOKINGS",
     "profile": "PROFILE"
   },
+  "my_bookings": "My Bookings",
+  "active": "Active",
+  "past": "Past",
+  "no_bookings": "No {{status}} bookings found",
   "onboarding": {
     "slide1_title": "Find a Store",
     "slide1_desc": "Search for verified stores near you. Check prices, capacity, and hours in real-time.",
