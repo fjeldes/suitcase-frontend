@@ -85,10 +85,17 @@ export default function MyStoresScreen() {
                       <View
                         style={[
                           styles.statusDot,
-                          { backgroundColor: store.isActive ? '#10B981' : '#94A3B8' }
+                          { backgroundColor: store.status === 'active' ? '#10B981' : store.status === 'rejected' ? '#EF4444' : '#F59E0B' }
                         ]}
                       />
                       <Text style={styles.storeName}>{store.name}</Text>
+                      {store.status && store.status !== 'active' && (
+                        <View style={[styles.statusBadge, { backgroundColor: store.status === 'rejected' ? '#FEE2E2' : '#FEF3C7' }]}>
+                          <Text style={[styles.statusBadgeText, { color: store.status === 'rejected' ? '#DC2626' : '#D97706' }]}>
+                            {store.status.toUpperCase()}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                     <Text style={styles.storeAddress} numberOfLines={1}>{store.address}</Text>
                   </View>
@@ -139,6 +146,8 @@ const styles = StyleSheet.create({
   statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
   storeName: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
   storeAddress: { fontSize: 14, color: '#64748B', marginLeft: 18 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginLeft: 8 },
+  statusBadgeText: { fontSize: 9, fontWeight: '800' },
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
   dividerText: { marginHorizontal: 16, fontSize: 12, fontWeight: '700', color: '#94A3B8', letterSpacing: 1.5 },
