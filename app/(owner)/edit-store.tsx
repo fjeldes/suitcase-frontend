@@ -1,5 +1,6 @@
 import { useStoreDetail } from '@/hooks/useStoreDetail';
 import { useUpdateLocation } from '@/hooks/useUpdateLocation';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -21,10 +22,12 @@ import Toast from 'react-native-toast-message';
 
 export default function EditStoreScreen() {
     const router = useRouter();
-    const { locationId } = useLocalSearchParams();
+    const { colors } = useTheme();
+    const { locationId } = useLocalSearchParams<{ locationId: string }>();
+    const id = Array.isArray(locationId) ? locationId[0] : locationId;
 
     // Hooks de datos
-    const { data: location, isLoading } = useStoreDetail(locationId);
+    const { data: location, isLoading } = useStoreDetail(id);
     const updateLocationMutation = useUpdateLocation();
 
     // Estados del formulario
@@ -68,7 +71,7 @@ export default function EditStoreScreen() {
     const handleSave = async () => {
         try {
             await updateLocationMutation.mutateAsync({
-                id: locationId as string,
+                id: id,
                 ...form,
                 imageUrl: image, // Incluimos la imagen (local uri o url remota)
                 currency: form.currency.toUpperCase()
@@ -79,6 +82,19 @@ export default function EditStoreScreen() {
             Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo actualizar la tienda' });
         }
     };
+
+    if (!id) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.loadingContainer}>
+                    <Text style={{ color: colors.textMuted, fontSize: 16 }}>Store ID not found</Text>
+                    <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16, padding: 12 }}>
+                        <Text style={{ color: '#1A1F71', fontWeight: '600' }}>Go Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     if (isLoading) {
         return (
