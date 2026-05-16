@@ -5,8 +5,6 @@ import { Google } from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { authService } from '@/services/authService';
-import { useAuthStore } from '@/store/useAuthStore';
 import Toast from 'react-native-toast-message';
 
 WebBrowser.maybeCompleteAuthSession();
