@@ -63,13 +63,19 @@ export default function DashboardScreen() {
     if (!activeLocationId && stores && stores.length === 0) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.surfaceCardLow, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-                <Ionicons name="business-outline" size={64} color="#CBD5E0" />
+                <MaterialCommunityIcons name="store-plus-outline" size={64} color={colors.iconMuted} />
                 <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginTop: 16, marginBottom: 8, textAlign: 'center' }}>
-                    {t('owner.no_store')}
+                    Create your first storage location
                 </Text>
-                <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 20 }}>
-                    {t('owner.no_store_desc')}
+                <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 20, paddingHorizontal: 20 }}>
+                    Start earning by listing your space. Tap the button below to add a new storage location.
                 </Text>
+                <TouchableOpacity
+                    style={{ marginTop: 24, backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 16 }}
+                    onPress={() => router.push(ROUTES.OWNER.CREATE_LOCATION)}
+                >
+                    <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 16 }}>Add Storage Location</Text>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }
