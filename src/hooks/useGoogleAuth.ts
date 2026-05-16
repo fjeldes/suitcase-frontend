@@ -1,24 +1,24 @@
 import { ROUTES } from '@/constants/routes';
 import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/useAuthStore';
-import { makeRedirectUri } from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/google';
-import { useRouter } from 'expo-router';
+import { Google } from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { authService } from '@/services/authService';
+import { useAuthStore } from '@/store/useAuthStore';
 import Toast from 'react-native-toast-message';
+
 WebBrowser.maybeCompleteAuthSession();
 
 export const useGoogleAuth = () => {
-    const router = useRouter();
-    const setTokens = useAuthStore((state) => state.setTokens);
-    const [isLoading, setIsLoading] = useState(false);
-    console.log(makeRedirectUri());
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        // Usa el ID de cliente que termina en .apps.googleusercontent.com
-        iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-        // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const setTokens = useAuthStore((state) => state.setTokens);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     });
 
     useEffect(() => {
