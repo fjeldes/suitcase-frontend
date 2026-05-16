@@ -3,9 +3,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function ClientLayout() {
   const { isDark, colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -38,7 +40,7 @@ export default function ClientLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'EXPLORE',
+          title: t('nav.explore'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="compass" size={22} color={color} />
@@ -49,7 +51,7 @@ export default function ClientLayout() {
       <Tabs.Screen
         name="bookings"
         options={{
-          title: 'BOOKINGS',
+          title: t('nav.bookings'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="briefcase" size={22} color={color} />
@@ -60,7 +62,7 @@ export default function ClientLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'PROFILE',
+          title: t('nav.profile'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="person" size={22} color={color} />

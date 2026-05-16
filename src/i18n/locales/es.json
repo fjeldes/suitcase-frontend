@@ -3,15 +3,18 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "delete": "Eliminar",
-    "confirm": "Confirmar",
-    "loading": "Cargando...",
-    "error": "Error",
-    "success": "Éxito",
-    "close": "Cerrar",
-    "next": "Siguiente",
-    "skip": "Saltar",
     "done": "Listo",
-    "back": "Volver"
+    "close": "Cerrar",
+    "yes": "Sí",
+    "no": "No",
+    "error": "Error",
+    "active": "Activo",
+    "search": "Buscar"
+  },
+  "nav": {
+    "explore": "Explorar",
+    "bookings": "Reservas",
+    "profile": "Perfil"
   },
   "onboarding": {
     "slide1_title": "Encuentra una Tienda",

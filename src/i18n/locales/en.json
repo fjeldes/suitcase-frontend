@@ -3,15 +3,18 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
-    "confirm": "Confirm",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "close": "Close",
-    "next": "Next",
-    "skip": "Skip",
     "done": "Done",
-    "back": "Back"
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "error": "Error",
+    "active": "Active",
+    "search": "Search"
+  },
+  "nav": {
+    "explore": "EXPLORE",
+    "bookings": "BOOKINGS",
+    "profile": "PROFILE"
   },
   "onboarding": {
     "slide1_title": "Find a Store",
