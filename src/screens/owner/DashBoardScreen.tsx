@@ -60,6 +60,19 @@ export default function DashboardScreen() {
             </SafeAreaView>
         );
     }
+    if (!activeLocationId && stores && stores.length === 0) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surfaceCardLow, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+                <Ionicons name="business-outline" size={64} color="#CBD5E0" />
+                <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginTop: 16, marginBottom: 8, textAlign: 'center' }}>
+                    {t('owner.no_store')}
+                </Text>
+                <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 20 }}>
+                    {t('owner.no_store_desc')}
+                </Text>
+            </SafeAreaView>
+        );
+    }
     if (!activeLocationId) return <LoadingDashboard />;
     if (isLoading || !dashboardData) return <LoadingDashboard />;
 
