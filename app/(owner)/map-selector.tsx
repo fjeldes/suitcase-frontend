@@ -55,8 +55,8 @@ export default function MapSelector() {
       lng: region.longitude.toString(),
     });
 
-    // Volvemos físicamente atrás. El mapa desaparece del stack.
-    router.back();
+    // Volvemos a la pantalla de crear ubicación
+    router.push('/(owner)/create-location');
   };
 
   return (
@@ -81,7 +81,7 @@ export default function MapSelector() {
 
       <SafeAreaView style={styles.header}>
         <View style={styles.searchRow}>
-          <TouchableOpacity style={styles.backBox} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.backBox} onPress={() => router.push('/(owner)/create-location')}>
             <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
           </TouchableOpacity>
           <GooglePlacesAutocomplete
