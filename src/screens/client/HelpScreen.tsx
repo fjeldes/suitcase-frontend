@@ -22,7 +22,7 @@ const CONTACT_EMAIL = 'support@suitcase.app';
 const CONTACT_PHONE = '+1 (234) 567-890';
 
 export default function HelpScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors, isDark } = useTheme();
   const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -30,8 +30,8 @@ export default function HelpScreen() {
   const s = useMemo(() => createStyles(colors), [colors]);
 
   const { data: faqs, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ['faqs'],
-    queryFn: () => faqService.getAll(),
+    queryKey: ['faqs', i18n.language],
+    queryFn: () => faqService.getAll(undefined, i18n.language),
   });
 
   const groupedFaqs = useMemo(() => {
