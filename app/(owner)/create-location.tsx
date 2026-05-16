@@ -26,7 +26,7 @@ import Toast from 'react-native-toast-message'
 export default function CreateLocationScreen() {
   const router = useRouter()
   const { colors } = useTheme()
-  const { address, lat, lng } = useLocationStore()
+  const { address, lat, lng, reset: clearLocation } = useLocationStore()
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -51,6 +51,10 @@ export default function CreateLocationScreen() {
       { day: 0, label: 'Sun', open: '00:00', close: '00:00', isClosed: true },
     ]
   })
+
+  useEffect(() => {
+    clearLocation();
+  }, []);
 
   useEffect(() => {
     if (address) {
