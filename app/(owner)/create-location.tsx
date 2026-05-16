@@ -273,7 +273,7 @@ export default function CreateLocationScreen() {
                     }}
                     style={[s.statusBadge, item.isClosed ? s.closedBadge : s.openBadge]}
                   >
-                    <Text style={s.statusText}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
+                    <Text style={[s.statusText, item.isClosed && { color: colors.error }]}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -452,7 +452,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     backgroundColor: colors.successLight,
   },
   closedBadge: {
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: colors.errorLight,
   },
   statusText: {
     fontSize: 10,
