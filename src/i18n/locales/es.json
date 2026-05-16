@@ -199,5 +199,15 @@
     "removed_success": "Personal eliminado",
     "remove_failed": "Error al eliminar personal",
     "link_copied": "Enlace copiado al portapapeles"
+  },
+  "payment": {
+    "secure_wallet": "Billetera Segura",
+    "saved_cards": "Tarjetas Guardadas",
+    "manage_desc": "Administra tus métodos de pago de forma segura. Todas las transacciones están encriptadas.",
+    "no_cards": "Sin tarjetas guardadas",
+    "no_cards_desc": "Parece que aún no has agregado métodos de pago a tu cuenta.",
+    "add_method": "Agregar Método de Pago",
+    "default": "POR DEFECTO",
+    "expires": "Vence"
   }
 }

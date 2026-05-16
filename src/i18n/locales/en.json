@@ -199,5 +199,15 @@
     "removed_success": "Staff removed",
     "remove_failed": "Error removing staff",
     "link_copied": "Link copied to clipboard"
+  },
+  "payment": {
+    "secure_wallet": "SECURE WALLET",
+    "saved_cards": "Saved Cards",
+    "manage_desc": "Manage your payment methods securely. All transactions are encrypted with bank-level security.",
+    "no_cards": "No cards saved yet",
+    "no_cards_desc": "It looks like you haven't added any payment methods to your account for faster checkouts.",
+    "add_method": "Add Payment Method",
+    "default": "DEFAULT",
+    "expires": "Expires"
   }
 }
