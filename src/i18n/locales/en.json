@@ -200,7 +200,7 @@
     "remove_failed": "Error removing staff",
     "link_copied": "Link copied to clipboard"
   },
-  "payment": {
+    "payment": {
     "secure_wallet": "SECURE WALLET",
     "saved_cards": "Saved Cards",
     "manage_desc": "Manage your payment methods securely. All transactions are encrypted with bank-level security.",
@@ -209,5 +209,14 @@
     "add_method": "Add Payment Method",
     "default": "DEFAULT",
     "expires": "Expires"
+  },
+  "help": {
+    "find_answers": "Find answers to common questions or contact our support team.",
+    "still_need_help": "Still need help?",
+    "contact_desc": "Our support team is available to help you.",
+    "contact_us": "Contact Us",
+    "reach_out": "Reach out to us through the following channels:",
+    "email": "Email",
+    "phone": "Phone"
   }
 }

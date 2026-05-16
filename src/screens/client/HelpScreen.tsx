@@ -1,4 +1,5 @@
 import { faqService, FAQ } from '@/services/faqService';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
@@ -15,11 +16,18 @@ import {
   View,
   Linking,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+const CONTACT_EMAIL = 'support@suitcase.app';
+const CONTACT_PHONE = '+1 (234) 567-890';
 
 export default function HelpScreen() {
+  const { t } = useTranslation();
+  const { colors, isDark } = useTheme();
   const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showContact, setShowContact] = useState(false);
+  const s = useMemo(() => createStyles(colors), [colors]);
 
   const { data: faqs, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['faqs'],
@@ -28,153 +36,105 @@ export default function HelpScreen() {
 
   const groupedFaqs = useMemo(() => {
     if (!faqs) return {};
-    const groups: Record<string, FAQ[]> = {};
-    faqs.forEach((faq) => {
-      if (!groups[faq.category]) groups[faq.category] = [];
-      groups[faq.category].push(faq);
+    const grouped: Record<string, FAQ[]> = {};
+    faqs.forEach((faq: FAQ) => {
+      const cat = faq.category || 'general';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(faq);
     });
-    return groups;
+    return grouped;
   }, [faqs]);
 
-  const categoryLabels: Record<string, string> = {
-    general: 'General',
-    bookings: 'Bookings',
-    payments: 'Payments',
-    account: 'Account',
-  };
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.push('/(client)/profile')} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.topBar}>
+        <TouchableOpacity onPress={() => router.push('/(client)/profile')} style={s.backBtn}>
+          <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Help & Support</Text>
-        <View style={{ width: 44 }} />
+        <Text style={s.topBarTitle}>{t('profile.help_support')}</Text>
+        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        contentContainerStyle={s.scrollContent}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.iconColor} />}
       >
-        {/* Header */}
-        <View style={styles.heroSection}>
-          <View style={styles.heroIconBox}>
-            <Ionicons name="help-buoy-outline" size={32} color="#0A0E5E" />
-          </View>
-          <Text style={styles.heroTitle}>How can we help you?</Text>
-          <Text style={styles.heroSubtitle}>
-            Find answers to common questions or contact our support team.
-          </Text>
-        </View>
+        <Text style={s.mainTitle}>{t('profile.help_support')}</Text>
+        <Text style={s.description}>
+          {t('help.find_answers')}
+        </Text>
 
-        {/* FAQs */}
         {isLoading ? (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color="#0A0E5E" />
+          <View style={s.center}>
+            <ActivityIndicator size="large" color={colors.iconColor} />
           </View>
-        ) : faqs && faqs.length > 0 ? (
+        ) : (
           Object.entries(groupedFaqs).map(([category, items]) => (
-            <View key={category} style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                {categoryLabels[category] || category}
-              </Text>
-              <View style={styles.sectionCard}>
-                {items.map((faq) => {
-                  const isOpen = expandedId === faq.id;
-                  return (
-                    <View
-                      key={faq.id}
-                      style={[
-                        styles.faqItem,
-                        items.indexOf(faq) < items.length - 1 && styles.faqBorder,
-                      ]}
-                    >
-                      <TouchableOpacity
-                        style={styles.faqHeader}
-                        onPress={() => setExpandedId(isOpen ? null : faq.id)}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.faqQuestion}>{faq.question}</Text>
-                        <Ionicons
-                          name={isOpen ? 'chevron-up' : 'chevron-down'}
-                          size={20}
-                          color="#64748B"
-                        />
-                      </TouchableOpacity>
-                      {isOpen && (
-                        <View style={styles.faqAnswerWrap}>
-                          <Text style={styles.faqAnswer}>{faq.answer}</Text>
-                        </View>
-                      )}
+            <View key={category} style={s.section}>
+              <Text style={s.sectionTitle}>{category.toUpperCase()}</Text>
+              {items.map((faq) => {
+                const isExpanded = expandedId === faq.id;
+                return (
+                  <TouchableOpacity
+                    key={faq.id}
+                    style={s.faqItem}
+                    onPress={() => setExpandedId(isExpanded ? null : faq.id)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={s.faqHeader}>
+                      <Text style={s.faqQuestion}>{faq.question}</Text>
+                      <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={colors.iconMuted} />
                     </View>
-                  );
-                })}
-              </View>
+                    {isExpanded && <Text style={s.faqAnswer}>{faq.answer}</Text>}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           ))
-        ) : (
-          <View style={styles.emptyFaqs}>
-            <Ionicons name="document-text-outline" size={48} color="#CBD5E0" />
-            <Text style={styles.emptyFaqsText}>No FAQs available yet</Text>
-          </View>
         )}
 
-        {/* Contact Support */}
-        <TouchableOpacity style={styles.contactCard} onPress={() => setShowContact(true)}>
-          <View style={styles.contactIconBox}>
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color="#0A0E5E" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.contactTitle}>Still need help?</Text>
-            <Text style={styles.contactSubtitle}>Contact our support team</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
-        </TouchableOpacity>
+        <View style={s.contactCard}>
+          <Ionicons name="headset" size={32} color={colors.primary} />
+          <Text style={s.contactTitle}>{t('help.still_need_help')}</Text>
+          <Text style={s.contactDesc}>{t('help.contact_desc')}</Text>
+
+          <TouchableOpacity style={s.contactBtn} onPress={() => setShowContact(true)}>
+            <Ionicons name="mail-outline" size={20} color="#FFF" />
+            <Text style={s.contactBtnText}>{t('help.contact_us')}</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
-      {/* Contact Modal */}
       <Modal visible={showContact} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Contact Support</Text>
-            <Text style={styles.modalSubtitle}>
-              Reach out to us and we'll get back to you within 24 hours.
-            </Text>
+        <View style={s.modalOverlay}>
+          <View style={s.modalContent}>
+            <View style={s.modalHandle} />
+            <Text style={s.modalTitle}>{t('profile.contact_us')}</Text>
+            <Text style={s.modalDesc}>{t('help.reach_out')}</Text>
 
-            <TouchableOpacity
-              style={styles.contactOption}
-              onPress={() => Linking.openURL('mailto:support@suitcase.app')}
-            >
-              <View style={styles.contactOptionIcon}>
-                <Ionicons name="mail-outline" size={22} color="#0A0E5E" />
+            <TouchableOpacity style={s.contactOption} onPress={() => Linking.openURL(`mailto:${CONTACT_EMAIL}`)}>
+              <View style={[s.contactIconBox, { backgroundColor: colors.surfaceLight }]}>
+                <Ionicons name="mail-outline" size={22} color={colors.iconColor} />
               </View>
               <View>
-                <Text style={styles.contactOptionLabel}>Email</Text>
-                <Text style={styles.contactOptionValue}>support@suitcase.app</Text>
+                <Text style={s.contactLabel}>{t('help.email')}</Text>
+                <Text style={s.contactValue}>{CONTACT_EMAIL}</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.contactOption}
-              onPress={() => Linking.openURL('tel:+1234567890')}
-            >
-              <View style={styles.contactOptionIcon}>
-                <Ionicons name="call-outline" size={22} color="#0A0E5E" />
+            <TouchableOpacity style={s.contactOption} onPress={() => Linking.openURL(`tel:${CONTACT_PHONE}`)}>
+              <View style={[s.contactIconBox, { backgroundColor: colors.surfaceLight }]}>
+                <Ionicons name="call-outline" size={22} color={colors.iconColor} />
               </View>
               <View>
-                <Text style={styles.contactOptionLabel}>Phone</Text>
-                <Text style={styles.contactOptionValue}>+1 (234) 567-890</Text>
+                <Text style={s.contactLabel}>{t('help.phone')}</Text>
+                <Text style={s.contactValue}>{CONTACT_PHONE}</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.closeContactBtn}
-              onPress={() => setShowContact(false)}
-            >
-              <Text style={styles.closeContactBtnText}>Close</Text>
+            <TouchableOpacity style={s.closeBtn} onPress={() => setShowContact(false)}>
+              <Text style={s.closeBtnText}>{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -183,142 +143,35 @@ export default function HelpScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F7FAFC' },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: colors.surfaceCardLow },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 },
   backBtn: { padding: 5 },
-  topBarTitle: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
-  scrollContent: { padding: 20, paddingBottom: 100 },
-  center: { justifyContent: 'center', alignItems: 'center', paddingVertical: 40 },
-
-  // Hero
-  heroSection: { alignItems: 'center', marginBottom: 30, marginTop: 10 },
-  heroIconBox: {
-    width: 72,
-    height: 72,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  heroTitle: { fontSize: 22, fontWeight: '800', color: '#0A0E5E', marginBottom: 8 },
-  heroSubtitle: { fontSize: 14, color: '#64748B', textAlign: 'center', lineHeight: 20, paddingHorizontal: 20 },
-
-  // FAQ sections
+  topBarTitle: { fontSize: 18, fontWeight: '700', color: colors.textPrimary },
+  scrollContent: { padding: 24, paddingBottom: 40 },
+  mainTitle: { fontSize: 28, fontWeight: '800', color: colors.textPrimary, marginBottom: 8 },
+  description: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 24 },
+  center: { paddingVertical: 40, alignItems: 'center' },
   section: { marginBottom: 24 },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#8898AA',
-    letterSpacing: 1,
-    marginBottom: 10,
-    marginLeft: 4,
-  },
-  sectionCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.02,
-    shadowRadius: 5,
-  },
-  faqItem: {},
-  faqBorder: { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  faqHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  faqQuestion: { flex: 1, fontSize: 14, fontWeight: '600', color: '#1A202C', marginRight: 12 },
-  faqAnswerWrap: { paddingHorizontal: 16, paddingBottom: 16 },
-  faqAnswer: { fontSize: 14, color: '#64748B', lineHeight: 20 },
-
-  // Empty
-  emptyFaqs: { alignItems: 'center', paddingVertical: 40, gap: 12 },
-  emptyFaqsText: { fontSize: 15, color: '#94A3B8' },
-
-  // Contact card
-  contactCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 18,
-    borderRadius: 20,
-    marginTop: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.02,
-    shadowRadius: 5,
-  },
-  contactIconBox: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
-  },
-  contactTitle: { fontSize: 16, fontWeight: '700', color: '#1A202C' },
-  contactSubtitle: { fontSize: 13, color: '#64748B', marginTop: 2 },
-
-  // Contact Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    padding: 24,
-    paddingBottom: 40,
-  },
-  modalHandle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 3,
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: { fontSize: 22, fontWeight: '800', color: '#0A0E5E', marginBottom: 8 },
-  modalSubtitle: { fontSize: 14, color: '#64748B', lineHeight: 20, marginBottom: 24 },
-  contactOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    padding: 16,
-    backgroundColor: '#F8F9FB',
-    borderRadius: 14,
-    marginBottom: 10,
-  },
-  contactOptionIcon: {
-    width: 44,
-    height: 44,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  contactOptionLabel: { fontSize: 14, fontWeight: '700', color: '#1A202C' },
-  contactOptionValue: { fontSize: 13, color: '#64748B', marginTop: 2 },
-  closeContactBtn: {
-    marginTop: 16,
-    padding: 16,
-    borderRadius: 14,
-    backgroundColor: '#F1F5F9',
-    alignItems: 'center',
-  },
-  closeContactBtnText: { fontSize: 15, fontWeight: '700', color: '#64748B' },
+  sectionTitle: { fontSize: 12, fontWeight: '800', color: colors.textMuted, letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' },
+  faqItem: { backgroundColor: colors.surfaceCard, borderRadius: 16, padding: 16, marginBottom: 10 },
+  faqHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  faqQuestion: { fontSize: 15, fontWeight: '600', color: colors.textPrimary, flex: 1, marginRight: 12 },
+  faqAnswer: { fontSize: 14, color: colors.textMuted, lineHeight: 20, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border },
+  contactCard: { backgroundColor: colors.surfaceCard, borderRadius: 24, padding: 24, alignItems: 'center', marginTop: 8, borderWidth: 1, borderColor: colors.border },
+  contactTitle: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, marginTop: 12, marginBottom: 8 },
+  contactDesc: { fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
+  contactBtn: { backgroundColor: colors.primary, flexDirection: 'row', paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14, alignItems: 'center', gap: 8 },
+  contactBtnText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
+  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 40 },
+  modalHandle: { width: 40, height: 5, backgroundColor: colors.border, borderRadius: 3, alignSelf: 'center', marginBottom: 20 },
+  modalTitle: { fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 8 },
+  modalDesc: { fontSize: 14, color: colors.textMuted, marginBottom: 24, lineHeight: 20 },
+  contactOption: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 16, marginBottom: 12, borderRadius: 14, borderWidth: 1, borderColor: colors.border },
+  contactIconBox: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  contactLabel: { fontSize: 14, fontWeight: '700', color: colors.textPrimary },
+  contactValue: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
+  closeBtn: { padding: 16, borderRadius: 14, backgroundColor: colors.surfaceLight, alignItems: 'center', marginTop: 8 },
+  closeBtnText: { fontSize: 15, fontWeight: '700', color: colors.textMuted },
 });
