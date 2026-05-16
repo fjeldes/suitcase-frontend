@@ -204,9 +204,9 @@ export default function RegisterScreen() {
               }}>
                 {termsAccepted && <Ionicons name="checkmark" size={16} color="white" />}
               </View>
-              <Text style={{ flex: 1, fontSize: 13, color: '#64748B', lineHeight: 18 }}>
+              <Text style={{ flex: 1, fontSize: 13, color: colors.textMuted, lineHeight: 18 }}>
                 {t('auth.terms_text')}{' '}
-                <Text style={{ color: '#0A0E5E', fontWeight: '700' }} onPress={() => setShowTerms(true)}>
+                <Text style={{ color: colors.primary, fontWeight: '700' }} onPress={() => setShowTerms(true)}>
                   {t('settings.terms')}
                 </Text>
               </Text>
