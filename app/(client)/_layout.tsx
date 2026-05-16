@@ -1,25 +1,20 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
-
-const activeBlue = '#000666';
-const inactiveGray = '#8E8E93';
-const activeBackground = '#eef2ff';
+import { Platform, StyleSheet, View } from 'react-native';
 
 export default function ClientLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { isDark, colors } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: activeBlue,
-        tabBarInactiveTintColor: inactiveGray,
+        tabBarActiveTintColor: colors.iconColor,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.85)',
+          backgroundColor: isDark ? colors.surfaceCard : 'rgba(255,255,255,0.85)',
           borderTopWidth: 0,
           elevation: 20,
           shadowColor: '#1a237e',
@@ -45,7 +40,7 @@ export default function ClientLayout() {
         options={{
           title: 'EXPLORE',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="compass" size={22} color={color} />
             </View>
           ),
@@ -56,7 +51,7 @@ export default function ClientLayout() {
         options={{
           title: 'BOOKINGS',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="briefcase" size={22} color={color} />
             </View>
           ),
@@ -67,7 +62,7 @@ export default function ClientLayout() {
         options={{
           title: 'PROFILE',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && { backgroundColor: activeBackground }]}>
+            <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="person" size={22} color={color} />
             </View>
           ),
