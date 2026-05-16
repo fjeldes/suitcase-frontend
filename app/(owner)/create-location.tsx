@@ -32,9 +32,9 @@ export default function CreateLocationScreen() {
   const [form, setForm] = useState({
     name: '',
     address: '',
-    smallPrice: '5.00',
-    mediumPrice: '8.00',
-    largePrice: '12.00',
+    smallPrice: '5000',
+    mediumPrice: '8000',
+    largePrice: '12000',
     smallCapacity: '1',
     mediumCapacity: '1',
     largeCapacity: '1',
@@ -74,6 +74,19 @@ export default function CreateLocationScreen() {
     const handleSubmit = async () => {
       if (loading) return;
       
+      const MIN_PRICE = 990;
+      const prices = [
+        { key: 'small', val: parseInt(form.smallPrice) },
+        { key: 'medium', val: parseInt(form.mediumPrice) },
+        { key: 'large', val: parseInt(form.largePrice) },
+      ];
+      const lowPrice = prices.find(p => p.val < MIN_PRICE);
+      if (lowPrice) {
+        Toast.show({ type: 'error', text1: 'Invalid price', text2: `${lowPrice.key} price must be at least $${MIN_PRICE} CLP` });
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         

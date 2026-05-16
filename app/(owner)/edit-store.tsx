@@ -35,7 +35,7 @@ export default function EditStoreScreen() {
     const [form, setForm] = useState({
         name: '',
         currency: 'CLP',
-        pricePerDay: { small: 0, medium: 0, large: 0 },
+        pricePerDay: { small: 5000, medium: 8000, large: 12000 },
         capacity: { small: 0, medium: 0, large: 0 }
     });
 
