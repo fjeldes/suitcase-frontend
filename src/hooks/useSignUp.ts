@@ -12,7 +12,7 @@ export const useSignupMutation = (staffToken?: string) => {
             if (data.user?.email) {
                 const params: Record<string, string> = { email: data.user.email };
                 if (staffToken) params.staffToken = staffToken;
-                router.push({ pathname: '/(auth)/verify-email', params });
+                router.replace({ pathname: '/(auth)/verify-email', params });
                 Toast.show({
                     type: 'successCustom',
                     text1: 'Verification Email Sent',
