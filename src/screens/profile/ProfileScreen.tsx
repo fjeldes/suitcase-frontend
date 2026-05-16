@@ -144,6 +144,9 @@ export const ProfileScreen = () => {
             <UserAvatar key={user?.profile?.avatar} name={user?.name} avatarUrl={user?.profile?.avatar} size={112} />
           </View>
           <Text style={s.userName}>{user?.name || t('profile.my_profile')}</Text>
+          {(user as any)?.createdAt && (
+            <Text style={s.memberSince}>Member since {new Date((user as any).createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</Text>
+          )}
           <View style={s.badge}>
             <MaterialCommunityIcons name="shield-check" size={16} color="#fff" />
             <Text style={s.badgeText}>{t('profile.storage_partner')}</Text>
@@ -277,7 +280,8 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   scrollContent: { paddingBottom: 100 },
   profileSection: { alignItems: 'center', marginVertical: 20 },
   imageContainer: { width: 120, height: 120, borderRadius: 60, borderWidth: 4, borderColor: colors.surfaceCard, elevation: 10, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, marginBottom: 15 },
-  userName: { fontSize: 24, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 10 },
+  userName: { fontSize: 24, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 4 },
+  memberSince: { fontSize: 13, color: colors.textMuted, marginBottom: 10 },
   badge: { flexDirection: 'row', backgroundColor: colors.badgeOrange, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, alignItems: 'center', gap: 6 },
   badgeText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   section: { paddingHorizontal: 20, marginTop: 25 },
