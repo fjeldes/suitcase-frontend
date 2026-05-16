@@ -9,7 +9,7 @@ export const useLoginMutation = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: authService.login,
+    mutationFn: (data: { email: string; password: string }) => authService.login(data),
     onSuccess: (data) => {
       if (data.accessToken && data.refreshToken) {
         setTokens(data.accessToken, data.refreshToken, data.user);
@@ -17,12 +17,11 @@ export const useLoginMutation = () => {
         console.error("El backend no envió los tokens esperados:", data);
       }
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const message = error.response?.data?.message || 'Invalid credentials';
 
       if (message.toLowerCase().includes('verify')) {
-        const email = error.response?.data?.email || '';
-        router.replace({ pathname: '/(auth)/verify-email', params: { email } });
+        router.replace({ pathname: '/(auth)/verify-email', params: { email: variables.email } });
         return;
       }
 
