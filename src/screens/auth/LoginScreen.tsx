@@ -30,7 +30,7 @@ type LoginForm = z.infer<typeof loginSchema>
 
 export const LoginScreen = () => {
   const router = useRouter()
-  const { colors } = useTheme()
+  const { isDark, colors } = useTheme()
   const [showPassword, setShowPassword] = React.useState(false)
   const loginMutation = useLoginMutation()
 
@@ -58,7 +58,11 @@ export const LoginScreen = () => {
         <View style={s.content}>
           <View style={s.header}>
             <View style={s.logoRow}>
-              <Image source={require('@/assets/images/login-logo.png')} style={{ width: 240, height: 115 }} resizeMode="contain" />
+              <Image
+                source={isDark ? require('@/assets/images/light-icon.png') : require('@/assets/images/login-logo.png')}
+                style={{ width: 240, height: 115 }}
+                resizeMode="contain"
+              />
             </View>
             <Text style={s.title}>Welcome Back</Text>
             <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>

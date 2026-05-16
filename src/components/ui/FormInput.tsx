@@ -1,15 +1,15 @@
+import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Control, Controller, FieldValues, Path } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 
-// T representa los datos del formulario (ej. RegisterFormData)
 interface Props<T extends FieldValues> extends TextInputProps {
   control: Control<T>;
-  name: Path<T>; // Esto asegura que 'name' sea una de las llaves del formulario
+  name: Path<T>;
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
-  error?: any; // O FieldError si prefieres ser estricto
+  error?: any;
   isPassword?: boolean;
   showPassword?: boolean;
   togglePassword?: () => void;
@@ -26,20 +26,24 @@ export const FormInput = <T extends FieldValues>({
   togglePassword, 
   ...props 
 }: Props<T>) => {
+  const { colors } = useTheme();
+  const s = useMemo(() => createStyles(colors), [colors]);
+
   return (
-    <View style={styles.inputWrapper}>
-      <Text style={styles.inputLabel}>{label}</Text>
+    <View style={s.inputWrapper}>
+      <Text style={s.inputLabel}>{label}</Text>
       <Controller
         control={control}
         name={name}
         render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputField, error && styles.inputError]}>
-            <Ionicons name={icon} size={20} color="#666" style={styles.inputIcon} />
+          <View style={[s.inputField, error && s.inputError]}>
+            <Ionicons name={icon} size={20} color={colors.iconMuted} style={s.inputIcon} />
             <TextInput
-              style={styles.textInput}
+              style={s.textInput}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              placeholderTextColor={colors.iconMuted}
               secureTextEntry={isPassword && !showPassword}
               {...props}
             />
@@ -48,58 +52,28 @@ export const FormInput = <T extends FieldValues>({
                 <Ionicons 
                   name={showPassword ? 'eye-off-outline' : 'eye-outline'} 
                   size={20} 
-                  color="#666" 
+                  color={colors.iconMuted} 
                 />
               </TouchableOpacity>
             )}
           </View>
         )}
       />
-      {error && <Text style={styles.errorText}>{error.message}</Text>}
+      {error && <Text style={s.errorText}>{error.message}</Text>}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  inputWrapper: {
-    gap: 8,
-    marginBottom: 4, // Espacio entre campos
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#1A1F71',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  inputWrapper: { gap: 8, marginBottom: 4 },
+  inputLabel: { fontSize: 12, fontWeight: '700', color: colors.textLabel, letterSpacing: 0.5, textTransform: 'uppercase' },
   inputField: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F2F5',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
-    borderWidth: 1,
-    borderColor: 'transparent', // Para que no salte el layout al mostrar el error
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceLight,
+    borderRadius: 12, paddingHorizontal: 16, height: 56,
+    borderWidth: 1, borderColor: 'transparent',
   },
-  inputIcon: {
-    marginRight: 12,
-  },
-  textInput: {
-    flex: 1,
-    color: '#1A1F71',
-    fontSize: 15,
-    height: '100%',
-  },
-  inputError: {
-    borderColor: '#E74C3C', // Borde rojo si hay error
-    backgroundColor: '#FFF5F5', // Opcional: fondo ligeramente rojizo
-  },
-  errorText: {
-    color: '#E74C3C',
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
-    marginLeft: 4,
-  },
+  inputIcon: { marginRight: 12 },
+  textInput: { flex: 1, color: colors.textPrimary, fontSize: 15, height: '100%' },
+  inputError: { borderColor: colors.error, backgroundColor: colors.errorLight },
+  errorText: { color: colors.error, fontSize: 11, fontWeight: '600', marginTop: 2, marginLeft: 4 },
 });

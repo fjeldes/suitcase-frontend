@@ -1,11 +1,12 @@
 import { FormInput } from '@/components/ui/FormInput'
 import { useSignupMutation } from '@/hooks/useSignUp'
+import { useTheme } from '@/hooks/useTheme'
 import { SignUpFormData, signupSchema } from '@/schemas/auth.schema'
 import { termsService } from '@/services/termsService'
 import { Ionicons } from '@expo/vector-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
     ActivityIndicator,
@@ -14,12 +15,67 @@ import {
     Platform,
     SafeAreaView,
     ScrollView,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
+
+const createStyles = (colors: ReturnType<typeof useTheme>['colors'], isDark: boolean) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surfaceCardLow },
+  scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
+  backButton: { marginTop: 20, marginBottom: 24 },
+  headerTextContainer: { marginBottom: 32 },
+  logoContainer: { alignItems: 'flex-start', marginBottom: 10 },
+  logoText: { fontSize: 28, fontWeight: '800', color: colors.textPrimary, lineHeight: 34 },
+  title: { fontSize: 32, fontWeight: '800', color: colors.primary, marginBottom: 8 },
+  subtitle: { fontSize: 16, color: colors.textMuted },
+  formContainer: { gap: 20 },
+  inputWrapper: { gap: 8 },
+  inputLabel: { fontSize: 12, fontWeight: '700', color: colors.primary, letterSpacing: 0.5 },
+  inputField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceLight,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputIcon: { marginRight: 12 },
+  textInput: { flex: 1, color: colors.textPrimary, fontSize: 15 },
+  signUpButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  signUpButtonDisabled: { opacity: 0.6 },
+  signUpButtonText: { color: '#FFF', fontSize: 17, fontWeight: '700' },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 16, marginBottom: 40 },
+  footerText: { fontSize: 14, color: colors.textMuted },
+  loginLink: { fontSize: 14, fontWeight: 'bold', color: colors.primary, marginLeft: 4 },
+  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, maxHeight: '80%' },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 16 },
+  modalScroll: { maxHeight: 300 },
+  modalText: { fontSize: 14, color: colors.textMuted, lineHeight: 22 },
+  acceptBtn: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 16, alignItems: 'center', marginTop: 20 },
+  acceptBtnText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  termsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  termsCheckbox: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  checkbox: { width: 22, height: 22, borderRadius: 6, justifyContent: 'center', alignItems: 'center' },
+  checkboxChecked: { backgroundColor: colors.primary },
+  checkboxUnchecked: { borderWidth: 2, borderColor: colors.border },
+  termsText: { fontSize: 13, color: colors.textMuted, lineHeight: 20, flex: 1 },
+  termsLink: { color: colors.primary, fontWeight: '700' },
+  inputError: { borderColor: colors.error, borderWidth: 1, borderRadius: 14 },
+  errorText: { fontSize: 12, color: colors.error, marginTop: 2 },
+  formSection: { marginTop: 16, gap: 16 },
+})
 
 export default function RegisterScreen() {
   const { t } = useTranslation()
@@ -46,6 +102,9 @@ export default function RegisterScreen() {
     },
   })
 
+  const { colors, isDark } = useTheme();
+  const s = useMemo(() => createStyles(colors, isDark), [colors, isDark]);
+
   useEffect(() => {
     (async () => {
       setLoadingTerms(true)
@@ -62,22 +121,22 @@ export default function RegisterScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={s.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <ScrollView contentContainerStyle={s.scrollContent}>
+          <TouchableOpacity onPress={() => router.back()} style={s.backButton}>
             <Ionicons name="arrow-back" size={24} color="#1A1F71" />
           </TouchableOpacity>
 
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.title}>{t('auth.create_account')}</Text>
-            <Text style={styles.subtitle}>{t('auth.signup_subtitle')}</Text>
+          <View style={s.headerTextContainer}>
+            <Text style={s.title}>{t('auth.create_account')}</Text>
+            <Text style={s.subtitle}>{t('auth.signup_subtitle')}</Text>
           </View>
 
-          <View style={styles.formContainer}>
+          <View style={s.formContainer}>
             <FormInput<SignUpFormData>
               label={t('auth.first_name')}
               name="firstName"
@@ -154,11 +213,11 @@ export default function RegisterScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.signUpButton, (!termsAccepted || loadingTerms) && { opacity: 0.5 }]}
+              style={[s.signUpButton, (!termsAccepted || loadingTerms) && { opacity: 0.5 }]}
               onPress={handleSubmit(onSubmit)}
               disabled={!termsAccepted || loadingTerms}
             >
-              <Text style={styles.signUpButtonText}>{t('auth.sign_up')}</Text>
+              <Text style={s.signUpButtonText}>{t('auth.sign_up')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -188,59 +247,3 @@ export default function RegisterScreen() {
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FB' },
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
-  backButton: { marginTop: 20, marginBottom: 24 },
-  headerTextContainer: { marginBottom: 32 },
-  title: { fontSize: 32, fontWeight: '800', color: '#1A1F71', marginBottom: 8 },
-  subtitle: { fontSize: 16, color: '#666' },
-  formContainer: { gap: 20 },
-  inputWrapper: { gap: 8 },
-  inputLabel: { fontSize: 12, fontWeight: '700', color: '#1A1F71', letterSpacing: 0.5 },
-  inputField: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F2F5',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
-  },
-  inputIcon: { marginRight: 12 },
-  textInput: { flex: 1, color: '#1A1F71', fontSize: 15 },
-  signUpButton: {
-    backgroundColor: '#0A0E5E',
-    height: 56,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-    elevation: 4,
-    shadowColor: '#0A0E5E',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  signUpButtonText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 32 },
-  line: { flex: 1, height: 1, backgroundColor: '#DDD' },
-  dividerText: { marginHorizontal: 10, fontSize: 12, color: '#AAA', fontWeight: '600' },
-  socialContainer: { flexDirection: 'row', gap: 16 },
-  socialButton: {
-    flex: 1,
-    flexDirection: 'row',
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  socialText: { fontSize: 15, fontWeight: '600', color: '#000' },
-  footerLink: { marginTop: 32, alignItems: 'center' },
-  footerText: { fontSize: 14, color: '#666' },
-  footerLinkBold: { color: '#0A0E5E', fontWeight: '800' },
-})
