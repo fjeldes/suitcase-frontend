@@ -95,8 +95,8 @@ export default function CreateLocationScreen() {
         console.log('Success:', response);
         Toast.show({
           type: 'success',
-          text1: 'Success! ✨',
-          text2: 'Location created successfully.'
+          text1: 'Store submitted! ✨',
+          text2: 'Your location is pending review. We will notify you once it\'s approved.'
         });
         router.replace(ROUTES.OWNER.STORES);
         
