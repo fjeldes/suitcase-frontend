@@ -31,6 +31,7 @@ export default function VerifyEmailScreen() {
   const [isResending, setIsResending] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState(email || '');
+  const [devCode, setDevCode] = useState<string | null>(null);
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const handleChange = (text: string, index: number) => {
@@ -121,11 +122,13 @@ export default function VerifyEmailScreen() {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      await api.post('/auth/resend-code', { email: newEmail });
+      const res = await api.post('/auth/resend-code', { email: newEmail });
+      if (res.data?.code) setDevCode(res.data.code);
+      setEditingEmail(false);
       Toast.show({
         type: 'success',
         text1: 'Sent',
-        text2: 'A new verification code has been sent to your email.',
+        text2: 'A new verification code has been sent.',
         position: 'bottom',
       });
     } catch (err: any) {
@@ -230,6 +233,16 @@ export default function VerifyEmailScreen() {
                 <Text style={s.resendLink}>{isResending ? 'Sending...' : 'Resend Code'}</Text>
               </TouchableOpacity>
             </View>
+
+            {/* Dev code display */}
+            {devCode && (
+              <TouchableOpacity style={s.devCodeBtn} onPress={() => {
+                const newCode = devCode.split('').map(c => c);
+                setCode(newCode.length === 6 ? newCode : code);
+              }}>
+                <Text style={s.devCodeText}>⚡ Fill code from dev: {devCode}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -384,4 +397,6 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   emailEditBtn: { backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12 },
   emailEditBtnText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
+  devCodeBtn: { marginTop: 16, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight, borderWidth: 1, borderColor: colors.warning, alignItems: 'center' },
+  devCodeText: { fontSize: 13, fontWeight: '700', color: colors.warning },
 });
