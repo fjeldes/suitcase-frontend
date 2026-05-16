@@ -122,8 +122,12 @@ export default function VerifyEmailScreen() {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const res = await api.post('/auth/resend-code', { email: newEmail });
+      const isChanged = newEmail && newEmail !== email;
+      const res = isChanged
+        ? await api.post('/auth/change-email', { oldEmail: email, newEmail })
+        : await api.post('/auth/resend-code', { email: newEmail });
       if (res.data?.code) setDevCode(res.data.code);
+      if (res.data?.email) router.setParams({ email: res.data.email });
       setEditingEmail(false);
       Toast.show({
         type: 'success',
