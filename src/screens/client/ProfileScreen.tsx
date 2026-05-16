@@ -4,7 +4,8 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import React, { useMemo, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -25,10 +26,12 @@ import { useTranslation } from 'react-i18next';
 const { width } = Dimensions.get('window')
 
 export default function ProfileScreen() {
+  const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter()
   const { user, logout, setUser } = useAuthStore()
   const [uploading, setUploading] = useState(false);
+  const s = useMemo(() => createStyles(colors), [colors]);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -80,23 +83,23 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={s.safeArea}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
+        style={s.container}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* ENCABEZADO */}
-        <View style={styles.headerRow}>
+        <View style={s.headerRow}>
           <TouchableOpacity 
-            style={styles.avatarWrapper} 
+            style={s.avatarWrapper} 
             onPress={pickImage}
             disabled={uploading}
           >
-            <View style={styles.avatarCircle}>
+            <View style={s.avatarCircle}>
               {uploading ? (
-                <View style={styles.loadingContainer}>
-                   <ActivityIndicator size="small" color="#0A0E5E" />
+                <View style={s.loadingContainer}>
+                   <ActivityIndicator size="small" color={colors.primary} />
                 </View>
               ) : (
                 <UserAvatar 
@@ -107,101 +110,101 @@ export default function ProfileScreen() {
                 />
               )}
             </View>
-            <View style={styles.verifiedBadge}>
-              <Ionicons name="camera" size={14} color="white" />
+            <View style={s.verifiedBadge}>
+              <Ionicons name="camera" size={14} color={colors.textInverse} />
             </View>
           </TouchableOpacity>
 
-          <View style={styles.headerInfo}>
-            <Text style={styles.userName}>{user?.name || t('profile.my_profile')}</Text>
-            <Text style={styles.joinedDate}>{t('profile.joined_date')}</Text>
-            <View style={styles.premiumBadge}>
-              <Text style={styles.premiumText}>{t('profile.traveler_badge')}</Text>
+          <View style={s.headerInfo}>
+            <Text style={s.userName}>{user?.name || t('profile.my_profile')}</Text>
+            <Text style={s.joinedDate}>{t('profile.joined_date')}</Text>
+            <View style={s.premiumBadge}>
+              <Text style={s.premiumText}>{t('profile.traveler_badge')}</Text>
             </View>
           </View>
         </View>
 
         {/* SECCIÓN: BECOME A PARTNER (Banner azul con degradado) */}
-        <LinearGradient colors={['#1A1F71', '#0A0E5E']} style={styles.partnerCard}>
-          <Text style={styles.partnerTitle}>{t('profile.partner_title')}</Text>
-          <Text style={styles.partnerSubtitle}>
+        <LinearGradient colors={[colors.primary, colors.primary]} style={s.partnerCard}>
+          <Text style={s.partnerTitle}>{t('profile.partner_title')}</Text>
+          <Text style={s.partnerSubtitle}>
             {t('profile.partner_desc')}
           </Text>
 
           <TouchableOpacity 
-            style={styles.partnerButton}
+            style={s.partnerButton}
             onPress={() => router.push('/(client)/become-owner')}
           >
-            <Text style={styles.partnerButtonText}>{t('profile.become_partner')}</Text>
+            <Text style={s.partnerButtonText}>{t('profile.become_partner')}</Text>
           </TouchableOpacity>
 
           <Image
-            style={styles.previewImage}
+            style={s.previewImage}
             resizeMode="contain"
           />
         </LinearGradient>
 
         {/* LISTA DE OPCIONES (Estilo refinado) */}
-        <View style={styles.optionsContainer}>
+        <View style={s.optionsContainer}>
           <TouchableOpacity
-            style={styles.optionItem}
+            style={s.optionItem}
             onPress={() => router.push(ROUTES.CLIENT.SETTINGS)}
           >
-            <View style={styles.optionIconBox}>
-              <Ionicons name="settings-outline" size={22} color="#0A0E5E" />
+            <View style={s.optionIconBox}>
+              <Ionicons name="settings-outline" size={22} color={colors.primary} />
             </View>
-            <Text style={styles.optionItemText}>{t('profile.settings')}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
+            <Text style={s.optionItemText}>{t('profile.settings')}</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.optionItem}
+            style={s.optionItem}
             onPress={() => router.push('/(client)/payment-methods')}
           >
-            <View style={styles.optionIconBox}>
-              <Ionicons name="card-outline" size={22} color="#0A0E5E" />
+            <View style={s.optionIconBox}>
+              <Ionicons name="card-outline" size={22} color={colors.primary} />
             </View>
-            <Text style={styles.optionItemText}>{t('profile.payment_methods')}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
+            <Text style={s.optionItemText}>{t('profile.payment_methods')}</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.optionItem}
+            style={s.optionItem}
             onPress={() => router.push(ROUTES.CLIENT.HELP)}
           >
-            <View style={styles.optionIconBox}>
-              <Ionicons name="help-circle-outline" size={22} color="#0A0E5E" />
+            <View style={s.optionIconBox}>
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
             </View>
-            <Text style={styles.optionItemText}>{t('profile.help_support')}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
+            <Text style={s.optionItemText}>{t('profile.help_support')}</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
           </TouchableOpacity>
         </View>
 
         {/* SECCIÓN DE SEGURIDAD */}
-        <View style={styles.securityBox}>
-          <View style={styles.securityIconBox}>
-            <Ionicons name="lock-closed" size={20} color="#C05621" />
+        <View style={s.securityBox}>
+          <View style={s.securityIconBox}>
+            <Ionicons name="lock-closed" size={20} color={colors.badgeOrange} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.securityTitle}>{t('profile.security_title')}</Text>
-            <Text style={styles.securitySubtitle}>
+            <Text style={s.securityTitle}>{t('profile.security_title')}</Text>
+            <Text style={s.securitySubtitle}>
               {t('profile.security_subtitle')}
             </Text>
           </View>
         </View>
 
         {/* LOGOUT */}
-        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-          <Ionicons name="log-out-outline" size={22} color="#E53E3E" />
-          <Text style={styles.logoutText}>{t('profile.logout')}</Text>
+        <TouchableOpacity style={s.logoutButton} onPress={logout}>
+          <Ionicons name="log-out-outline" size={22} color={colors.dotRed} />
+          <Text style={s.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F7FAFC' },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: colors.surfaceCardLow },
   container: { flex: 1 },
   scrollContent: { padding: 20, paddingBottom: 100 },
 
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: 'white',
+    backgroundColor: colors.surfaceCard,
     elevation: 5,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -224,27 +227,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#FF6B00',
+    backgroundColor: colors.badgeOrange,
     borderRadius: 12,
     width: 24,
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',
     borderWhite: 2,
-    borderColor: 'white',
+    borderColor: colors.surfaceCard,
     borderWidth: 2,
   },
   headerInfo: { marginLeft: 20 },
-  userName: { fontSize: 22, fontWeight: '800', color: '#0A0E5E' },
-  joinedDate: { color: '#718096', fontSize: 14, marginVertical: 4 },
+  userName: { fontSize: 22, fontWeight: '800', color: colors.primary },
+  joinedDate: { color: colors.textMuted, fontSize: 14, marginVertical: 4 },
   premiumBadge: {
-    backgroundColor: '#1A1F71',
+    backgroundColor: colors.primary,
     alignSelf: 'flex-start',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 8,
   },
-  premiumText: { color: 'white', fontSize: 10, fontWeight: 'bold' },
+  premiumText: { color: colors.textInverse, fontSize: 10, fontWeight: 'bold' },
 
   // Partner Card
   partnerCard: {
@@ -257,14 +260,14 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   partnerTitle: {
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 28,
     fontWeight: '800',
     textAlign: 'center',
     marginBottom: 15,
   },
   partnerSubtitle: {
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textInverse,
     textAlign: 'center',
     fontSize: 14,
     lineHeight: 20,
@@ -272,13 +275,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   partnerButton: {
-    backgroundColor: '#FF6B00',
+    backgroundColor: colors.badgeOrange,
     paddingVertical: 15,
     paddingHorizontal: 35,
     borderRadius: 15,
     marginBottom: 30,
   },
-  partnerButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  partnerButtonText: { color: colors.textInverse, fontWeight: 'bold', fontSize: 16 },
   previewImage: {
     width: width * 0.7,
     height: 180,
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: colors.surfaceCard,
     padding: 15,
     borderRadius: 20,
     elevation: 2,
@@ -301,24 +304,24 @@ const styles = StyleSheet.create({
   optionIconBox: {
     width: 45,
     height: 45,
-    backgroundColor: '#F7FAFC',
+    backgroundColor: colors.surfaceCardLow,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
   },
-  optionItemText: { flex: 1, fontSize: 16, fontWeight: '700', color: '#1A202C' },
+  optionItemText: { flex: 1, fontSize: 16, fontWeight: '700', color: colors.textPrimary },
 
   // Security
   securityBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F3F9',
+    backgroundColor: colors.surfaceLight,
     padding: 20,
     borderRadius: 40,
     borderStyle: 'dashed',
     borderWidth: 1,
-    borderColor: '#CBD5E0',
+    borderColor: colors.iconMuted,
   },
   securityIconBox: {
     width: 40,
@@ -329,8 +332,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
   },
-  securityTitle: { fontSize: 15, fontWeight: '700', color: '#2D3748' },
-  securitySubtitle: { fontSize: 12, color: '#718096', marginTop: 2 },
+  securityTitle: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
+  securitySubtitle: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
 
   // Logout
   logoutButton: {
@@ -339,7 +342,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 30,
   },
-  logoutText: { color: '#E53E3E', fontSize: 16, fontWeight: '700', marginLeft: 8 },
+  logoutText: { color: colors.dotRed, fontSize: 16, fontWeight: '700', marginLeft: 8 },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

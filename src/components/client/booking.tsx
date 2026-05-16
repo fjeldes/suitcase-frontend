@@ -4,6 +4,7 @@ import { api } from '@/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -20,9 +21,11 @@ import { MiniBookingCard } from '../booking/MiniBookingCard';
 import { ReviewModal } from '../booking/ReviewModal';
 
 export default function BookingsScreen() {
+  const { colors, isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'Active' | 'Past'>('Active');
   const [selectedBookingForReview, setSelectedBookingForReview] = useState<BookingData | null>(null);
   const { data: bookings, isLoading, refetch } = useBookingsQuery();
+  const s = useMemo(() => createStyles(colors), [colors]);
 
   // Auto-prompt review when switching to Past tab
   useEffect(() => {
@@ -55,28 +58,28 @@ export default function BookingsScreen() {
 
   if (isLoading && !bookings) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0A0E5E" />
+      <View style={s.center}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
+    <SafeAreaView style={s.container}>
+      <View style={s.header}>
+        <Image source={isDark ? require('@/assets/images/light-icon.png') : require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
       </View>
 
-      <Text style={styles.pageTitle}>My Bookings</Text>
+      <Text style={s.pageTitle}>My Bookings</Text>
 
-      <View style={styles.tabContainer}>
+      <View style={s.tabContainer}>
         {(['Active', 'Past'] as const).map((tab) => (
           <TouchableOpacity
             key={tab}
-            style={[styles.tabButton, activeTab === tab && styles.tabButtonActive]}
+            style={[s.tabButton, activeTab === tab && s.tabButtonActive]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
+            <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -84,14 +87,14 @@ export default function BookingsScreen() {
       <FlatList
         data={filteredBookings}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={s.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#0A0E5E" />
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="archive-outline" size={60} color="#CBD5E0" />
-            <Text style={styles.emptyText}>No {activeTab.toLowerCase()} bookings found</Text>
+          <View style={s.emptyContainer}>
+            <Ionicons name="archive-outline" size={60} color={colors.iconMuted} />
+            <Text style={s.emptyText}>No {activeTab.toLowerCase()} bookings found</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -120,18 +123,18 @@ export default function BookingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FE' },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surfaceCardLow },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0A0E5E', marginLeft: 8 },
-  pageTitle: { fontSize: 32, fontWeight: '800', color: '#0A0E5E', paddingHorizontal: 20, marginTop: 20 },
-  tabContainer: { flexDirection: 'row', backgroundColor: '#EDF0F7', marginHorizontal: 20, marginTop: 20, borderRadius: 25, padding: 4 },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: colors.primary, marginLeft: 8 },
+  pageTitle: { fontSize: 32, fontWeight: '800', color: colors.primary, paddingHorizontal: 20, marginTop: 20 },
+  tabContainer: { flexDirection: 'row', backgroundColor: colors.surfaceLight, marginHorizontal: 20, marginTop: 20, borderRadius: 25, padding: 4 },
   tabButton: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 20 },
-  tabButtonActive: { backgroundColor: '#FFFFFF', elevation: 2 },
-  tabText: { fontWeight: '600', color: '#8898AA' },
-  tabTextActive: { color: '#0A0E5E' },
+  tabButtonActive: { backgroundColor: colors.surfaceCard, elevation: 2 },
+  tabText: { fontWeight: '600', color: colors.textMuted },
+  tabTextActive: { color: colors.primary },
   scrollContent: { padding: 20, paddingBottom: 100 },
   emptyContainer: { alignItems: 'center', marginTop: 50 },
-  emptyText: { color: '#8898AA', marginTop: 10, fontSize: 16 }
+  emptyText: { color: colors.textMuted, marginTop: 10, fontSize: 16 }
 });
