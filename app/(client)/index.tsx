@@ -19,8 +19,10 @@ import { useNearbyStores } from '@/hooks/useNearbyStores'
 import { useUserLocation } from '@/hooks/useUserLocation'
 import { useLocationStore } from '@/store/useLocationStore'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 export default function ExploreScreen() {
+  const { t } = useTranslation()
   const mapRef = useRef<MapView>(null)
   const router = useRouter()
   const [selectedStore, setSelectedStore] = useState<any>(null)
@@ -182,7 +184,7 @@ export default function ExploreScreen() {
       {/* Barra de Búsqueda de Google Places */}
       <View style={styles.searchContainer}>
         <GooglePlacesAutocomplete
-          placeholder="Search places or addresses..."
+          placeholder={t('search_places')}
           fetchDetails={true}
           minLength={3}
           debounce={400}
