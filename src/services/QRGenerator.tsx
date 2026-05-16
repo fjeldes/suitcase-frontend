@@ -33,7 +33,7 @@ export const QRGenerator = ({ value, sizeScale = 0.6 }: QRGeneratorProps) => {
           size={finalSize}
           color="#0A0E5E"
           backgroundColor="white"
-          logo={require('@/assets/images/logo.png')}
+          logo={require('@/assets/images/login-logo.png')}
           logoSize={finalSize * 0.25}
           logoBackgroundColor="white"
           logoBorderRadius={8}
