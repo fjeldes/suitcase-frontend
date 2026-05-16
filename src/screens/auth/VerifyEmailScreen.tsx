@@ -29,6 +29,8 @@ export default function VerifyEmailScreen() {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState(email || '');
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const handleChange = (text: string, index: number) => {
@@ -119,7 +121,7 @@ export default function VerifyEmailScreen() {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      await api.post('/auth/resend-code', { email });
+      await api.post('/auth/resend-code', { email: newEmail });
       Toast.show({
         type: 'success',
         text1: 'Sent',
@@ -167,6 +169,29 @@ export default function VerifyEmailScreen() {
             <Text style={s.subtitle}>
               We've sent a 6-digit code to your email address. Please enter it below to confirm your identity.
             </Text>
+
+            {/* Email display with edit */}
+            {editingEmail ? (
+              <View style={s.emailEditRow}>
+                <TextInput
+                  style={s.emailInput}
+                  value={newEmail}
+                  onChangeText={setNewEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
+                  placeholderTextColor={colors.iconMuted}
+                />
+                <TouchableOpacity onPress={() => setEditingEmail(false)} style={s.emailEditBtn}>
+                  <Text style={s.emailEditBtnText}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity onPress={() => setEditingEmail(true)} style={s.emailRow}>
+                <Text style={s.emailText}>{newEmail || email || 'your@email.com'}</Text>
+                <MaterialCommunityIcons name="pencil" size={16} color={colors.primary} />
+              </TouchableOpacity>
+            )}
 
             {/* Inputs de 6 dígitos */}
             <View style={s.codeContainer}>
@@ -347,4 +372,16 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     fontSize: 14,
     fontWeight: '700',
   },
+  emailRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    marginBottom: 24, paddingVertical: 8,
+  },
+  emailText: { fontSize: 14, color: colors.textMuted, textDecorationLine: 'underline' },
+  emailEditRow: { flexDirection: 'row', gap: 8, marginBottom: 24, alignItems: 'center' },
+  emailInput: {
+    flex: 1, backgroundColor: colors.surfaceLight, borderRadius: 12, padding: 12,
+    fontSize: 14, color: colors.textPrimary, borderWidth: 1, borderColor: colors.border,
+  },
+  emailEditBtn: { backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12 },
+  emailEditBtnText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
 });
