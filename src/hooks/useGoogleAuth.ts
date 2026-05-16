@@ -1,7 +1,7 @@
 import { ROUTES } from '@/constants/routes';
 import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Google } from 'expo-auth-session/providers/google';
+import { useAuthRequest } from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -14,63 +14,53 @@ export const useGoogleAuth = () => {
   const router = useRouter();
   const setTokens = useAuthStore((state) => state.setTokens);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    });
+  });
 
-    useEffect(() => {
-        if (response?.type === 'success') {
-            const { id_token } = response.params;
-            handleLogin(id_token);
-        } else if (response?.type === 'error' || response?.type === 'cancel') {
-            setIsLoading(false);
-        }
-    }, [response]);
+  const handleLogin = async (idToken: string) => {
+    try {
+      setIsLoading(true);
+      const data = await authService.loginWithGoogle(idToken);
 
-    const handleLogin = async (idToken: string) => {
-        setIsLoading(true);
-        try {
-            // Llamada a tu service que acabamos de actualizar
-            const data = await authService.loginWithGoogle(idToken);
+      if (data.accessToken && data.refreshToken) {
+        setTokens(data.accessToken, data.refreshToken, data.user);
 
-            if (data.accessToken) {
-                // Guardar en Zustand
-                setTokens(data.accessToken, data.refreshToken, data.user);
+        Toast.show({
+          type: 'success',
+          text1: 'Welcome!',
+          text2: 'You have signed in with Google.',
+          position: 'bottom',
+        });
 
-                // Alerta personalizada estilo KipGo
-                Toast.show({
-                    type: 'successCustom',
-                    text1: 'Registration Successful!',
-                    text2: `Welcome to the family, ${data.user.name || 'Partner'}.`,
-                    position: 'bottom',
-                });
+        const roles = data.user?.roles || [];
+        router.replace(roles.includes('owner') || roles.includes('staff') ? '/(owner)' : '/(client)');
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Google Sign-In Failed',
+        text2: error.response?.data?.message || 'Could not authenticate with Google.',
+        position: 'bottom',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-                // Redirección basada en roles (igual que en tu RootLayout)
-                const roles = data.user?.roles || [];
-                if (roles.includes('owner')) {
-                    router.replace(ROUTES.OWNER.DASHBOARD);
-                } else {
-                    router.replace(ROUTES.CLIENT.EXPLORE);
-                }
-            }
-        } catch (error) {
-            console.error('Google Login Error:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No se pudo iniciar sesión con Google.',
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  useEffect(() => {
+    if (response?.type === 'success' && response.params?.id_token) {
+      handleLogin(response.params.id_token);
+    } else if (response?.type === 'error' || response?.type === 'cancel') {
+      setIsLoading(false);
+    }
+  }, [response]);
 
-    return {
-        signIn: () => {
-            setIsLoading(true);
-            promptAsync();
-        },
-        isLoading: isLoading || !request,
-    };
+  const signIn = async () => {
+    setIsLoading(true);
+    await promptAsync();
+  };
+
+  return { signIn, isLoading: isLoading || !request };
 };
