@@ -1,17 +1,16 @@
+import { ROUTES } from '@/constants/routes';
 import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 
 export const useLoginMutation = () => {
-  // 1. Usamos el nombre correcto del Store (plural)
   const setTokens = useAuthStore((state) => state.setTokens);
+  const router = useRouter();
 
   return useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
-      /** * 2. Ajustamos a la nueva estructura del backend:
-       * data ahora es: { accessToken, refreshToken, user }
-       */
       if (data.accessToken && data.refreshToken) {
         setTokens(data.accessToken, data.refreshToken, data.user);
       } else {
@@ -20,12 +19,17 @@ export const useLoginMutation = () => {
     },
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Invalid credentials';
-      
-      // Muestra un Toast mucho más amigable
+
+      if (message.toLowerCase().includes('verify')) {
+        const email = error.response?.data?.email || '';
+        router.replace({ pathname: '/(auth)/verify-email', params: { email } });
+        return;
+      }
+
       import('react-native-toast-message').then(({ default: Toast }) => {
         Toast.show({
             type: 'error',
-            text1: message.includes('verify') ? 'Verificación Requerida' : 'Login Failed',
+            text1: 'Login Failed',
             text2: message,
             position: 'bottom',
         });
