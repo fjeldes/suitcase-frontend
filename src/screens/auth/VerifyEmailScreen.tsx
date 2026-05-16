@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import {
   ActivityIndicator,
   Image,
@@ -21,6 +22,9 @@ export default function VerifyEmailScreen() {
   const router = useRouter();
   const { email, staffToken } = useLocalSearchParams<{ email: string; staffToken?: string }>();
   const setTokens = useAuthStore((state) => state.setTokens);
+
+  const { colors, isDark } = useTheme();
+  const s = useMemo(() => createStyles(colors), [colors]);
 
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -135,42 +139,42 @@ export default function VerifyEmailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <SafeAreaView style={s.safeArea}>
+      <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         
         {/* Header App-like */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
+        <View style={s.header}>
+          <TouchableOpacity onPress={() => router.back()} style={s.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.primary} />
           </TouchableOpacity>
-          <Image source={require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
+          <Image source={isDark ? require('@/assets/images/light-icon.png') : require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48 }} resizeMode="contain" />
           <View style={{ width: 40 }} />
         </View>
 
-        <View style={styles.content}>
-          <View style={styles.card}>
+        <View style={s.content}>
+          <View style={s.card}>
             {/* Icono central */}
-            <View style={styles.iconWrapper}>
-              <View style={styles.iconCircle}>
-                <MaterialCommunityIcons name="email" size={40} color="#0A0E5E" />
-                <View style={styles.shieldBadge}>
-                  <MaterialCommunityIcons name="shield-check" size={12} color="#FFF" />
+            <View style={s.iconWrapper}>
+              <View style={s.iconCircle}>
+                <MaterialCommunityIcons name="email" size={40} color={colors.primary} />
+                <View style={s.shieldBadge}>
+                  <MaterialCommunityIcons name="shield-check" size={12} color={colors.surfaceCard} />
                 </View>
               </View>
             </View>
 
-            <Text style={styles.title}>Verify your Email</Text>
-            <Text style={styles.subtitle}>
+            <Text style={s.title}>Verify your Email</Text>
+            <Text style={s.subtitle}>
               We've sent a 6-digit code to your email address. Please enter it below to confirm your identity.
             </Text>
 
             {/* Inputs de 6 dígitos */}
-            <View style={styles.codeContainer}>
+            <View style={s.codeContainer}>
               {code.map((digit, idx) => (
                 <TextInput
                   key={idx}
                   ref={(ref) => (inputRefs.current[idx] = ref)}
-                  style={styles.codeInput}
+                  style={s.codeInput}
                   keyboardType="numeric"
                   maxLength={1}
                   value={digit}
@@ -183,22 +187,22 @@ export default function VerifyEmailScreen() {
 
             {/* Botón principal */}
             <TouchableOpacity 
-              style={[styles.verifyButton, isVerifying && styles.disabledButton]}
+              style={[s.verifyButton, isVerifying && s.disabledButton]}
               onPress={handleVerify}
               disabled={isVerifying}
             >
               {isVerifying ? (
-                <ActivityIndicator color="#FFF" />
+                <ActivityIndicator color={colors.surfaceCard} />
               ) : (
-                <Text style={styles.verifyButtonText}>Verify Account</Text>
+                <Text style={s.verifyButtonText}>Verify Account</Text>
               )}
             </TouchableOpacity>
 
             {/* Botón de reenvío */}
-            <View style={styles.footerRow}>
-              <Text style={styles.footerText}>Didn't receive the code? </Text>
+            <View style={s.footerRow}>
+              <Text style={s.footerText}>Didn't receive the code? </Text>
               <TouchableOpacity onPress={handleResend} disabled={isResending}>
-                <Text style={styles.resendLink}>{isResending ? 'Sending...' : 'Resend Code'}</Text>
+                <Text style={s.resendLink}>{isResending ? 'Sending...' : 'Resend Code'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -209,8 +213,8 @@ export default function VerifyEmailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FAFAFA' },
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: colors.surfaceCardLow },
   flex: { flex: 1 },
   
   header: {
@@ -219,7 +223,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     height: 60,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.surfaceCardLow,
   },
   backButton: {
     width: 40,
@@ -229,7 +233,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0A0E5E',
+    color: colors.primary,
   },
   
   content: {
@@ -239,7 +243,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 24,
     padding: 30,
     alignItems: 'center',
@@ -257,37 +261,37 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
     borderWidth: 4,
-    borderColor: '#FFF',
+    borderColor: colors.surfaceCard,
   },
   shieldBadge: {
     position: 'absolute',
     bottom: -2,
     right: -2,
-    backgroundColor: '#FF6B00',
+    backgroundColor: colors.badgeOrange,
     width: 24,
     height: 24,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFF',
+    borderColor: colors.surfaceCard,
   },
 
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#0A0E5E',
+    color: colors.primary,
     marginBottom: 12,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748B',
+    color: colors.textMuted,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
@@ -303,16 +307,16 @@ const styles = StyleSheet.create({
   codeInput: {
     width: 45,
     height: 55,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.surfaceLight,
     borderRadius: 12,
     fontSize: 24,
     fontWeight: '700',
-    color: '#0A0E5E',
+    color: colors.primary,
     textAlign: 'center',
   },
 
   verifyButton: {
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     width: '100%',
     height: 56,
     borderRadius: 16,
@@ -324,7 +328,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   verifyButtonText: {
-    color: '#FFF',
+    color: colors.surfaceCard,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -335,11 +339,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   footerText: {
-    color: '#64748B',
+    color: colors.textMuted,
     fontSize: 14,
   },
   resendLink: {
-    color: '#0A0E5E',
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '700',
   },

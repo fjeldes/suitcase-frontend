@@ -223,21 +223,21 @@ export default function RegisterScreen() {
 
           {/* Terms Modal */}
           <Modal visible={showTerms} transparent animationType="slide">
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+            <View style={{ flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' }}>
               <View style={{
-                backgroundColor: 'white', borderTopLeftRadius: 32, borderTopRightRadius: 32,
+                backgroundColor: colors.surfaceModal, borderTopLeftRadius: 32, borderTopRightRadius: 32,
                 padding: 24, paddingBottom: 40, maxHeight: '80%',
               }}>
-                <View style={{ width: 40, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
+                <View style={{ width: 40, height: 5, backgroundColor: colors.border, borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
                 <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 16 }}>{t('settings.terms')}</Text>
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator>
                   <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 22, whiteSpace: 'pre-wrap' }}>{termsContent}</Text>
                 </ScrollView>
                 <TouchableOpacity
-                  style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: '#0A0E5E', alignItems: 'center' }}
+                  style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center' }}
                   onPress={() => setShowTerms(false)}
                 >
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>{t('common.close')}</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.textInverse }}>{t('common.close')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
