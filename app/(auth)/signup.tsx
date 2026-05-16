@@ -128,7 +128,7 @@ export default function RegisterScreen() {
       >
         <ScrollView contentContainerStyle={s.scrollContent}>
           <TouchableOpacity onPress={() => router.back()} style={s.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#1A1F71" />
+            <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
           </TouchableOpacity>
 
           <View style={s.headerTextContainer}>
@@ -198,8 +198,8 @@ export default function RegisterScreen() {
             >
               <View style={{
                 width: 22, height: 22, borderRadius: 6, borderWidth: 2,
-                borderColor: termsAccepted ? '#0A0E5E' : '#CBD5E0',
-                backgroundColor: termsAccepted ? '#0A0E5E' : 'transparent',
+                borderColor: termsAccepted ? colors.primary : colors.border,
+                backgroundColor: termsAccepted ? colors.primary : 'transparent',
                 justifyContent: 'center', alignItems: 'center', marginTop: 2,
               }}>
                 {termsAccepted && <Ionicons name="checkmark" size={16} color="white" />}
@@ -229,9 +229,9 @@ export default function RegisterScreen() {
                 padding: 24, paddingBottom: 40, maxHeight: '80%',
               }}>
                 <View style={{ width: 40, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
-                <Text style={{ fontSize: 20, fontWeight: '800', color: '#0A0E5E', marginBottom: 16 }}>{t('settings.terms')}</Text>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 16 }}>{t('settings.terms')}</Text>
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator>
-                  <Text style={{ fontSize: 14, color: '#1A202C', lineHeight: 22, whiteSpace: 'pre-wrap' }}>{termsContent}</Text>
+                  <Text style={{ fontSize: 14, color: colors.textMuted, lineHeight: 22, whiteSpace: 'pre-wrap' }}>{termsContent}</Text>
                 </ScrollView>
                 <TouchableOpacity
                   style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: '#0A0E5E', alignItems: 'center' }}
