@@ -7,7 +7,8 @@ import { formatBookingDates } from '@/utils/dateFormatter';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -23,7 +24,9 @@ import {
 
 export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   const router = useRouter();
+  const { colors } = useTheme();
   const queryClient = useQueryClient();
+  const s = useMemo(() => createStyles(colors), [colors]);
 
   // 1. TODOS LOS HOOKS AL PRINCIPIO (Regla de oro de React)
   const { data: booking, isLoading, refetch, isRefetching } = useBookingDetail(bookingId as string);
@@ -43,7 +46,7 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   // 2. MANEJO DE ESTADOS DE CARGA Y ERROR
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <View style={[s.container, s.center]}>
         <ActivityIndicator size="large" color="#1A1F71" />
       </View>
     );
@@ -51,10 +54,10 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
 
   if (!booking) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <View style={[s.container, s.center]}>
         <Text>Booking not found</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.mapsButton}>
-          <Text style={styles.mapsButtonText}>Go Back</Text>
+        <TouchableOpacity onPress={() => router.back()} style={s.mapsButton}>
+          <Text style={s.mapsButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -91,18 +94,18 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   const days = Math.max(1, Math.ceil((new Date(endRaw).getTime() - new Date(startRaw).getTime()) / (1000 * 60 * 60 * 24)));
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={s.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={s.header}>
         <TouchableOpacity onPress={() => router.replace('/(client)/bookings')}>
           <Ionicons name="arrow-back" size={24} color="#1A1F71" />
         </TouchableOpacity>
         <View>
-          <Text style={styles.headerTitle}>Booking</Text>
-          <Text style={styles.headerTitle}>Confirmation</Text>
+          <Text style={s.headerTitle}>Booking</Text>
+          <Text style={s.headerTitle}>Confirmation</Text>
         </View>
         <View style={[
-          styles.confirmedBadge,
+          s.confirmedBadge,
           status === 'cancelled' && { backgroundColor: '#FEE2E2' }
         ]}>
           <Ionicons
@@ -110,7 +113,7 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
             size={16}
             color={status === 'cancelled' ? "#E53E3E" : "#FF8A00"}
           />
-          <Text style={[styles.confirmedText, status === 'cancelled' && { color: '#E53E3E' }]}>
+          <Text style={[s.confirmedText, status === 'cancelled' && { color: '#E53E3E' }]}>
             {status.toUpperCase()}
           </Text>
         </View>
@@ -118,48 +121,48 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={s.scrollContent}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
       >
         {/* QR Code Section */}
-        <View style={styles.qrSection}>
+        <View style={s.qrSection}>
           <QRGenerator value={qrCode || id} sizeScale={0.4} />
-          <Text style={styles.bookingRef}>REF: {qrCode || id.substring(0, 8).toUpperCase()}</Text>
+          <Text style={s.bookingRef}>REF: {qrCode || id.substring(0, 8).toUpperCase()}</Text>
         </View>
 
         {/* Location Card */}
-        <View style={styles.card}>
-          <Text style={styles.locationTitle}>{location?.name || 'Storage Location'}</Text>
-          <View style={styles.locationRow}>
+        <View style={s.card}>
+          <Text style={s.locationTitle}>{location?.name || 'Storage Location'}</Text>
+          <View style={s.locationRow}>
             <Ionicons name="location-sharp" size={16} color="#666" />
-            <Text style={styles.locationText}>{location?.address}</Text>
+            <Text style={s.locationText}>{location?.address}</Text>
           </View>
           <Image
             source={{ uri: location?.image || 'https://via.placeholder.com/300x150' }}
-            style={styles.locationImage}
+            style={s.locationImage}
           />
-          <TouchableOpacity style={styles.mapsButton}>
+          <TouchableOpacity style={s.mapsButton}>
             <Ionicons name="map-outline" size={20} color="#FFF" />
-            <Text style={styles.mapsButtonText}>Open in Google Maps</Text>
+            <Text style={s.mapsButtonText}>Open in Google Maps</Text>
           </TouchableOpacity>
         </View>
 
         {/* Status Section */}
-        <View style={styles.statusContainer}>
+        <View style={s.statusContainer}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.statusLabel}>STORAGE DURATION</Text>
-            <Text style={styles.statusValue}>{formattedStart} — {formattedEnd}</Text>
+            <Text style={s.statusLabel}>STORAGE DURATION</Text>
+            <Text style={s.statusValue}>{formattedStart} — {formattedEnd}</Text>
           </View>
           <View style={{ alignItems: 'flex-end' }}>
-            <Text style={styles.statusLabel}>SECURITY</Text>
-            <Text style={[styles.statusValue, { color: '#27AE60' }]}>Safe & Locked</Text>
+            <Text style={s.statusLabel}>SECURITY</Text>
+            <Text style={[s.statusValue, { color: '#27AE60' }]}>Safe & Locked</Text>
           </View>
         </View>
 
         {/* Luggage Breakdown */}
-        <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="luggage" size={24} color="#A52A2A" />
-          <Text style={styles.sectionHeaderText}>Luggage Breakdown</Text>
+        <View style={s.sectionHeader}>
+          <MaterialCommunityIcons name="briefcase" size={24} color={colors.textMuted} />
+          <Text style={s.sectionHeaderText}>Luggage Breakdown</Text>
         </View>
 
         {Object.entries(items).map(([size, quantity]) => (
@@ -187,15 +190,15 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
         />
 
         {surcharges.length > 0 && (
-          <View style={styles.surchargeSection}>
-            <Text style={styles.surchargeTitle}>EXTRA CHARGES</Text>
+          <View style={s.surchargeSection}>
+            <Text style={s.surchargeTitle}>EXTRA CHARGES</Text>
             {surcharges.map((s: any, i: number) => (
-              <View key={i} style={styles.surchargeRow}>
+              <View key={i} style={s.surchargeRow}>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.surchargeLabel}>{s.description}</Text>
-                  <Text style={styles.surchargeDate}>{new Date(s.createdAt).toLocaleDateString()}</Text>
+                  <Text style={s.surchargeLabel}>{s.description}</Text>
+                  <Text style={s.surchargeDate}>{new Date(s.createdAt).toLocaleDateString()}</Text>
                 </View>
-                <Text style={styles.surchargeAmount}>+${Number(s.total).toLocaleString()}</Text>
+                <Text style={s.surchargeAmount}>+${Number(s.total).toLocaleString()}</Text>
               </View>
             ))}
           </View>
@@ -205,32 +208,32 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FB' },
+const createStyles = (colors: any) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surfaceCardLow },
   center: { justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     paddingTop: 50
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1A1F71' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: colors.textPrimary },
   confirmedBadge: {
     flexDirection: 'row',
-    backgroundColor: '#FFF2E6',
+    backgroundColor: colors.surfaceLight,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     alignItems: 'center',
   },
-  confirmedText: { color: '#FF8A00', fontWeight: 'bold', fontSize: 10, marginLeft: 4 },
+  confirmedText: { color: colors.badgeOrange, fontWeight: 'bold', fontSize: 10, marginLeft: 4 },
   scrollContent: { padding: 16 },
   qrSection: { alignItems: 'center', marginVertical: 10 },
-  bookingRef: { color: '#666', letterSpacing: 1, fontSize: 12, marginTop: 10, fontWeight: '600' },
+  bookingRef: { color: colors.textMuted, letterSpacing: 1, fontSize: 12, marginTop: 10, fontWeight: '600' },
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 24,
     padding: 20,
     marginBottom: 20,
@@ -240,33 +243,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
-  locationTitle: { fontSize: 18, fontWeight: '700', color: '#1A1F71' },
+  locationTitle: { fontSize: 18, fontWeight: '700', color: colors.textPrimary },
   locationRow: { flexDirection: 'row', marginVertical: 5 },
-  locationText: { color: '#666', fontSize: 14, marginLeft: 5 },
+  locationText: { color: colors.textMuted, fontSize: 14, marginLeft: 5 },
   locationImage: { width: '100%', height: 120, borderRadius: 15, marginVertical: 15 },
   mapsButton: {
-    backgroundColor: '#0A0E50',
+    backgroundColor: colors.primary,
     flexDirection: 'row',
     padding: 12,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  mapsButtonText: { color: '#FFF', fontWeight: '600', marginLeft: 8 },
+  mapsButtonText: { color: colors.textInverse, fontWeight: '600', marginLeft: 8 },
   statusContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surfaceCard,
     padding: 15,
     borderRadius: 15,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#EEE'
+    borderColor: colors.border
   },
-  statusLabel: { fontSize: 10, color: '#666', fontWeight: 'bold' },
-  statusValue: { fontSize: 13, fontWeight: '700', color: '#1A1F71', marginTop: 4 },
+  statusLabel: { fontSize: 10, color: colors.textMuted, fontWeight: 'bold' },
+  statusValue: { fontSize: 13, fontWeight: '700', color: colors.textPrimary, marginTop: 4 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  sectionHeaderText: { fontSize: 18, fontWeight: 'bold', color: '#1A1F71', marginLeft: 10 },
+  sectionHeaderText: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary, marginLeft: 10 },
   paymentCard: { backgroundColor: '#162181', borderRadius: 24, padding: 25, marginTop: 10 },
   paymentTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
   paymentRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },

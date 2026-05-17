@@ -3,7 +3,8 @@ import { useBookingStore } from '@/store/useBookingStore'
 import type { BookingData } from '@/types/booking.types'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React from 'react'
+import { useTheme } from '@/hooks/useTheme'
+import React, { useMemo } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface MainBookingCardProps {
@@ -12,8 +13,10 @@ interface MainBookingCardProps {
 }
 
 export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
+  const { colors } = useTheme()
   const router = useRouter()
   const setCurrentBooking = useBookingStore((state) => state.setCurrentBooking)
+  const s = useMemo(() => createStyles(colors), [colors])
 
   const startDate = new Date(booking.startDate).toLocaleDateString('en-US', {
     month: 'short',
@@ -36,16 +39,16 @@ export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
   }
   console.log(booking)
   return (
-    <View style={styles.card}>
+    <View style={s.card}>
       <Image
         source={{ uri: booking.location?.imageUrl || 'https://via.placeholder.com/500' }}
-        style={styles.cardImage}
+        style={s.cardImage}
       />
-      <View style={styles.cardBody}>
-        <View style={styles.statusRow}>
+      <View style={s.cardBody}>
+        <View style={s.statusRow}>
           <View
             style={[
-              styles.badgeActive,
+              s.badgeActive,
               booking.status === 'pending' && { backgroundColor: '#F6AD55' },
             ]}
           >
@@ -54,52 +57,52 @@ export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
               size={12}
               color="white"
             />
-            <Text style={styles.badgeText}> {booking.status.toUpperCase()}</Text>
+            <Text style={s.badgeText}> {booking.status.toUpperCase()}</Text>
           </View>
-          <View style={styles.dateInfo}>
-            <Text style={styles.dateRange}>
+          <View style={s.dateInfo}>
+            <Text style={s.dateRange}>
               {startDate} - {endDate}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.storeName}>{booking.location?.name}</Text>
-        <View style={styles.locationRow}>
+        <Text style={s.storeName}>{booking.location?.name}</Text>
+        <View style={s.locationRow}>
           <Ionicons name="location" size={14} color="#0A0E5E" />
-          <Text style={styles.locationText} numberOfLines={1}>
+          <Text style={s.locationText} numberOfLines={1}>
             {' '}
             {booking.location?.address}
           </Text>
         </View>
 
-        <View style={styles.itemsRow}>
+        <View style={s.itemsRow}>
           {booking.items?.small > 0 && (
-            <View style={styles.itemTag}>
-              <Text style={styles.itemTagText}>{booking.items.small} Small</Text>
+            <View style={s.itemTag}>
+              <Text style={s.itemTagText}>{booking.items.small} Small</Text>
             </View>
           )}
           {booking.items?.medium > 0 && (
-            <View style={styles.itemTag}>
-              <Text style={styles.itemTagText}>{booking.items.medium} Med</Text>
+            <View style={s.itemTag}>
+              <Text style={s.itemTagText}>{booking.items.medium} Med</Text>
             </View>
           )}
           {booking.items?.large > 0 && (
-            <View style={styles.itemTag}>
-              <Text style={styles.itemTagText}>{booking.items.large} Large</Text>
+            <View style={s.itemTag}>
+              <Text style={s.itemTagText}>{booking.items.large} Large</Text>
             </View>
           )}
         </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.qrButton} onPress={handleViewQR} accessibilityLabel="View QR code" accessibilityRole="button">
+        <View style={s.buttonContainer}>
+          <TouchableOpacity style={s.qrButton} onPress={handleViewQR} accessibilityLabel="View QR code" accessibilityRole="button">
             <Ionicons name="qr-code-outline" size={18} color="white" />
-            <Text style={styles.qrButtonText}> View QR Code</Text>
+            <Text style={s.qrButtonText}> View QR Code</Text>
           </TouchableOpacity>
 
           {/* NUEVO BOTÓN PARA EL DETALLE QUE HICIMOS */}
-          <TouchableOpacity style={styles.detailButton} onPress={handleViewDetail} accessibilityLabel="View booking details" accessibilityRole="button">
+          <TouchableOpacity style={s.detailButton} onPress={handleViewDetail} accessibilityLabel="View booking details" accessibilityRole="button">
             <Ionicons name="list-outline" size={18} color="#0A0E5E" />
-            <Text style={styles.detailButtonText}> View Booking Detail</Text>
+            <Text style={s.detailButtonText}> View Booking Detail</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -107,9 +110,9 @@ export const MainBookingCard = ({ booking }: MainBookingCardProps) => {
   )
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   card: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 20,
@@ -125,39 +128,38 @@ const styles = StyleSheet.create({
   },
   badgeActive: {
     flexDirection: 'row',
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     alignItems: 'center',
   },
-  badgeText: { color: 'white', fontSize: 11, fontWeight: '700' },
-  dateRange: { fontSize: 14, fontWeight: '700', color: '#0A0E5E' },
+  badgeText: { color: colors.textInverse, fontSize: 11, fontWeight: '700' },
+  dateRange: { fontSize: 14, fontWeight: '700', color: colors.textPrimary },
   dateInfo: { alignItems: 'flex-end' },
-  storeName: { fontSize: 22, fontWeight: '700', color: '#0A0E5E' },
+  storeName: { fontSize: 22, fontWeight: '700', color: colors.textPrimary },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
-  locationText: { color: '#8898AA', fontSize: 13, flex: 1 },
+  locationText: { color: colors.textMuted, fontSize: 13, flex: 1 },
   itemsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 15, marginBottom: 20 },
   itemTag: {
-    backgroundColor: '#F1F3F9',
+    backgroundColor: colors.surfaceLight,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
   },
-  itemTagText: { color: '#0A0E5E', fontWeight: '600', fontSize: 12 },
+  itemTagText: { color: colors.textPrimary, fontWeight: '600', fontSize: 12 },
   qrButton: {
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 14,
     borderRadius: 12,
   },
-  qrButtonText: { color: 'white', fontWeight: '700', fontSize: 16 },
+  qrButtonText: { color: colors.textInverse, fontWeight: '700', fontSize: 16 },
   buttonContainer: {
-    gap: 10, // Espacio entre los dos botones
+    gap: 10,
   },
-  // Estilos para el nuevo botón de detalle
   detailButton: {
     backgroundColor: 'transparent',
     flexDirection: 'row',
@@ -166,7 +168,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#0A0E5E',
+    borderColor: colors.primary,
   },
-  detailButtonText: { color: '#0A0E5E', fontWeight: '700', fontSize: 16 },
+  detailButtonText: { color: colors.primary, fontWeight: '700', fontSize: 16 },
 })
