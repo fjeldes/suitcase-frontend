@@ -1,5 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useState } from 'react'
 import {
     ActivityIndicator,
@@ -22,6 +23,7 @@ import { uploadService } from '@/services/uploadService'
 import * as ImagePicker from 'expo-image-picker'
 
 export default function BookingValidated() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { currentBooking, clearCurrentBooking } = useBookingStore()
   const { mutate: processBooking, isPending } = useProcessBooking()
@@ -32,7 +34,7 @@ export default function BookingValidated() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#0A0E5E" />
-        <Text style={{ marginTop: 10, color: '#6B7280' }}>Loading booking data...</Text>
+        <Text style={{ marginTop: 10, color: '#6B7280' }}>{t('validation.loading')}</Text>
       </View>
     )
   }
@@ -43,7 +45,7 @@ export default function BookingValidated() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== 'granted') {
-      Toast.show({ type: 'error', text1: 'Permission needed', text2: 'Camera access is required to take luggage photos.' })
+      Toast.show({ type: 'error', text1: t('validation.permission_needed'), text2: t('validation.camera_required') })
       return
     }
 
@@ -59,7 +61,7 @@ export default function BookingValidated() {
         const url = await uploadService.uploadImage(result.assets[0].uri, 'check-in-photos')
         setPhotos((prev) => [...prev, url])
       } catch {
-        Toast.show({ type: 'error', text1: 'Upload failed', text2: 'Could not save the photo.' })
+        Toast.show({ type: 'error', text1: t('validation.upload_failed'), text2: t('validation.photo_save_error') })
       } finally {
         setUploadingPhoto(false)
       }
@@ -80,8 +82,8 @@ export default function BookingValidated() {
         router.replace(ROUTES.OWNER.CHECKIN_SUCCESS)
       },
       onError: (err: any) => {
-        const errorMsg = err.response?.data?.message || 'Action could not be completed.'
-        Toast.show({ type: 'error', text1: 'Transaction Failed', text2: errorMsg })
+        const errorMsg = err.response?.data?.message || t('validation.action_failed')
+        Toast.show({ type: 'error', text1: t('validation.transaction_failed'), text2: errorMsg })
       },
     })
   }
@@ -103,7 +105,7 @@ export default function BookingValidated() {
         <TouchableOpacity onPress={handleCancel} style={styles.backButton} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Verification</Text>
+        <Text style={styles.headerTitle}>{t('validation.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -116,10 +118,8 @@ export default function BookingValidated() {
           </View>
         </View>
 
-        <Text style={styles.mainTitle}>Booking Validated</Text>
-        <Text style={styles.subTitle}>
-          QR code verified. Please confirm the details below before proceeding.
-        </Text>
+        <Text style={styles.mainTitle}>{t('validation.booking_validated')}</Text>
+        <Text style={styles.subTitle}>{t('validation.qr_verified')}</Text>
 
         <View style={styles.badgeContainer}>
           <View style={[styles.readyBadge, !isCheckIn && styles.readyBadgeOut]}>
@@ -129,18 +129,18 @@ export default function BookingValidated() {
               color={isCheckIn ? '#9A3412' : '#065F46'}
             />
             <Text style={[styles.readyBadgeText, !isCheckIn && styles.readyBadgeTextOut]}>
-              {isCheckIn ? ' Ready for Check-in' : ' Ready for Check-out'}
+              {isCheckIn ? t('validation.ready_checkin') : t('validation.ready_checkout')}
             </Text>
           </View>
         </View>
 
         <View style={styles.card}>
           <View>
-            <Text style={styles.label}>CUSTOMER</Text>
+            <Text style={styles.label}>{t('validation.customer_label')}</Text>
             <Text style={styles.customerName}>
               {currentBooking.user?.profile
                 ? `${currentBooking.user.profile.firstName} ${currentBooking.user.profile.lastName}`
-                : 'Guest User'}
+                : t('validation.guest_user')}
             </Text>
           </View>
           <View style={styles.avatarPlaceholder}>
@@ -151,7 +151,7 @@ export default function BookingValidated() {
         <View style={[styles.card, { flexDirection: 'column', alignItems: 'flex-start' }]}>
           <View style={styles.bookingIdRow}>
             <View>
-              <Text style={styles.label}>BOOKING ID</Text>
+              <Text style={styles.label}>{t('validation.booking_id_label')}</Text>
               <Text style={styles.bookingIdText}>#{bookingIdDisplay}</Text>
             </View>
             <MaterialCommunityIcons name="qrcode" size={26} color="black" />
@@ -163,7 +163,7 @@ export default function BookingValidated() {
               <View style={styles.declaredValueRow}>
                 <Ionicons name="shield-checkmark" size={18} color="#B45309" />
                 <Text style={styles.declaredValueText}>
-                  Declared value: ${Number(currentBooking.declaredValue ?? 0).toLocaleString()}
+                  {t('validation.declared_value', { amount: Number(currentBooking.declaredValue ?? 0).toLocaleString() })}
                 </Text>
               </View>
             </>
@@ -171,7 +171,7 @@ export default function BookingValidated() {
 
           <View style={styles.divider} />
 
-          <Text style={[styles.label, { marginBottom: 12 }]}>STORAGE ITEMS</Text>
+          <Text style={[styles.label, { marginBottom: 12 }]}>{t('validation.storage_items_label')}</Text>
 
           {Object.entries(currentBooking.items || {}).map(([key, value]) => {
             if (!value || value === 0) return null
@@ -186,9 +186,9 @@ export default function BookingValidated() {
                 </View>
                 <View>
                   <Text style={styles.itemTitle}>
-                    {value} {key.charAt(0).toUpperCase() + key.slice(1)} Item{value > 1 ? 's' : ''}
+                    {value}x {key === 'small' ? t('booking.item_small') : key === 'medium' ? t('booking.item_medium') : t('booking.item_large')}
                   </Text>
-                  <Text style={styles.itemSubtitle}>Scan verified</Text>
+                  <Text style={styles.itemSubtitle}>{t('validation.scan_verified')}</Text>
                 </View>
               </View>
             )
@@ -198,10 +198,8 @@ export default function BookingValidated() {
         {/* PHOTOS SECTION - only during check-in */}
         {isCheckIn && (
           <View style={styles.photosSection}>
-            <Text style={styles.photosLabel}>LUGGAGE PHOTOS (optional)</Text>
-            <Text style={styles.photosDesc}>
-              Take photos of the items for their protection and yours.
-            </Text>
+            <Text style={styles.photosLabel}>{t('validation.photos_label')}</Text>
+            <Text style={styles.photosDesc}>{t('validation.photos_desc')}</Text>
 
             {photos.length > 0 && (
               <View style={styles.photoGrid}>
@@ -229,7 +227,7 @@ export default function BookingValidated() {
                 <>
                   <Ionicons name="camera-outline" size={20} color="#0A0E5E" />
                   <Text style={styles.addPhotoText}>
-                    {photos.length >= 4 ? 'Max 4 photos' : 'Take Photo'}
+                    {photos.length >= 4 ? t('validation.max_photos') : t('validation.take_photo')}
                   </Text>
                 </>
               )}
@@ -249,13 +247,13 @@ export default function BookingValidated() {
               <ActivityIndicator color="white" />
             ) : (
               <Text style={styles.confirmButtonText}>
-                {isCheckIn ? 'Confirm Check-in' : 'Confirm Check-out'}
+                {isCheckIn ? t('validation.confirm_checkin') : t('validation.confirm_checkout')}
               </Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} accessibilityLabel="Cancel and go back" accessibilityRole="button">
-            <Text style={styles.cancelText}>Cancel and Go Back</Text>
+            <Text style={styles.cancelText}>{t('validation.cancel_go_back')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

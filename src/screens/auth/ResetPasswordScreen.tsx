@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useState, useRef } from 'react';
 import {
   ActivityIndicator,
@@ -17,6 +18,7 @@ import { api } from '@/services/api';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { email } = useLocalSearchParams<{ email: string }>();
   
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -56,21 +58,21 @@ export default function ResetPasswordScreen() {
   const handleReset = async () => {
     const fullCode = code.join('');
     if (fullCode.length < 6) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Please enter the complete 6-digit code.' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('auth.code_incomplete') });
       return;
     }
     if (newPassword.length < 6) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Password must be at least 6 characters long.' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('auth.reset_password_invalid') });
       return;
     }
 
     setIsResetting(true);
     try {
       await api.post('/auth/reset-password', { email, code: fullCode, newPassword });
-      Toast.show({ type: 'success', text1: 'Success', text2: 'Your password has been updated successfully.' });
+      Toast.show({ type: 'success', text1: t('auth.reset_success') });
       router.replace('/(auth)/login');
     } catch (err: any) {
-      Toast.show({ type: 'error', text1: 'Error', text2: err.response?.data?.message || 'Invalid or expired code.' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: err.response?.data?.message || t('auth.code_invalid') });
     } finally {
       setIsResetting(false);
     }
@@ -87,10 +89,8 @@ export default function ResetPasswordScreen() {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Reset Password</Text>
-          <Text style={styles.subtitle}>
-            Enter the 6-digit code we sent to {email || 'your email'} and your new password.
-          </Text>
+          <Text style={styles.title}>{t('auth.reset_password_title')}</Text>
+          <Text style={styles.subtitle}>{t('auth.reset_password_subtitle', { email: email || 'your email' })}</Text>
 
           {/* OTP Inputs */}
           <View style={styles.codeContainer}>
@@ -115,7 +115,7 @@ export default function ResetPasswordScreen() {
             <Ionicons name="lock-closed-outline" size={20} color="#64748B" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="New Password"
+              placeholder={t('settings.new_password')}
               secureTextEntry={!showPassword}
               value={newPassword}
               onChangeText={setNewPassword}
@@ -136,7 +136,7 @@ export default function ResetPasswordScreen() {
             {isResetting ? (
               <ActivityIndicator color="#FFF" />
             ) : (
-              <Text style={styles.primaryButtonText}>Reset Password</Text>
+              <Text style={styles.primaryButtonText}>{t('auth.reset_password_button')}</Text>
             )}
           </TouchableOpacity>
         </View>

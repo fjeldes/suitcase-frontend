@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ActivityIndicator,
@@ -23,6 +24,7 @@ export default function VerifyEmailScreen() {
   const { email, staffToken } = useLocalSearchParams<{ email: string; staffToken?: string }>();
   const setTokens = useAuthStore((state) => state.setTokens);
 
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const s = useMemo(() => createStyles(colors), [colors]);
 
@@ -71,8 +73,8 @@ export default function VerifyEmailScreen() {
     if (fullCode.length < 6) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: 'Please enter the complete 6-digit code.',
+        text1: t('common.error'),
+        text2: t('auth.code_incomplete'),
         position: 'bottom',
       });
       return;
@@ -83,7 +85,7 @@ export default function VerifyEmailScreen() {
       const response = await api.post('/auth/verify-email', { email, code: fullCode });
       if (response.data?.accessToken) {
         setTokens(response.data.accessToken, response.data.refreshToken, response.data.user);
-        Toast.show({ type: 'success', text1: 'Success', text2: 'Email verified successfully!', position: 'bottom' });
+        Toast.show({ type: 'success', text1: t('auth.verify_success'), position: 'bottom' });
 
         if (staffToken) {
           try {
@@ -94,7 +96,7 @@ export default function VerifyEmailScreen() {
               if (refresh.data?.accessToken) {
                 setTokens(refresh.data.accessToken, refresh.data.refreshToken, refresh.data.user);
               }
-              Toast.show({ type: 'success', text1: 'Invitation Accepted', text2: `You are now staff at ${result.locationName}!` });
+              Toast.show({ type: 'success', text1: t('auth.invite_accepted'), text2: t('auth.invite_desc', { locationName: result.locationName }) });
             }
           } catch {
             // Silently fail
@@ -110,8 +112,8 @@ export default function VerifyEmailScreen() {
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: err.response?.data?.message || 'Invalid or expired code.',
+        text1: t('common.error'),
+        text2: err.response?.data?.message || t('auth.code_invalid'),
         position: 'bottom',
       });
     } finally {
@@ -131,15 +133,15 @@ export default function VerifyEmailScreen() {
       setEditingEmail(false);
       Toast.show({
         type: 'success',
-        text1: 'Sent',
-        text2: 'A new verification code has been sent.',
+        text1: t('auth.sent_label'),
+        text2: t('auth.sent_desc'),
         position: 'bottom',
       });
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: err.response?.data?.message || 'Could not resend code.',
+        text1: t('common.error'),
+        text2: err.response?.data?.message || t('auth.resend_failed'),
         position: 'bottom',
       });
     } finally {
@@ -172,10 +174,8 @@ export default function VerifyEmailScreen() {
               </View>
             </View>
 
-            <Text style={s.title}>Verify your Email</Text>
-            <Text style={s.subtitle}>
-              We've sent a 6-digit code to your email address. Please enter it below to confirm your identity.
-            </Text>
+            <Text style={s.title}>{t('auth.verify_email')}</Text>
+            <Text style={s.subtitle}>{t('auth.verify_subtitle')}</Text>
 
             {/* Email display with edit */}
             {editingEmail ? (
@@ -186,11 +186,11 @@ export default function VerifyEmailScreen() {
                   onChangeText={setNewEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.change_email_placeholder')}
                   placeholderTextColor={colors.iconMuted}
                 />
                 <TouchableOpacity onPress={() => setEditingEmail(false)} style={s.emailEditBtn}>
-                  <Text style={s.emailEditBtnText}>OK</Text>
+                  <Text style={s.emailEditBtnText}>{t('common.done')}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -226,15 +226,15 @@ export default function VerifyEmailScreen() {
               {isVerifying ? (
                 <ActivityIndicator color={colors.surfaceCard} />
               ) : (
-                <Text style={s.verifyButtonText}>Verify Account</Text>
+                <Text style={s.verifyButtonText}>{t('auth.verify_button')}</Text>
               )}
             </TouchableOpacity>
 
             {/* Botón de reenvío */}
             <View style={s.footerRow}>
-              <Text style={s.footerText}>Didn't receive the code? </Text>
+              <Text style={s.footerText}>{t('auth.didnt_receive_code')} </Text>
               <TouchableOpacity onPress={handleResend} disabled={isResending}>
-                <Text style={s.resendLink}>{isResending ? 'Sending...' : 'Resend Code'}</Text>
+                <Text style={s.resendLink}>{isResending ? t('auth.sending') : t('auth.resend_code')}</Text>
               </TouchableOpacity>
             </View>
 

@@ -3,6 +3,7 @@ import { useActivityLogs } from '@/hooks/useActivityLogs';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { createStyles } from './RecentActivity.styles';
@@ -58,6 +59,7 @@ const ActivityItem = ({ type, title, location, time, statusText, isLast }: Activ
 };
 
 export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number; locationId?: string }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -74,7 +76,7 @@ export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number
     const yesterday = new Date();
     yesterday.setDate(now.getDate() - 1);
     if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return t('activity.yesterday');
     }
 
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
@@ -83,7 +85,7 @@ export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <Text style={styles.sectionTitle}>{t('activity.recent_activity')}</Text>
         <ActivityIndicator color={colors.iconColor} style={{ marginTop: 20 }} />
       </View>
     );
@@ -92,11 +94,11 @@ export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number
   if (!logs || logs.length === 0) {
     return (
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <Text style={styles.sectionTitle}>{t('activity.recent_activity')}</Text>
         <View style={styles.emptyCard}>
           <Ionicons name="list-circle-outline" size={32} color={colors.iconMuted} />
-          <Text style={styles.emptyTextTitle}>No activity yet</Text>
-          <Text style={styles.emptyText}>When bookings are made, they will appear here.</Text>
+          <Text style={styles.emptyTextTitle}>{t('activity.no_activity_yet')}</Text>
+          <Text style={styles.emptyText}>{t('activity.no_activity_desc')}</Text>
         </View>
       </View>
     );
@@ -104,29 +106,29 @@ export const RecentActivity = ({ maxItems = 3, locationId }: { maxItems?: number
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Recent Activity</Text>
+      <Text style={styles.sectionTitle}>{t('activity.recent_activity')}</Text>
 
       <View style={styles.listCard}>
         {logs.slice(0, maxItems).map((log, idx) => {
           const isLast = idx === Math.min(logs.length, maxItems) - 1;
           const timeFormatted = formatTime(log.createdAt);
-          const locationName = log.location?.name || 'Store';
+          const locationName = log.location?.name || t('activity.store_fallback');
 
           const props = (type: ActivityProps['type'], title: string, statusText?: string) => (
             <ActivityItem key={log.id} type={type} title={title} location={locationName} time={timeFormatted} statusText={statusText} isLast={isLast} />
           );
 
-          if (log.type === 'NEW_BOOKING') return props('BOOKING', `New Booking: ${log.payload?.itemsSummary || 'Items'}`, log.payload?.status);
-          if (log.type === 'COLLECTION_COMPLETED') return props('COLLECTION', 'Collection Completed', log.payload?.orderNumber);
-          if (log.type === 'BOOKING_CANCELLED') return props('CANCELLED', 'Booking Cancelled', log.payload?.orderNumber);
-          if (log.type === 'REVIEW_RECEIVED') return props('REVIEW', 'Review Received');
-          return props('BOOKING', 'Activity Logged');
+          if (log.type === 'NEW_BOOKING') return props('BOOKING', t('activity.new_booking_with', { items: log.payload?.itemsSummary || t('activity.new_booking') }), log.payload?.status);
+          if (log.type === 'COLLECTION_COMPLETED') return props('COLLECTION', t('activity.collection_completed'), log.payload?.orderNumber);
+          if (log.type === 'BOOKING_CANCELLED') return props('CANCELLED', t('activity.booking_cancelled'), log.payload?.orderNumber);
+          if (log.type === 'REVIEW_RECEIVED') return props('REVIEW', t('activity.review_received'));
+          return props('BOOKING', t('activity.activity_logged'));
         })}
       </View>
 
       {logs.length > maxItems && (
         <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={() => router.push(ROUTES.OWNER.ACTIVITY_LOGS)}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.iconColor }}>View All Activity</Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.iconColor }}>{t('activity.view_all')}</Text>
         </TouchableOpacity>
       )}
     </View>

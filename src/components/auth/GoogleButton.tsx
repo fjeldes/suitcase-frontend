@@ -5,7 +5,9 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native'
 import { styles } from './GoogleButton.styles'
 
 export const GoogleButton = () => {
-  const { signIn, isLoading } = useGoogleAuth()
+  const { signIn, isLoading, isAvailable } = useGoogleAuth()
+
+  if (!isAvailable) return null
 
   return (
     <TouchableOpacity

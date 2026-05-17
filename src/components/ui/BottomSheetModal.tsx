@@ -11,8 +11,8 @@ export const BottomSheetModal = ({ visible, onClose, children, style, ...props }
   const { colors } = useTheme();
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
           <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
           <View style={[styles.content, { backgroundColor: colors.surfaceModal }]} {...props}>
@@ -27,7 +27,7 @@ export const BottomSheetModal = ({ visible, onClose, children, style, ...props }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  overlay: { flex: 1, justifyContent: 'flex-end' },
+  overlay: { flex: 1, justifyContent: 'flex-end', elevation: 100, zIndex: 100 },
   backdrop: { flex: 1 },
   content: {
     borderTopLeftRadius: 32,

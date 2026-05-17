@@ -6,10 +6,12 @@ import { BookingData } from '@/types/bookings/BookingData'
 import { Ionicons } from '@expo/vector-icons'
 import dayjs from 'dayjs'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export default function BookingTicketScreen({ booking }: { booking: BookingData }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const fullName = `${booking.user.profile.firstName} ${booking.user.profile.lastName}`
   const storeName = booking.location.name
@@ -25,7 +27,7 @@ export default function BookingTicketScreen({ booking }: { booking: BookingData 
         <Ionicons name="arrow-back" size={28} color="#0A0E5E" />
       </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <StatusBadge label="Active" />
+        <StatusBadge label={t('booking.active')} />
 
         <View style={styles.mainCard}>
           <TicketCard qrValue={booking.qrCode} bookingId={booking.id.split('-')[0].toUpperCase()} />
@@ -38,8 +40,8 @@ export default function BookingTicketScreen({ booking }: { booking: BookingData 
         <View style={styles.helpBox}>
           <Ionicons name="information-circle" size={24} color="#FF7A00" />
           <Text style={styles.helpText}>
-            <Text style={{ fontWeight: 'bold' }}>How to use: </Text>
-            Show this QR code to the store owner upon arrival for instant check-in.
+            <Text style={{ fontWeight: 'bold' }}>{t('booking.how_to_use')}: </Text>
+            {t('booking.qr_code_hint')}
           </Text>
         </View>
       </ScrollView>

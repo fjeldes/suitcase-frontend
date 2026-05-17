@@ -6,6 +6,7 @@ import { useLocationStore } from '@/store/useLocationStore'
 import { useTheme } from '@/hooks/useTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   KeyboardAvoidingView,
@@ -25,6 +26,7 @@ import Toast from 'react-native-toast-message'
 
 export default function CreateLocationScreen() {
   const router = useRouter()
+  const { t } = useTranslation()
   const { colors } = useTheme()
   const { address, lat, lng, reset: clearLocation } = useLocationStore()
 
@@ -42,7 +44,7 @@ export default function CreateLocationScreen() {
     lng: '',
     imageUrl: null as string | null,
     workingHours: [
-      { day: 1, label: 'Mon', open: '09:00', close: '18:00', isClosed: false },
+      {       day: 1, label: 'Mon', open: '09:00', close: '18:00', isClosed: false },
       { day: 2, label: 'Tue', open: '09:00', close: '18:00', isClosed: false },
       { day: 3, label: 'Wed', open: '09:00', close: '18:00', isClosed: false },
       { day: 4, label: 'Thu', open: '09:00', close: '18:00', isClosed: false },
@@ -82,7 +84,7 @@ export default function CreateLocationScreen() {
       ];
       const lowPrice = prices.find(p => p.val < MIN_PRICE);
       if (lowPrice) {
-        Toast.show({ type: 'error', text1: 'Invalid price', text2: `${lowPrice.key} price must be at least $${MIN_PRICE} CLP` });
+        Toast.show({ type: 'error', text1: t('createLocation.toast_invalid_price'), text2: t('createLocation.toast_invalid_price_desc', { key: lowPrice.key, min: MIN_PRICE }) });
         setLoading(false);
         return;
       }
@@ -95,8 +97,8 @@ export default function CreateLocationScreen() {
         console.log('Success:', response);
         Toast.show({
           type: 'success',
-          text1: 'Store submitted! ✨',
-          text2: 'Your location is pending review. We will notify you once it\'s approved.'
+          text1: t('createLocation.toast_store_submitted'),
+          text2: t('createLocation.toast_store_submitted_desc')
         });
         router.replace(ROUTES.OWNER.STORES);
         
@@ -104,8 +106,8 @@ export default function CreateLocationScreen() {
         console.error('Error creating location:', error.response?.data || error.message);
         Toast.show({
           type: 'error',
-          text1: 'Error',
-          text2: error.response?.data?.message || 'Something went wrong'
+          text1: t('common.error'),
+          text2: error.response?.data?.message || t('createLocation.toast_something_wrong')
         });
       } finally {
         setLoading(false);
@@ -115,7 +117,7 @@ export default function CreateLocationScreen() {
     const pickImage = async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Toast.show({ type: 'error', text1: 'Permission Denied', text2: 'Need access to gallery.' });
+        Toast.show({ type: 'error', text1: t('createLocation.toast_permission_denied'), text2: t('createLocation.toast_gallery_needed') });
         return;
       }
 
@@ -131,9 +133,9 @@ export default function CreateLocationScreen() {
           setLoading(true);
           const uploadedUrl = await uploadService.uploadImage(result.assets[0].uri, 'locations');
           setForm({ ...form, imageUrl: uploadedUrl });
-          Toast.show({ type: 'success', text1: 'Image uploaded!' });
+          Toast.show({ type: 'success', text1: t('createLocation.toast_image_uploaded') });
         } catch (error) {
-          Toast.show({ type: 'error', text1: 'Upload failed' });
+          Toast.show({ type: 'error', text1: t('createLocation.toast_upload_failed') });
         } finally {
           setLoading(false);
         }
@@ -154,14 +156,12 @@ export default function CreateLocationScreen() {
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          <Text style={s.mainTitle}>Add Storage Location</Text>
-          <Text style={s.description}>
-            Expand your network. Provide a secure vault for travelers and earn more...
-          </Text>
+          <Text style={s.mainTitle}>{t('createLocation.title')}</Text>
+          <Text style={s.description}>{t('createLocation.desc')}</Text>
 
           <View style={s.sectionHeader}>
             <Ionicons name="camera" size={20} color="#B45309" />
-            <Text style={s.sectionTitle}>Store Photo</Text>
+            <Text style={s.sectionTitle}>{t('createLocation.store_photo')}</Text>
           </View>
 
           <TouchableOpacity 
@@ -178,37 +178,37 @@ export default function CreateLocationScreen() {
                   />
                   <View style={s.imageOverlay}>
                     <Ionicons name="create" size={24} color="#FFF" />
-                    <Text style={s.overlayText}>Change Photo</Text>
+                    <Text style={s.overlayText}>{t('createLocation.change_photo')}</Text>
                   </View>
                 </View>
               </View>
             ) : (
               <View style={s.uploadPlaceholder}>
                 <Ionicons name="cloud-upload-outline" size={40} color={colors.textMuted} />
-                <Text style={s.uploadTitle}>Upload Main Photo</Text>
-                <Text style={s.uploadSubtitle}>Showcase your storage space</Text>
+                <Text style={s.uploadTitle}>{t('createLocation.upload_photo')}</Text>
+                <Text style={s.uploadSubtitle}>{t('createLocation.upload_subtitle')}</Text>
               </View>
             )}
           </TouchableOpacity>
 
           <View style={s.sectionHeader}>
             <Ionicons name="location" size={20} color="#B45309" />
-            <Text style={s.sectionTitle}>Location Details</Text>
+            <Text style={s.sectionTitle}>{t('createLocation.location_details')}</Text>
           </View>
 
-          <Text style={s.inputLabel}>Location Name</Text>
+          <Text style={s.inputLabel}>{t('createLocation.location_name')}</Text>
           <TextInput
             style={s.textField}
-            placeholder="e.g. Grand Central Secure Storage"
+            placeholder={t('createLocation.location_placeholder')}
             placeholderTextColor={colors.iconMuted}
             value={form.name}
             onChangeText={(val) => setForm({ ...form, name: val })}
           />
 
-          <Text style={s.inputLabel}>Full Address</Text>
+          <Text style={s.inputLabel}>{t('createLocation.full_address')}</Text>
           <TextInput
             style={s.textField}
-            placeholder="Select address on map"
+            placeholder={t('createLocation.address_placeholder')}
             placeholderTextColor={colors.iconMuted}
             value={form.address}
             editable={false}
@@ -221,21 +221,21 @@ export default function CreateLocationScreen() {
             <View style={s.mapButton}>
               <Ionicons name={form.lat ? 'checkmark-circle' : 'navigate'} size={18} color={colors.iconColor} />
               <Text style={s.mapButtonText}>
-                {form.lat ? 'Location Pinned' : 'Pin Location on Map'}
+                {form.lat ? t('createLocation.location_pinned') : t('createLocation.pin_location')}
               </Text>
             </View>
           </TouchableOpacity>
 
           <View style={s.sectionHeader}>
             <Ionicons name="cash" size={20} color="#B45309" />
-            <Text style={s.sectionTitle}>Luggage Pricing</Text>
+            <Text style={s.sectionTitle}>{t('createLocation.luggage_pricing')}</Text>
           </View>
 
           <View style={s.priceContainer}>
             <StorageCard
               icon="bag-personal"
-              label="Small"
-              subLabel="Backpacks, Handbags"
+              label={t('createLocation.small')}
+              subLabel={t('createLocation.small_sub')}
               priceValue={form.smallPrice}
               capacityValue={form.smallCapacity}
               onPriceChange={(v) => setForm({ ...form, smallPrice: v })}
@@ -243,8 +243,8 @@ export default function CreateLocationScreen() {
             />
             <StorageCard
               icon="bag-suitcase"
-              label="Medium"
-              subLabel="Carry-ons, Standard Suitcases"
+              label={t('createLocation.medium')}
+              subLabel={t('createLocation.medium_sub')}
               priceValue={form.mediumPrice}
               capacityValue={form.mediumCapacity}
               onPriceChange={(v) => setForm({ ...form, mediumPrice: v })}
@@ -252,8 +252,8 @@ export default function CreateLocationScreen() {
             />
             <StorageCard
               icon="suitcase"
-              label="Large"
-              subLabel="Large Check-in Bags, Trunk"
+              label={t('createLocation.large')}
+              subLabel={t('createLocation.large_sub')}
               priceValue={form.largePrice}
               capacityValue={form.largeCapacity}
               onPriceChange={(v) => setForm({ ...form, largePrice: v })}
@@ -263,14 +263,12 @@ export default function CreateLocationScreen() {
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -10, marginBottom: 20, paddingHorizontal: 4 }}>
             <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
-            <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }}>
-              Prices and capacity are estimates. You can update them anytime from your store settings.
-            </Text>
+            <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }}>{t('createLocation.prices_info')}</Text>
           </View>
 
           <View style={s.sectionHeader}>
             <Ionicons name="time" size={20} color="#B45309" />
-            <Text style={s.sectionTitle}>Business Hours</Text>
+            <Text style={s.sectionTitle}>{t('createLocation.business_hours')}</Text>
           </View>
 
           <View style={s.hoursContainer}>
@@ -286,7 +284,7 @@ export default function CreateLocationScreen() {
                     }}
                     style={[s.statusBadge, item.isClosed ? s.closedBadge : s.openBadge]}
                   >
-                    <Text style={[s.statusText, item.isClosed && { color: colors.error }]}>{item.isClosed ? 'CLOSED' : 'OPEN'}</Text>
+                    <Text style={[s.statusText, item.isClosed && { color: colors.error }]}>{item.isClosed ? t('createLocation.closed') : t('createLocation.open')}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -304,7 +302,7 @@ export default function CreateLocationScreen() {
                       placeholderTextColor={colors.iconMuted}
                       maxLength={5}
                     />
-                    <Text style={s.timeDivider}>to</Text>
+                    <Text style={s.timeDivider}>{t('createLocation.to')}</Text>
                     <TextInput
                       style={s.timeInput}
                       value={item.close}
@@ -324,7 +322,7 @@ export default function CreateLocationScreen() {
           </View>
 
           <TouchableOpacity style={s.submitBtn} onPress={() => handleSubmit()} disabled={loading}>
-            <Text style={s.submitBtnText}>Create Storage Location</Text>
+            <Text style={s.submitBtnText}>{t('createLocation.submit')}</Text>
             <Ionicons name="chevron-forward" size={20} color="#fff" />
           </TouchableOpacity>
         </ScrollView>

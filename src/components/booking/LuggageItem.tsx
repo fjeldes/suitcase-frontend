@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,12 +11,13 @@ interface LuggageItemProps {
 }
 
 export const LuggageItem = ({ size, quantity, pricePerDay, days }: LuggageItemProps) => {
+  const { t } = useTranslation();
   if (quantity === 0) return null;
 
   const labels = {
-    small: 'Small Bag',
-    medium: 'Medium Bag',
-    large: 'Large Suitcase'
+    small: t('booking.item_small'),
+    medium: t('booking.item_medium'),
+    large: t('booking.item_large')
   };
 
   return (
@@ -29,11 +31,11 @@ export const LuggageItem = ({ size, quantity, pricePerDay, days }: LuggageItemPr
       </View>
       <View style={{ flex: 1, marginLeft: 12 }}>
         <Text style={styles.itemTitle}>{quantity}x {labels[size]}</Text>
-        <Text style={styles.itemSub}>Standard Protection Included</Text>
+        <Text style={styles.itemSub}>{t('booking.standard_protection')}</Text>
       </View>
       <View>
         <Text style={styles.itemPrice}>${pricePerDay}/day</Text>
-        <Text style={styles.itemTotal}>${quantity * pricePerDay * (days || 1)} {days ? `(${days} days)` : '/day'}</Text>
+        <Text style={styles.itemTotal}>${quantity * pricePerDay * (days || 1)} {days ? `(${days} ${days > 1 ? t('booking.days') : t('booking.day')})` : '/day'}</Text>
       </View>
     </View>
   );

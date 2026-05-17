@@ -1,5 +1,6 @@
 import { ItemsCount } from '@/types/bookings/BookingData';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -8,16 +9,16 @@ interface ItemSummaryProps {
 }
 
 export const ItemSummary = ({ items }: ItemSummaryProps) => {
-  // Mapeo para facilitar el renderizado
+  const { t } = useTranslation();
   const itemTypes = [
-    { key: 'large', label: 'Large Suitcases', icon: 'briefcase' },
-    { key: 'medium', label: 'Medium Suitcases', icon: 'briefcase' },
-    { key: 'small', label: 'Backpacks / Small items', icon: 'bag-handle' },
+    { key: 'large', label: t('booking.item_large_summary'), icon: 'briefcase' },
+    { key: 'medium', label: t('booking.item_medium_summary'), icon: 'briefcase' },
+    { key: 'small', label: t('booking.item_small_summary'), icon: 'bag-handle' },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ITEMS SUMMARY</Text>
+      <Text style={styles.title}>{t('booking.items_summary_label')}</Text>
       
       {itemTypes.map((type) => {
         const quantity = items[type.key as keyof ItemsCount];

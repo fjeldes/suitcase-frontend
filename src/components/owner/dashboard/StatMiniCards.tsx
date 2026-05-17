@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -39,16 +40,17 @@ export const StatMiniCards = ({
   percentageIncrease,
   onViewDetails,
 }: StatMiniCardsProps) => {
+  const { t } = useTranslation();
   const isPositive = percentageIncrease >= 0;
-  const revenueSub = `${isPositive ? '+' : ''}${percentageIncrease}% vs yesterday`;
+  const revenueSub = `${isPositive ? '+' : ''}${percentageIncrease}% ${t('owner.vs_yesterday')}`;
 
   return (
     <TouchableOpacity onPress={onViewDetails} activeOpacity={onViewDetails ? 0.8 : 1} disabled={!onViewDetails}>
       <View style={styles.grid}>
-        <StatCard title="Revenue Today" value={`$${todayRevenue.toFixed(0)}`} icon="cash-outline" color="#0A0E5E" bgColor="#EEF2FF" subtitle={revenueSub} />
-        <StatCard title="Active Bookings" value={activeBookings} icon="briefcase-outline" color="#6366F1" bgColor="#EEF2FF" />
-        <StatCard title="Pickups Today" value={pickupsToday} icon="log-out-outline" color="#22C55E" bgColor="#F0FDF4" />
-        <StatCard title="Dropoffs Today" value={dropoffsToday} icon="log-in-outline" color="#FF6D00" bgColor="#FFF7ED" />
+        <StatCard title={t('owner.revenue_today')} value={`$${todayRevenue.toFixed(0)}`} icon="cash-outline" color="#0A0E5E" bgColor="#EEF2FF" subtitle={revenueSub} />
+        <StatCard title={t('owner.active_bookings')} value={activeBookings} icon="briefcase-outline" color="#6366F1" bgColor="#EEF2FF" />
+        <StatCard title={t('owner.pickups_today')} value={pickupsToday} icon="log-out-outline" color="#22C55E" bgColor="#F0FDF4" />
+        <StatCard title={t('owner.dropoffs_today')} value={dropoffsToday} icon="log-in-outline" color="#FF6D00" bgColor="#FFF7ED" />
       </View>
     </TouchableOpacity>
   );

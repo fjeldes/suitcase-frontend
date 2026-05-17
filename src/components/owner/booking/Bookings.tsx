@@ -3,6 +3,7 @@ import { useOwnerStore } from '@/store/useOwnerStore'
 import { useTheme } from '@/hooks/useTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
@@ -18,15 +19,15 @@ import {
 } from 'react-native'
 import { BookingCard } from './BookingCard'
 
-const FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Today', value: 'today' },
-  { label: 'To Check-in', value: 'confirmed' },
-  { label: 'In Storage', value: 'in_storage' },
-  { label: 'Completed', value: 'completed' },
-]
-
 export default function BookingsScreen() {
+  const { t } = useTranslation()
+  const FILTERS = useMemo(() => [
+    { label: t('common.all'), value: 'all' },
+    { label: t('stats.today'), value: 'today' },
+    { label: t('booking.status_confirmed'), value: 'confirmed' },
+    { label: t('booking.status_in_storage'), value: 'in_storage' },
+    { label: t('booking.status_completed'), value: 'completed' },
+  ], [t])
   const [activeFilter, setActiveFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const { activeLocationId } = useOwnerStore()
@@ -67,12 +68,12 @@ export default function BookingsScreen() {
           <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 15 }}>
             <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
           </TouchableOpacity>
-          <Text style={s.headerTitle}>Bookings</Text>
+          <Text style={s.headerTitle}>{t('owner.bookings')}</Text>
         </View>
         <View style={s.searchWrapper}>
           <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
-            placeholder="Search client or booking ID..."
+            placeholder={t('owner.search_placeholder')}
             style={s.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -117,7 +118,7 @@ export default function BookingsScreen() {
           ListEmptyComponent={
             <View style={s.emptyState}>
               <Ionicons name="receipt-outline" size={60} color={colors.iconMuted} />
-              <Text style={s.emptyText}>No bookings for this filter</Text>
+              <Text style={s.emptyText}>{t('owner.no_bookings_filter')}</Text>
             </View>
           }
         />

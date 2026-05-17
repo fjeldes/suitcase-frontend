@@ -1,4 +1,5 @@
 // components/booking/BookingSummary.tsx
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -32,6 +33,7 @@ export const BookingSummary = ({
     onCancel,
     onViewReceipt,
 }: BookingSummaryProps) => {
+    const { t } = useTranslation();
     const activeItems = Object.entries(items).filter(([_, qty]) => qty > 0);
     const formatter = new Intl.NumberFormat('es-CL', {
         style: 'currency',
@@ -40,7 +42,7 @@ export const BookingSummary = ({
     });
     return (
         <View style={styles.paymentCard}>
-            <Text style={styles.paymentTitle}>Resumen de Pago</Text>
+            <Text style={styles.paymentTitle}>{t('booking.payment_summary')}</Text>
 
             {activeItems.map(([size, qty]) => {
                 const price = pricePerDay[size as keyof typeof pricePerDay] || 0;
@@ -50,7 +52,7 @@ export const BookingSummary = ({
                 return (
                     <View key={size} style={styles.paymentRow}>
                         <Text style={styles.payLabel}>
-                            {qty}x {size.charAt(0).toUpperCase() + size.slice(1)} ({days} {days > 1 ? 'días' : 'día'})
+                            {qty}x {size.charAt(0).toUpperCase() + size.slice(1)} ({days} {days > 1 ? t('booking.days') : t('booking.day')})
                         </Text>
                         <Text style={styles.payValue}>${subtotal.toLocaleString()}</Text>
                     </View>
@@ -62,7 +64,7 @@ export const BookingSummary = ({
                 <View style={styles.taxContainer}>
                     <View style={styles.divider} />
                     <View style={styles.paymentRow}>
-                        <Text style={styles.taxLabel}>IVA (19%) incluido</Text>
+                        <Text style={styles.taxLabel}>{t('booking.iva_included')}</Text>
                         <Text style={styles.taxValue}>${receipt.tax.toLocaleString()}</Text>
                     </View>
                 </View>
@@ -72,15 +74,15 @@ export const BookingSummary = ({
 
             <View style={styles.totalRow}>
                 <View>
-                    <Text style={styles.totalLabel}>Precio Total</Text>
-                    <Text style={styles.daysLabel}>{days} {days > 1 ? 'Días de custodia' : 'Día de custodia'}</Text>
+                    <Text style={styles.totalLabel}>{t('booking.total_price')}</Text>
+                    <Text style={styles.daysLabel}>{days > 1 ? t('booking.custody_days', { days }) : t('booking.custody_day', { days })}</Text>
                 </View>
                 <Text style={styles.totalValue}>{formatter.format(totalPrice)}</Text>
             </View>
 
             {onViewReceipt && (
                 <TouchableOpacity style={styles.receiptButton} onPress={onViewReceipt}>
-                    <Text style={styles.receiptButtonText}>View Receipt</Text>
+                    <Text style={styles.receiptButtonText}>{t('booking.get_receipt')}</Text>
                 </TouchableOpacity>
             )}
 
@@ -93,7 +95,7 @@ export const BookingSummary = ({
                     {isCanceling ? (
                         <ActivityIndicator color="#E53E3E" />
                     ) : (
-                        <Text style={styles.cancelButtonText}>Cancel Booking</Text>
+                        <Text style={styles.cancelButtonText}>{t('booking.cancel_booking')}</Text>
                     )}
                 </TouchableOpacity>
             )}

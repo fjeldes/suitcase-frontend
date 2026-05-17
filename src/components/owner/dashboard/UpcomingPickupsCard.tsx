@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
@@ -15,6 +16,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export const UpcomingPickupsCard = ({ count, nextTime, nextPerson, nextItem }: PickupsProps) => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -31,8 +33,8 @@ export const UpcomingPickupsCard = ({ count, nextTime, nextPerson, nextItem }: P
             <MaterialCommunityIcons name="calendar-blank-outline" size={24} color="#92400E" />
           </View>
           <View>
-            <Text style={styles.title}>Upcoming Pickups</Text>
-            <Text style={styles.subText}>{count} Scheduled today</Text>
+            <Text style={styles.title}>{t('owner.upcoming_pickups')}</Text>
+            <Text style={styles.subText}>{t('owner.scheduled_today', { count })}</Text>
           </View>
         </View>
         <Ionicons name={expanded ? "chevron-up" : "chevron-down"} size={22} color="#64748B" />
@@ -41,11 +43,11 @@ export const UpcomingPickupsCard = ({ count, nextTime, nextPerson, nextItem }: P
       {/* Contenido colapsable */}
       {expanded && (
         <View style={styles.nextPickupBox}>
-          <Text style={styles.nextLabel}>NEXT PICKUP</Text>
+          <Text style={styles.nextLabel}>{t('owner.next_pickup_label')}</Text>
           <Text style={styles.nextDetail}>
             {nextTime
-              ? `${nextTime} • ${nextPerson || 'Guest'} (${nextItem})`
-              : 'No more pickups today'}
+              ? `${nextTime} • ${nextPerson || t('common.guest')} (${nextItem})`
+              : t('owner.no_pickups')}
           </Text>
         </View>
       )}

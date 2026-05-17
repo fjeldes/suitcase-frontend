@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,10 +20,15 @@ import { NotificationItem } from './NotificationItem';
 import { createStyles } from './Notifications.style';
 dayjs.extend(relativeTime);
 
-const CATEGORIES = ['All Notifications', 'Bookings', 'System', 'Marketing'];
-
 export default function NotificationsScreen() {
-  const [activeTab, setActiveTab] = useState('All Notifications');
+  const { t } = useTranslation();
+  const CATEGORIES = useMemo(() => [
+    t('notifications.category_all'),
+    t('notifications.category_bookings'),
+    t('notifications.category_system'),
+    t('notifications.category_marketing'),
+  ], [t]);
+  const [activeTab, setActiveTab] = useState(t('notifications.category_all'));
   const router = useRouter();
   const { colors } = useTheme();
 
@@ -52,7 +58,7 @@ export default function NotificationsScreen() {
         <TouchableOpacity style={styles.menuButton} onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="chevron-back" size={28} color={colors.iconColor} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
+        <Text style={styles.headerTitle}>{t('notifications.title')}</Text>
         <View style={styles.avatarMini}>
           <Ionicons name="shield-checkmark" size={18} color={colors.iconColor} />
         </View>
@@ -66,10 +72,8 @@ export default function NotificationsScreen() {
         }
       >
         <View style={styles.introSection}>
-          <Text style={styles.sectionTitle}>Activity Overview</Text>
-          <Text style={styles.sectionSubtitle}>
-            Manage your business pulse with real-time updates and critical monitoring.
-          </Text>
+          <Text style={styles.sectionTitle}>{t('notifications.activity_overview')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('notifications.subtitle')}</Text>
           <TouchableOpacity
             style={styles.markAllButton}
             activeOpacity={0.7}
@@ -78,7 +82,7 @@ export default function NotificationsScreen() {
             accessibilityRole="button"
           >
             <Ionicons name="checkmark-done-outline" size={18} color={colors.iconColor} />
-            <Text style={styles.markAllText}>Mark all as read</Text>
+            <Text style={styles.markAllText}>{t('notifications.mark_all_read')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -122,7 +126,7 @@ export default function NotificationsScreen() {
                 key={item.id}
                 type={item.category === 'TRANSACTIONAL' ? 'CRITICAL' : 'LOG'}
                 title={item.title}
-                time={dayjs(item.createdAt).fromNow(true).toUpperCase() + ' AGO'}
+                time={dayjs(item.createdAt).fromNow(true).toUpperCase() + ' ' + t('notifications.ago')}
                 description={item.message}
                 isUnread={!item.isRead}
                 showButtons={item.category === 'TRANSACTIONAL' && !item.isRead}
@@ -135,7 +139,7 @@ export default function NotificationsScreen() {
             <View style={{ alignItems: 'center', marginTop: 60, paddingHorizontal: 40 }}>
               <Ionicons name="notifications-off-outline" size={48} color={colors.iconMuted} />
               <Text style={{ color: colors.textMuted, textAlign: 'center', marginTop: 12, fontSize: 16 }}>
-                Everything is up to date! Check back later for new activities.
+                {t('notifications.empty')}
               </Text>
             </View>
           )}
@@ -149,7 +153,7 @@ export default function NotificationsScreen() {
             accessibilityLabel="Refresh notifications"
             accessibilityRole="button"
           >
-            <Text style={styles.loadMoreText}>Refresh history</Text>
+            <Text style={styles.loadMoreText}>{t('notifications.refresh')}</Text>
             <Ionicons name="refresh-outline" size={20} color={colors.iconColor} />
           </TouchableOpacity>
         )}

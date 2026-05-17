@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { BookingData } from '@/types/booking.types';
 import { useReviews } from '@/hooks/useReviews';
 
@@ -22,6 +23,7 @@ interface ReviewModalProps {
 }
 
 export const ReviewModal = ({ isVisible, onClose, booking, onSuccess }: ReviewModalProps) => {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const { createReview, isPostingReview } = useReviews();
@@ -56,15 +58,13 @@ export const ReviewModal = ({ isVisible, onClose, booking, onSuccess }: ReviewMo
           <View style={styles.content}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>Rate your experience</Text>
+              <Text style={styles.title}>{t('review.rate_experience')}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeBtn} accessibilityLabel="Close review modal" accessibilityRole="button">
                 <Ionicons name="close" size={24} color="#94A3B8" />
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.subtitle}>
-              How was your storage at {booking?.location?.name}?
-            </Text>
+            <Text style={styles.subtitle}>{t('review.how_storage_at', { name: booking?.location?.name })}</Text>
 
             {/* Stars Selector */}
             <View style={styles.starsContainer}>
@@ -88,7 +88,7 @@ export const ReviewModal = ({ isVisible, onClose, booking, onSuccess }: ReviewMo
             {/* Comment Input */}
             <TextInput
               style={styles.input}
-              placeholder="Tell us about your experience (optional)..."
+              placeholder={t('review.placeholder')}
               placeholderTextColor="#94A3B8"
               multiline
               numberOfLines={4}
@@ -108,7 +108,7 @@ export const ReviewModal = ({ isVisible, onClose, booking, onSuccess }: ReviewMo
               {isPostingReview ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text style={styles.submitBtnText}>Submit Review</Text>
+                <Text style={styles.submitBtnText}>{t('review.submit')}</Text>
               )}
             </TouchableOpacity>
           </View>

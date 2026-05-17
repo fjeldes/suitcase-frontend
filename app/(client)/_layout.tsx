@@ -18,7 +18,7 @@ export default function ClientLayout() {
         tabBarStyle: {
           backgroundColor: isDark ? colors.surfaceCard : 'rgba(255,255,255,0.85)',
           borderTopWidth: 0,
-          elevation: 20,
+          elevation: 0,
           shadowColor: '#1a237e',
           shadowOpacity: 0.06,
           shadowRadius: 40,
@@ -29,7 +29,11 @@ export default function ClientLayout() {
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
           position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
         },
+        tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '700',

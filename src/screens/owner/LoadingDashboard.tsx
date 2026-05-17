@@ -1,9 +1,12 @@
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
 
-export const LoadingDashboard = ({ message = "Loading dashboard..." }) => {
+export const LoadingDashboard = ({ message }: { message?: string }) => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
+  const displayMessage = message || t('common.loading');
 
   const fadeAnim = useRef(new Animated.Value(0.5)).current;
 
@@ -30,7 +33,7 @@ export const LoadingDashboard = ({ message = "Loading dashboard..." }) => {
       <View style={styles.content}>
         {/* Spinner Principal */}
         <ActivityIndicator size="large" color="#0A0E5E" />
-        <Text style={styles.text}>{message}</Text>
+        <Text style={styles.text}>{displayMessage}</Text>
 
         {/* Cards Skeletons Visuales */}
         <View style={styles.row}>

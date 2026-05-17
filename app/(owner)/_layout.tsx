@@ -1,10 +1,12 @@
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 export default function OwnerLayout() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
 
@@ -17,7 +19,7 @@ export default function OwnerLayout() {
         tabBarStyle: {
           backgroundColor: colors.tabBarBg,
           borderTopWidth: 0,
-          elevation: 20,
+          elevation: 0,
           shadowColor: '#1a237e',
           shadowOpacity: 0.06,
           shadowRadius: 40,
@@ -28,14 +30,18 @@ export default function OwnerLayout() {
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
           position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
         },
+        tabBarHideOnKeyboard: true,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '700', marginTop: 4 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'DASHBOARD',
+          title: t('tabs.dashboard'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="grid" size={22} color={color} />
@@ -46,7 +52,7 @@ export default function OwnerLayout() {
       <Tabs.Screen
         name="bookings"
         options={{
-          title: 'BOOKINGS',
+          title: t('tabs.bookings'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="briefcase" size={22} color={color} />
@@ -57,7 +63,7 @@ export default function OwnerLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'PROFILE',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && { backgroundColor: colors.tabBarActiveBg }]}>
               <Ionicons name="person" size={22} color={color} />

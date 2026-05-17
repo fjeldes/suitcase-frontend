@@ -4,6 +4,7 @@ import { termsService } from '@/services/termsService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -21,61 +22,6 @@ import {
 import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const FEATURES = [
-  {
-    icon: 'cash-outline' as const,
-    family: 'Ionicons',
-    title: 'Earn passive income',
-    desc: 'Hosts earn an average of $5,400+ per year just from their unused space.',
-    accent: '#22C55E',
-    bg: '#F0FDF4',
-  },
-  {
-    icon: 'pricetag-outline' as const,
-    family: 'Ionicons',
-    title: 'Set your own prices',
-    desc: 'You decide how much to charge per bag size per day. Full control, always.',
-    accent: '#6366F1',
-    bg: '#EEF2FF',
-  },
-  {
-    icon: 'shield-checkmark-outline' as const,
-    family: 'Ionicons',
-    title: 'Secure & Insured',
-    desc: 'Every booking is backed by our protection policy. Peace of mind for you and your guests.',
-    accent: '#F59E0B',
-    bg: '#FFFBEB',
-  },
-  {
-    icon: 'star-outline' as const,
-    family: 'Ionicons',
-    title: 'World class vetting',
-    desc: 'Our review system ensures only trustworthy travelers use your space.',
-    accent: '#0EA5E9',
-    bg: '#F0F9FF',
-  },
-];
-
-const STEPS = [
-  {
-    number: '01',
-    title: 'List your space',
-    desc: 'Add your location, set capacity and pricing in under 5 minutes.',
-  },
-  {
-    number: '02',
-    title: 'Approve requests',
-    desc: 'Review and confirm bookings. Accept travelers you trust.',
-  },
-  {
-    number: '03',
-    title: 'Start earning',
-    desc: 'Receive payouts directly. No middlemen, no hassle.',
-  },
-];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -123,11 +69,65 @@ function StepRow({ step, isLast }: { step: (typeof STEPS)[0]; isLast: boolean })
 
 export default function BecomeOwnerScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { mutate: becomeOwner, isPending } = useBecomeOwner();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [termsModal, setTermsModal] = useState(false);
   const [ownerTerms, setOwnerTerms] = useState<any>(null);
   const [loadingTerms, setLoadingTerms] = useState(false);
+
+  const FEATURES = useMemo(() => [
+    {
+      icon: 'cash-outline' as const,
+      family: 'Ionicons',
+      title: t('becomeOwner.feature_earn_title'),
+      desc: t('becomeOwner.feature_earn_desc'),
+      accent: '#22C55E',
+      bg: '#F0FDF4',
+    },
+    {
+      icon: 'pricetag-outline' as const,
+      family: 'Ionicons',
+      title: t('becomeOwner.feature_prices_title'),
+      desc: t('becomeOwner.feature_prices_desc'),
+      accent: '#6366F1',
+      bg: '#EEF2FF',
+    },
+    {
+      icon: 'shield-checkmark-outline' as const,
+      family: 'Ionicons',
+      title: t('becomeOwner.feature_secure_title'),
+      desc: t('becomeOwner.feature_secure_desc'),
+      accent: '#F59E0B',
+      bg: '#FFFBEB',
+    },
+    {
+      icon: 'star-outline' as const,
+      family: 'Ionicons',
+      title: t('becomeOwner.feature_vetting_title'),
+      desc: t('becomeOwner.feature_vetting_desc'),
+      accent: '#0EA5E9',
+      bg: '#F0F9FF',
+    },
+  ], [t]);
+
+  const STEPS = useMemo(() => [
+    {
+      number: '01',
+      title: t('becomeOwner.step1_title'),
+      desc: t('becomeOwner.step1_desc'),
+    },
+    {
+      number: '02',
+      title: t('becomeOwner.step2_title'),
+      desc: t('becomeOwner.step2_desc'),
+    },
+    {
+      number: '03',
+      title: t('becomeOwner.step3_title'),
+      desc: t('becomeOwner.step3_desc'),
+    },
+  ], [t]);
 
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 120],
@@ -144,12 +144,12 @@ export default function BecomeOwnerScreen() {
     } catch {
       becomeOwner(undefined, {
         onSuccess: () => {
-          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a KipGo host. Let's create your first storage location." });
+          Toast.show({ type: 'success', text1: t('becomeOwner.toast_welcome'), text2: t('becomeOwner.toast_welcome_desc') });
           router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
-          const msg = err?.response?.data?.message || 'Something went wrong. Please try again.';
-          Toast.show({ type: 'error', text1: 'Error', text2: msg });
+          const msg = err?.response?.data?.message || t('becomeOwner.toast_error_fallback');
+          Toast.show({ type: 'error', text1: t('common.error'), text2: msg });
         },
       });
     } finally {
@@ -164,16 +164,16 @@ export default function BecomeOwnerScreen() {
       setTermsModal(false);
       becomeOwner(undefined, {
         onSuccess: () => {
-          Toast.show({ type: 'success', text1: 'Welcome, Partner!', text2: "You're now a KipGo host. Let's create your first storage location." });
+          Toast.show({ type: 'success', text1: t('becomeOwner.toast_welcome'), text2: t('becomeOwner.toast_welcome_desc') });
           router.replace(ROUTES.OWNER.CREATE_LOCATION);
         },
         onError: (err: any) => {
-          const msg = err?.response?.data?.message || 'Something went wrong. Please try again.';
-          Toast.show({ type: 'error', text1: 'Error', text2: msg });
+          const msg = err?.response?.data?.message || t('becomeOwner.toast_error_fallback');
+          Toast.show({ type: 'error', text1: t('common.error'), text2: msg });
         },
       });
     } catch {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Could not accept terms. Please try again.' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('becomeOwner.toast_terms_error') });
     }
   };
 
@@ -184,7 +184,7 @@ export default function BecomeOwnerScreen() {
         <TouchableOpacity onPress={() => router.navigate('/(client)/profile')} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.floatingTitle}>Become a Partner</Text>
+        <Text style={styles.floatingTitle}>{t('becomeOwner.floating_title')}</Text>
         <View style={{ width: 36 }} />
       </Animated.View>
 
@@ -203,7 +203,7 @@ export default function BecomeOwnerScreen() {
 
           <View style={styles.heroBadge}>
             <MaterialCommunityIcons name="shield-check" size={14} color="#22C55E" />
-            <Text style={styles.heroBadgeText}>KipGo Partner</Text>
+            <Text style={styles.heroBadgeText}>{t('becomeOwner.badge')}</Text>
           </View>
 
           <Text style={styles.heroTitle}>
@@ -211,24 +211,22 @@ export default function BecomeOwnerScreen() {
             <Text style={styles.heroTitleAccent}>guaranteed income.</Text>
           </Text>
 
-          <Text style={styles.heroSub}>
-            Join the only luggage-storage platform that pays you fairly, protects your space, and connects you with verified global travelers.
-          </Text>
+          <Text style={styles.heroSub}>{t('becomeOwner.hero_subtitle')}</Text>
 
           {/* Stats */}
           <View style={styles.statsRow}>
-            <StatBadge value="$5,400+" label="Avg yearly earnings" />
+            <StatBadge value="$5,400+" label={t('becomeOwner.stats_earnings')} />
             <View style={styles.statDivider} />
-            <StatBadge value="4.9★" label="Partner rating" />
+            <StatBadge value="4.9★" label={t('becomeOwner.stats_rating')} />
             <View style={styles.statDivider} />
-            <StatBadge value="100%" label="Free to join" />
+            <StatBadge value="100%" label={t('becomeOwner.stats_free')} />
           </View>
         </LinearGradient>
 
         {/* ── WHY SECTION ── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>WHY HOST WITH US</Text>
-          <Text style={styles.sectionTitle}>Everything you need,{'\n'}nothing you don't.</Text>
+          <Text style={styles.sectionLabel}>{t('becomeOwner.why_label')}</Text>
+          <Text style={styles.sectionTitle}>{t('becomeOwner.why_title')}</Text>
 
           <View style={styles.featuresGrid}>
             {FEATURES.map((f) => (
@@ -240,9 +238,9 @@ export default function BecomeOwnerScreen() {
         {/* ── EARNINGS HIGHLIGHT ── */}
         <LinearGradient colors={['#F0FDF4', '#DCFCE7']} style={styles.earningsCard}>
           <View style={styles.earningsLeft}>
-            <Text style={styles.earningsLabel}>AVERAGE EARNINGS</Text>
-            <Text style={styles.earningsAmount}>$5,400</Text>
-            <Text style={styles.earningsSub}>per year · per location</Text>
+            <Text style={styles.earningsLabel}>{t('becomeOwner.earnings_label')}</Text>
+            <Text style={styles.earningsAmount}>{t('becomeOwner.earnings_amount')}</Text>
+            <Text style={styles.earningsSub}>{t('becomeOwner.earnings_sub')}</Text>
           </View>
           <View style={styles.earningsRight}>
             <MaterialCommunityIcons name="trending-up" size={48} color="#22C55E" />
@@ -251,8 +249,8 @@ export default function BecomeOwnerScreen() {
 
         {/* ── GETTING STARTED ── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>HOW IT WORKS</Text>
-          <Text style={styles.sectionTitle}>Getting started{'\n'}is seamless.</Text>
+          <Text style={styles.sectionLabel}>{t('becomeOwner.how_label')}</Text>
+          <Text style={styles.sectionTitle}>{t('becomeOwner.how_title')}</Text>
 
           <View style={styles.stepsContainer}>
             {STEPS.map((step, i) => (
@@ -264,10 +262,8 @@ export default function BecomeOwnerScreen() {
         {/* ── CTA ── */}
         <LinearGradient colors={['#FF6B00', '#FF8F00']} style={styles.ctaCard}>
           <MaterialCommunityIcons name="shield-lock" size={40} color="rgba(255,255,255,0.9)" style={{ marginBottom: 16 }} />
-          <Text style={styles.ctaTitle}>Ready to become a{'\n'}Custodian?</Text>
-          <Text style={styles.ctaSub}>
-            It takes less than 5 minutes to list your first space. No commitment required.
-          </Text>
+          <Text style={styles.ctaTitle}>{t('becomeOwner.cta_title')}</Text>
+          <Text style={styles.ctaSub}>{t('becomeOwner.cta_sub')}</Text>
           <TouchableOpacity
             style={[styles.ctaButton, isPending && { opacity: 0.7 }]}
             onPress={handleGetStarted}
@@ -278,7 +274,7 @@ export default function BecomeOwnerScreen() {
               <ActivityIndicator color="#FF6B00" />
             ) : (
               <>
-                <Text style={styles.ctaButtonText}>Get Started Now</Text>
+                <Text style={styles.ctaButtonText}>{t('becomeOwner.cta_button')}</Text>
                 <Ionicons name="arrow-forward" size={20} color="#FF6B00" />
               </>
             )}
@@ -296,8 +292,8 @@ export default function BecomeOwnerScreen() {
             padding: 24, paddingBottom: 40, maxHeight: '80%',
           }}>
             <View style={{ width: 40, height: 5, backgroundColor: '#E2E8F0', borderRadius: 3, alignSelf: 'center', marginBottom: 20 }} />
-            <Text style={{ fontSize: 22, fontWeight: '800', color: '#0A0E5E', marginBottom: 4 }}>Terms & Conditions</Text>
-            <Text style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Version {ownerTerms?.version} - Owner Agreement</Text>
+            <Text style={{ fontSize: 22, fontWeight: '800', color: '#0A0E5E', marginBottom: 4 }}>{t('becomeOwner.terms_title')}</Text>
+            <Text style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>{t('becomeOwner.terms_version', { version: ownerTerms?.version })}</Text>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator>
               <Text style={{ fontSize: 14, color: '#1A202C', lineHeight: 22 }}>{ownerTerms?.content}</Text>
             </ScrollView>
@@ -306,13 +302,13 @@ export default function BecomeOwnerScreen() {
                 style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: '#F1F5F9', alignItems: 'center' }}
                 onPress={() => setTermsModal(false)}
               >
-                <Text style={{ fontSize: 15, fontWeight: '700', color: '#64748B' }}>Decline</Text>
+                <Text style={{ fontSize: 15, fontWeight: '700', color: '#64748B' }}>{t('becomeOwner.terms_decline')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ flex: 1, padding: 16, borderRadius: 14, backgroundColor: '#0A0E5E', alignItems: 'center' }}
                 onPress={handleAcceptTerms}
               >
-                <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>Accept</Text>
+                <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>{t('becomeOwner.terms_accept')}</Text>
               </TouchableOpacity>
             </View>
           </View>

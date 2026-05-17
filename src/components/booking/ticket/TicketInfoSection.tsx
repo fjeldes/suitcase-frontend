@@ -1,27 +1,28 @@
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { StyleSheet, Text, View } from 'react-native'
 import { InfoBadge } from './InfoBadge'
 
-export const TicketInfoSection = ({ customerName, location, period }: any) => (
+export const TicketInfoSection = ({ customerName, location, period }: any) => {
+  const { t } = useTranslation();
+  return (
   <View style={styles.container}>
-    {/* Customer Row */}
     <View style={styles.customerCard}>
       <View>
-        <Text style={styles.label}>CUSTOMER NAME</Text>
+        <Text style={styles.label}>{t('booking.customer_name_label')}</Text>
         <Text style={styles.value}>{customerName}</Text>
       </View>
       <View style={styles.iconBox}>
         <Ionicons name="person" size={20} color="#0A0E5E" />
       </View>
     </View>
-
-    {/* Fila de Badges con InfoBadge */}
     <View style={styles.row}>
-      <InfoBadge label="Location" value={location} />
-      <InfoBadge label="Period" value={period} />
+      <InfoBadge label={t('booking.location_label')} value={location} />
+      <InfoBadge label={t('booking.period_label')} value={period} />
     </View>
   </View>
-)
+);
+}
 
 const styles = StyleSheet.create({
   container: {

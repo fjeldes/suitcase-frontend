@@ -1,10 +1,12 @@
 import { useActivityLogs } from '@/hooks/useActivityLogs';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ActivityLogsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [limit] = useState(50);
   const { data: logs, isLoading, refetch, isRefetching } = useActivityLogs(limit);
@@ -14,19 +16,19 @@ export default function ActivityLogsScreen() {
     const now = new Date();
     if (date.toDateString() === now.toDateString()) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const yesterday = new Date(); yesterday.setDate(now.getDate() - 1);
-    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (date.toDateString() === yesterday.toDateString()) return t('activity.yesterday') + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const getActivityConfig = (type: string) => {
     switch (type) {
-      case 'NEW_BOOKING': return { icon: 'time-outline' as const, color: '#B45309', label: 'New Booking' };
-      case 'COLLECTION_COMPLETED': return { icon: 'checkmark-circle-outline' as const, color: '#818CF8', label: 'Collection Completed' };
-      case 'CHECK_IN': return { icon: 'log-in-outline' as const, color: '#22C55E', label: 'Check In' };
-      case 'CHECK_OUT': return { icon: 'log-out-outline' as const, color: '#FF6D00', label: 'Check Out' };
-      case 'BOOKING_CANCELLED': return { icon: 'close-circle-outline' as const, color: '#F87171', label: 'Cancelled' };
-      case 'REVIEW_RECEIVED': return { icon: 'star' as const, color: '#F59E0B', label: 'Review' };
-      default: return { icon: 'information-circle-outline' as const, color: '#64748B', label: 'Activity' };
+      case 'NEW_BOOKING': return { icon: 'time-outline' as const, color: '#B45309', label: t('activity.new_booking') };
+      case 'COLLECTION_COMPLETED': return { icon: 'checkmark-circle-outline' as const, color: '#818CF8', label: t('activity.collection_completed') };
+      case 'CHECK_IN': return { icon: 'log-in-outline' as const, color: '#22C55E', label: t('activity.check_in') };
+      case 'CHECK_OUT': return { icon: 'log-out-outline' as const, color: '#FF6D00', label: t('activity.check_out') };
+      case 'BOOKING_CANCELLED': return { icon: 'close-circle-outline' as const, color: '#F87171', label: t('activity.cancelled') };
+      case 'REVIEW_RECEIVED': return { icon: 'star' as const, color: '#F59E0B', label: t('activity.review') };
+      default: return { icon: 'information-circle-outline' as const, color: '#64748B', label: t('activity.activity') };
     }
   };
 
@@ -36,7 +38,7 @@ export default function ActivityLogsScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Activity Log</Text>
+        <Text style={styles.topBarTitle}>{t('activity.title')}</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -51,7 +53,7 @@ export default function ActivityLogsScreen() {
           ListEmptyComponent={
             <View style={styles.center}>
               <Ionicons name="list-circle-outline" size={48} color="#CBD5E0" />
-              <Text style={styles.emptyText}>No activity recorded yet</Text>
+              <Text style={styles.emptyText}>{t('activity.no_activity')}</Text>
             </View>
           }
           renderItem={({ item }) => {

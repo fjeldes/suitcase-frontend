@@ -1,12 +1,14 @@
 import { useLocationStore } from '@/store/useLocationStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView from 'react-native-maps';
 
 export default function MapSelector() {
+  const { t } = useTranslation();
   const router = useRouter();
   const mapRef = useRef<MapView>(null);
   const googleInputRef = useRef<any>(null);
@@ -21,8 +23,8 @@ export default function MapSelector() {
   });
 
   const [addressInfo, setAddressInfo] = useState({
-    main: "Mueve el mapa",
-    full: "Buscando dirección..."
+    main: t('createLocation.move_map'),
+    full: t('createLocation.searching_address')
   });
 
   const fetchAddressFromCoords = async (lat: number, lng: number) => {
@@ -86,7 +88,7 @@ export default function MapSelector() {
           </TouchableOpacity>
           <GooglePlacesAutocomplete
             ref={googleInputRef}
-            placeholder="Search address in Chile..."
+            placeholder={t('createLocation.search_chile')}
             fetchDetails={true}
             minLength={3} // Empezar a buscar tras 3 letras
             debounce={400} // Retraso para no saturar la API
@@ -113,12 +115,12 @@ export default function MapSelector() {
 
       <View style={styles.footer}>
         <View style={styles.indicator} />
-        <Text style={styles.label}>SELECTED LOCATION</Text>
+        <Text style={styles.label}>{t('createLocation.selected_location')}</Text>
         <Text style={styles.addressMain}>{addressInfo.main}</Text>
         <Text style={styles.addressFull}>{addressInfo.full}</Text>
 
         <TouchableOpacity style={styles.btn} onPress={handleConfirm} disabled={isSearching}>
-          {isSearching ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Confirm Location</Text>}
+          {isSearching ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>{t('createLocation.confirm_location')}</Text>}
           <Ionicons name="checkmark-circle" size={20} color="#fff" />
         </TouchableOpacity>
       </View>

@@ -1,6 +1,7 @@
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { api } from '@/services/api';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
 import React, { useMemo, useRef, useState } from 'react';
 import {
   Button,
@@ -20,9 +21,10 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import MapView, { Marker } from 'react-native-maps';
 
 export default function CreateLocation() {
+  const { t } = useTranslation();
   const { location: userLocation } = useUserLocation();
   const [marker, setMarker] = useState<any>(null);
-  const [name, setName] = useState('Nueva Ubicación');
+  const [name, setName] = useState(t('createLocation.confirm_location_title'));
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [workingHours, setWorkingHours] = useState([
@@ -52,7 +54,7 @@ export default function CreateLocation() {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return Toast.show({ type: 'error', text1: 'Error', text2: 'Permiso denegado' });
+    if (status !== 'granted') return Toast.show({ type: 'error', text1: t('common.error'), text2: t('profile.permission_denied') });
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -67,7 +69,7 @@ export default function CreateLocation() {
   };
 
   const create = async () => {
-    if (!marker) return Toast.show({ type: 'error', text1: 'Error', text2: 'Selecciona un punto en el mapa' });
+    if (!marker) return Toast.show({ type: 'error', text1: t('common.error'), text2: t('createLocation.toast_select_point') });
     try {
       setUploading(true);
       
@@ -86,10 +88,10 @@ export default function CreateLocation() {
         capacity: { small: 5, medium: 5, large: 5 },
         pricePerDay: { small: 5, medium: 7, large: 10 },
       });
-      Toast.show({ type: 'success', text1: 'Éxito', text2: 'Location creada correctamente' });
+      Toast.show({ type: 'success', text1: t('createLocation.success_label'), text2: t('createLocation.toast_created') });
       setSelectedImage(null);
     } catch (err: any) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo crear la ubicación.' });
+      Toast.show({ type: 'error', text1: t('common.error'), text2: t('createLocation.toast_create_error') });
     }
   };
 
@@ -125,7 +127,7 @@ export default function CreateLocation() {
       >
         <BottomSheetView style={styles.contentContainer}>
           <GooglePlacesAutocomplete
-            placeholder="¿Dónde está el lugar?"
+            placeholder={t('createLocation.search_placeholder_old')}
             fetchDetails={true}
             onPress={(data, details = null) => {
               if (details) {
@@ -167,7 +169,7 @@ export default function CreateLocation() {
           />
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Store Hours</Text>
+            <Text style={styles.sectionTitle}>{t('createLocation.business_hours')}</Text>
             <TouchableOpacity 
               style={styles.applyAllButton}
               onPress={() => {
@@ -175,7 +177,7 @@ export default function CreateLocation() {
                 setWorkingHours(workingHours.map(d => ({ ...d, open: monday.open, close: monday.close, isClosed: false })));
               }}
             >
-              <Text style={styles.applyAllText}>Apply Mon-Fri to all</Text>
+              <Text style={styles.applyAllText}>{t('createLocation.apply_all')}</Text>
             </TouchableOpacity>
 
             {workingHours.map((item, index) => (
@@ -189,7 +191,7 @@ export default function CreateLocation() {
                     setWorkingHours(newHours);
                   }}
                 >
-                  <Text style={styles.statusText}>{item.isClosed ? 'Closed' : 'Open'}</Text>
+                  <Text style={styles.statusText}>{item.isClosed ? t('booking.closed') : t('booking.open_now')}</Text>
                 </TouchableOpacity>
                 
                 {!item.isClosed && (
@@ -229,7 +231,7 @@ export default function CreateLocation() {
             ) : (
               <View style={styles.imagePlaceholder}>
                 <Ionicons name="camera-outline" size={32} color="#8898AA" />
-                <Text style={styles.imageText}>Agregar foto del local</Text>
+                <Text style={styles.imageText}>{t('createLocation.add_photo_placeholder')}</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -243,7 +245,7 @@ export default function CreateLocation() {
               {uploading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text style={styles.buttonText}>Confirmar Ubicación</Text>
+                <Text style={styles.buttonText}>{t('createLocation.confirm_location_title')}</Text>
               )}
             </TouchableOpacity>
           </View>

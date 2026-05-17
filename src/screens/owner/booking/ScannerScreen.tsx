@@ -3,13 +3,15 @@ import { useValidateBooking } from '@/hooks/useValidateBooking'
 import { useBookingStore } from '@/store/useBookingStore'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Toast from 'react-native-toast-message'
 
 export default function ScannerScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
-
+ 
   const [permission, requestPermission] = useCameraPermissions()
   const [scanned, setScanned] = useState(false)
   const setCurrentBooking = useBookingStore((state) => state.setCurrentBooking)
@@ -26,9 +28,9 @@ export default function ScannerScreen() {
     return (
       <SafeAreaView style={styles.centerContainer}>
         <View style={styles.permissionBox}>
-          <Text style={styles.permissionText}>Camera access is required to scan QR codes</Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission} accessibilityLabel="Grant camera permission" accessibilityRole="button">
-            <Text style={styles.permissionButtonText}>Grant Permission</Text>
+          <Text style={styles.permissionText}>{t('scanner.camera_required')}</Text>
+          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission} accessibilityLabel={t('scanner.grant_permission')} accessibilityRole="button">
+            <Text style={styles.permissionButtonText}>{t('scanner.grant_permission')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -57,8 +59,8 @@ export default function ScannerScreen() {
         })
       },
       onError: (error: any) => {
-        const message = error.response?.data?.message || 'QR Code invalid or expired'
-        Toast.show({ type: 'error', text1: 'Invalid QR', text2: message });
+        const message = error.response?.data?.message || t('scanner.qr_expired')
+        Toast.show({ type: 'error', text1: t('scanner.invalid_qr'), text2: message });
         setScanned(false)
       },
     })
@@ -87,7 +89,7 @@ export default function ScannerScreen() {
           </View>
 
           <View style={styles.unfocusedContainer}>
-            <Text style={styles.hintText}>Position the QR code inside the frame</Text>
+            <Text style={styles.hintText}>{t('scanner.hint')}</Text>
           </View>
         </View>
 
@@ -99,7 +101,7 @@ export default function ScannerScreen() {
             accessibilityLabel="Simulate QR scan (development only)"
             accessibilityRole="button"
           >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Simulate QR Scan</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>{t('scanner.simulate')}</Text>
           </TouchableOpacity>
         )}
       </CameraView>

@@ -10,6 +10,7 @@ export interface CreateBookingPayload {
         large: number;
     };
     declaredValue?: number;
+    promoCode?: string;
 }
 
 // services/bookingService.ts
@@ -41,6 +42,11 @@ export const bookingService = {
 
     processBookingAction: async (qrCode: string) => {
         const { data } = await api.patch(`/bookings/process-qr/${qrCode}`);
+        return data;
+    },
+
+    validatePromo: async (code: string, bookingAmount: number) => {
+        const { data } = await api.post('/promos/validate', { code, bookingAmount });
         return data;
     },
 

@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useSwitchMode } from '@/hooks/useSwitchMode';
 import { useTheme } from '@/hooks/useTheme';
 import React, { useMemo, useState } from 'react';
 import {
@@ -30,7 +31,9 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter()
   const { user, logout, setUser } = useAuthStore()
+  const { switchMode } = useSwitchMode()
   const [uploading, setUploading] = useState(false);
+  const isOwner = user?.roles?.includes('owner')
   const s = useMemo(() => createStyles(colors), [colors]);
 
   const pickImage = async () => {
@@ -124,72 +127,87 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* SECCIÓN: BECOME A PARTNER (Banner azul con degradado) */}
-        <LinearGradient colors={[colors.primary, colors.primary]} style={s.partnerCard}>
-          <Text style={s.partnerTitle}>{t('profile.partner_title')}</Text>
-          <Text style={s.partnerSubtitle}>
-            {t('profile.partner_desc')}
-          </Text>
+        {/* MODO OWNER (solo si tiene rol owner y está en modo cliente) */}
+        {isOwner && (
+          <View style={s.sectionContainer}>
+            <Text style={s.sectionTitle}>{t('profile.mode')}</Text>
+            <TouchableOpacity style={s.switchCard} onPress={() => switchMode('owner')}>
+              <View style={s.switchIconBox}>
+                <Ionicons name="swap-horizontal-outline" size={22} color={colors.iconColor} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.switchTitle}>{t('profile.switch_to_owner')}</Text>
+                <Text style={s.switchSub}>{t('profile.switch_subtitle')}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#CBD5E0" />
+            </TouchableOpacity>
+          </View>
+        )}
 
-          <TouchableOpacity 
-            style={s.partnerButton}
-            onPress={() => router.push('/(client)/become-owner')}
-          >
-            <Text style={s.partnerButtonText}>{t('profile.become_partner')}</Text>
-          </TouchableOpacity>
+        {/* SECCIÓN: BECOME A PARTNER (solo si NO es owner) */}
+        {!isOwner && (
+          <LinearGradient colors={[colors.primary, colors.primary]} style={s.partnerCard}>
+            <Text style={s.partnerTitle}>{t('profile.partner_title')}</Text>
+            <Text style={s.partnerSubtitle}>
+              {t('profile.partner_desc')}
+            </Text>
 
-          <Image
-            style={s.previewImage}
-            resizeMode="contain"
-          />
-        </LinearGradient>
+            <TouchableOpacity 
+              style={s.partnerButton}
+              onPress={() => router.push('/(client)/become-owner')}
+            >
+              <Text style={s.partnerButtonText}>{t('profile.become_partner')}</Text>
+            </TouchableOpacity>
 
-        {/* LISTA DE OPCIONES (Estilo refinado) */}
-        <View style={s.optionsContainer}>
-          <TouchableOpacity
-            style={s.optionItem}
-            onPress={() => router.push(ROUTES.CLIENT.SETTINGS)}
-          >
-            <View style={s.optionIconBox}>
-              <Ionicons name="settings-outline" size={22} color={colors.primary} />
-            </View>
-            <Text style={s.optionItemText}>{t('profile.settings')}</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
-          </TouchableOpacity>
+            <Image
+              style={s.previewImage}
+              resizeMode="contain"
+            />
+          </LinearGradient>
+        )}
 
-          <TouchableOpacity 
-            style={s.optionItem}
-            onPress={() => router.push('/(client)/payment-methods')}
-          >
-            <View style={s.optionIconBox}>
-              <Ionicons name="card-outline" size={22} color={colors.primary} />
-            </View>
-            <Text style={s.optionItemText}>{t('profile.payment_methods')}</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
-          </TouchableOpacity>
+        {/* SECCIÓN: AJUSTES */}
+        <View style={s.sectionContainer}>
+          <Text style={s.sectionTitle}>{t('settings.account')}</Text>
+          <View style={s.card}>
+            <TouchableOpacity
+              style={s.optionItem}
+              onPress={() => router.push(ROUTES.CLIENT.SETTINGS)}
+            >
+              <View style={s.optionIconBox}>
+                <Ionicons name="settings-outline" size={22} color={colors.primary} />
+              </View>
+              <Text style={s.optionItemText}>{t('profile.settings')}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={s.optionItem}
-            onPress={() => router.push(ROUTES.CLIENT.HELP)}
-          >
-            <View style={s.optionIconBox}>
-              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
-            </View>
-            <Text style={s.optionItemText}>{t('profile.help_support')}</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={s.optionItem}
+              onPress={() => router.push('/(client)/payment-methods')}
+            >
+              <View style={s.optionIconBox}>
+                <Ionicons name="card-outline" size={22} color={colors.primary} />
+              </View>
+              <Text style={s.optionItemText}>{t('profile.payment_methods')}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* SECCIÓN DE SEGURIDAD */}
-        <View style={s.securityBox}>
-          <View style={s.securityIconBox}>
-            <Ionicons name="lock-closed" size={20} color={colors.badgeOrange} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={s.securityTitle}>{t('profile.security_title')}</Text>
-            <Text style={s.securitySubtitle}>
-              {t('profile.security_subtitle')}
-            </Text>
+        {/* SECCIÓN: SOPORTE */}
+        <View style={s.sectionContainer}>
+          <Text style={s.sectionTitle}>{t('profile.support')}</Text>
+          <View style={s.card}>
+            <TouchableOpacity
+              style={s.optionItem}
+              onPress={() => router.push(ROUTES.CLIENT.HELP)}
+            >
+              <View style={s.optionIconBox}>
+                <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+              </View>
+              <Text style={s.optionItemText}>{t('profile.help_support')}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.iconMuted} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -233,7 +251,6 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWhite: 2,
     borderColor: colors.surfaceCard,
     borderWidth: 2,
   },
@@ -289,17 +306,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
 
   // Options
-  optionsContainer: { width: '100%', gap: 12, marginBottom: 25 },
+  card: { backgroundColor: colors.surfaceCard, borderRadius: 20, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceCard,
     padding: 15,
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.02,
-    shadowRadius: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
   optionIconBox: {
     width: 45,
@@ -312,7 +325,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   optionItemText: { flex: 1, fontSize: 16, fontWeight: '700', color: colors.textPrimary },
 
-  // Security
+  // Shared
+  sectionContainer: { marginTop: 28 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 15 },
+  switchCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceCard, padding: 16, borderRadius: 20, gap: 14, elevation: 2, shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 5 },
+  switchIconBox: { width: 44, height: 44, backgroundColor: colors.tabBarActiveBg, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  switchTitle: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
+  switchSub: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   securityBox: {
     flexDirection: 'row',
     alignItems: 'center',

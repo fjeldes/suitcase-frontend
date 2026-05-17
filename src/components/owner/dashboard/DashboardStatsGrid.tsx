@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
@@ -18,6 +19,7 @@ const StatCard = ({ label, value, color }: StatCardProps) => (
 );
 
 export const DashboardStatsGrid = ({ data }: { data: any }) => {
+  const { t } = useTranslation();
   const calculateTotalOccupancy = () => {
     if (!data.occupancy || data.occupancy.length === 0) return 0;
     const sum = data.occupancy.reduce((acc: number, curr: any) => acc + curr.percentage, 0);
@@ -28,22 +30,22 @@ export const DashboardStatsGrid = ({ data }: { data: any }) => {
   return (
     <View style={styles.grid}>
       <StatCard 
-        label="INCOMING" 
+        label={t('owner.incoming_label')} 
         value={data.pickups.totalToday} 
         color="#0A0E5E" 
       />
       <StatCard 
-        label="ACTIVE" 
+        label={t('owner.active_label')} 
         value={data.bookings.activeCount} 
-        color="#8B4513" // Café/Naranja oscuro
+        color="#8B4513"
       />
       <StatCard 
-        label="Occupancy" 
+        label={t('owner.occupancy_label')} 
         value={`${totalOccupancy}%`}
         color="#7C9AFF" 
       />
       <StatCard 
-        label="REVENUE" 
+        label={t('stats.revenue')} 
         value={`$${data.revenue.today}k`} 
         color="#C1C1C1" 
       />

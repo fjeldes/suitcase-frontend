@@ -2,10 +2,12 @@ import { useDashboardStats } from '@/hooks/useDashboard';
 import { useOwnerStore } from '@/store/useOwnerStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function StatsDetailScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { activeLocationId, activeLocationName } = useOwnerStore();
   const { data: stats } = useDashboardStats(activeLocationId || undefined, { enabled: !!activeLocationId });
@@ -37,28 +39,28 @@ export default function StatsDetailScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#0A0E5E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>{activeLocationName || 'Stats'}</Text>
+        <Text style={styles.topBarTitle}>{activeLocationName || t('stats.title')}</Text>
         <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Revenue Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>REVENUE</Text>
+          <Text style={styles.sectionTitle}>{t('stats.revenue')}</Text>
           <View style={styles.card}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
               <View>
-                <Text style={styles.label}>Today</Text>
+                <Text style={styles.label}>{t('stats.today')}</Text>
                 <Text style={styles.value}>${stats.revenue.today.toFixed(0)}</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.label}>Yesterday</Text>
+                <Text style={styles.label}>{t('stats.yesterday')}</Text>
                 <Text style={styles.value}>${stats.revenue.yesterday.toFixed(0)}</Text>
               </View>
             </View>
             <View style={styles.divider} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.label}>Change</Text>
+              <Text style={styles.label}>{t('stats.change')}</Text>
               <Text style={[styles.value, stats.revenue.percentageIncrease >= 0 ? { color: '#22C55E' } : { color: '#E53E3E' }]}>
                 {stats.revenue.percentageIncrease >= 0 ? '+' : ''}{stats.revenue.percentageIncrease}%
               </Text>
@@ -68,19 +70,19 @@ export default function StatsDetailScreen() {
 
         {/* Bookings Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>BOOKINGS</Text>
+          <Text style={styles.sectionTitle}>{t('stats.bookings')}</Text>
           <View style={styles.card}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
               <View>
-                <Text style={styles.label}>Active</Text>
+                <Text style={styles.label}>{t('stats.active')}</Text>
                 <Text style={styles.value}>{stats.bookings.activeCount}</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.label}>Today Pickups</Text>
+                <Text style={styles.label}>{t('stats.today_pickups')}</Text>
                 <Text style={styles.value}>{stats.pickups.totalToday}</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.label}>Today Dropoffs</Text>
+                <Text style={styles.label}>{t('stats.today_dropoffs')}</Text>
                 <Text style={styles.value}>{stats.dropoffs.totalToday}</Text>
               </View>
             </View>
@@ -89,24 +91,24 @@ export default function StatsDetailScreen() {
 
         {/* Occupancy / Capacity */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CAPACITY</Text>
+          <Text style={styles.sectionTitle}>{t('stats.capacity')}</Text>
           <View style={styles.card}>
-            <Bar label="Small Bags" value={smallTotal} max={100} color="#0A0E5E" />
-            <Bar label="Medium Bags" value={mediumTotal} max={100} color="#6366F1" />
-            <Bar label="Large Bags" value={largeTotal} max={100} color="#FF6D00" />
+            <Bar label={t('stats.small_bags')} value={smallTotal} max={100} color="#0A0E5E" />
+            <Bar label={t('stats.medium_bags')} value={mediumTotal} max={100} color="#6366F1" />
+            <Bar label={t('stats.large_bags')} value={largeTotal} max={100} color="#FF6D00" />
           </View>
         </View>
 
         {/* Next Events */}
         {(stats.pickups.nextPickup || stats.dropoffs.nextDropoff) && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>NEXT EVENTS</Text>
+            <Text style={styles.sectionTitle}>{t('stats.next_events')}</Text>
             <View style={styles.card}>
               {stats.dropoffs.nextDropoff && (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 }}>
                   <Ionicons name="log-in-outline" size={20} color="#FF6D00" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#1A202C' }}>Drop-off: {stats.dropoffs.nextDropoff.customerName}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#1A202C' }}>{t('owner.dropoff_with_name', { name: stats.dropoffs.nextDropoff.customerName })}</Text>
                     <Text style={{ fontSize: 12, color: '#64748B' }}>{stats.dropoffs.nextDropoff.time} • {stats.dropoffs.nextDropoff.itemsDetail}</Text>
                   </View>
                 </View>
@@ -115,7 +117,7 @@ export default function StatsDetailScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 }}>
                   <Ionicons name="log-out-outline" size={20} color="#22C55E" />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#1A202C' }}>Pickup: {stats.pickups.nextPickup.customerName}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#1A202C' }}>{t('owner.pickup_with_name', { name: stats.pickups.nextPickup.customerName })}</Text>
                     <Text style={{ fontSize: 12, color: '#64748B' }}>{stats.pickups.nextPickup.time} • {stats.pickups.nextPickup.itemsDetail}</Text>
                   </View>
                 </View>

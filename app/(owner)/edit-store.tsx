@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -22,6 +23,7 @@ import Toast from 'react-native-toast-message';
 
 export default function EditStoreScreen() {
     const router = useRouter();
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const { locationId } = useLocalSearchParams<{ locationId: string }>();
     const id = Array.isArray(locationId) ? locationId[0] : locationId;
@@ -76,10 +78,10 @@ export default function EditStoreScreen() {
                 imageUrl: image, // Incluimos la imagen (local uri o url remota)
                 currency: form.currency.toUpperCase()
             });
-            Toast.show({ type: 'success', text1: 'Éxito', text2: 'Tienda actualizada correctamente' });
+            Toast.show({ type: 'success', text1: t('createLocation.success_label'), text2: t('createLocation.toast_update_success') });
             router.push('/(owner)/stores');
         } catch (error) {
-            Toast.show({ type: 'error', text1: 'Error', text2: 'No se pudo actualizar la tienda' });
+            Toast.show({ type: 'error', text1: t('common.error'), text2: t('createLocation.toast_update_error') });
         }
     };
 
@@ -87,9 +89,9 @@ export default function EditStoreScreen() {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.loadingContainer}>
-                    <Text style={{ color: colors.textMuted, fontSize: 16 }}>Store ID not found</Text>
+                    <Text style={{ color: colors.textMuted, fontSize: 16 }}>{t('createLocation.store_id_not_found')}</Text>
                     <TouchableOpacity onPress={() => router.push('/(owner)/stores')} style={{ marginTop: 16, padding: 12 }}> 
-                        <Text style={{ color: '#1A1F71', fontWeight: '600' }}>Go Back</Text>
+                        <Text style={{ color: '#1A1F71', fontWeight: '600' }}>{t('booking.go_back')}</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -123,13 +125,13 @@ export default function EditStoreScreen() {
 
                                 <View style={styles.editPhotoBadge}>
                                     <Ionicons name="camera" size={16} color="#FFF" />
-                                    <Text style={styles.editPhotoText}>Change Photo</Text>
+                                    <Text style={styles.editPhotoText}>{t('createLocation.change_photo')}</Text>
                                 </View>
                             </View>
 
                             <View style={styles.overlay}>
-                                <Text style={styles.headerLabel}>STORE IDENTIFIER</Text>
-                                <Text style={styles.headerTitle}>{form.name || 'Store Name'}</Text>
+                                <Text style={styles.headerLabel}>{t('createLocation.store_identifier')}</Text>
+                                <Text style={styles.headerTitle}>{form.name || t('createLocation.store_name_fallback')}</Text>
                             </View>
                         </ImageBackground>
                     </TouchableOpacity>
@@ -137,17 +139,17 @@ export default function EditStoreScreen() {
                     <View style={styles.formContent}>
                         {/* Basic Info */}
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Basic Information</Text>
+                            <Text style={styles.sectionTitle}>{t('createLocation.basic_info')}</Text>
 
-                            <Text style={styles.label}>STORE NAME</Text>
+                            <Text style={styles.label}>{t('createLocation.location_name')}</Text>
                             <TextInput
                                 style={styles.input}
                                 value={form.name}
                                 onChangeText={(val) => setForm({ ...form, name: val })}
-                                placeholder="Example: Downtown Vault"
+                                placeholder={t('createLocation.edit_name_placeholder')}
                             />
 
-                            <Text style={[styles.label, { marginTop: 20 }]}>CURRENCY</Text>
+                            <Text style={[styles.label, { marginTop: 20 }]}>{t('createLocation.currency')}</Text>
                             <View style={styles.currencySelector}>
                                 {['CLP', 'USD', 'EUR'].map((curr) => (
                                     <TouchableOpacity
@@ -169,7 +171,7 @@ export default function EditStoreScreen() {
 
                         {/* Pricing & Capacity */}
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Pricing & Capacity</Text>
+                            <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
                             {(['small', 'medium', 'large'] as const).map((size) => (
                                 <View key={size} style={styles.priceCard}>
                                     <View style={styles.priceHeader}>
@@ -184,7 +186,7 @@ export default function EditStoreScreen() {
 
                                     <View style={styles.priceRow}>
                                         <View style={{ flex: 1, marginRight: 15 }}>
-                                            <Text style={styles.miniLabel}>Daily Price ({form.currency})</Text>
+                                            <Text style={styles.miniLabel}>{t('createLocation.daily_price', { currency: form.currency })}</Text>
                                             <TextInput
                                                 style={styles.cardInput}
                                                 keyboardType="numeric"
@@ -199,7 +201,7 @@ export default function EditStoreScreen() {
                                             />
                                         </View>
                                         <View style={{ flex: 1 }}>
-                                            <Text style={styles.miniLabel}>Max Units</Text>
+                                            <Text style={styles.miniLabel}>{t('createLocation.max_units')}</Text>
                                             <TextInput
                                                 style={styles.cardInput}
                                                 keyboardType="numeric"
@@ -228,7 +230,7 @@ export default function EditStoreScreen() {
                             ) : (
                                 <>
                                     <Ionicons name="checkmark-circle-outline" size={20} color="#FFF" style={{ marginRight: 8 }} />
-                                    <Text style={styles.saveButtonText}>Save Changes</Text>
+                                    <Text style={styles.saveButtonText}>{t('createLocation.save_changes')}</Text>
                                 </>
                             )}
                         </TouchableOpacity>

@@ -3,7 +3,7 @@ import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAuthRequest } from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 
@@ -14,10 +14,14 @@ export const useGoogleAuth = () => {
   const router = useRouter();
   const setTokens = useAuthStore((state) => state.setTokens);
 
-  const [request, response, promptAsync] = useAuthRequest({
+  const clientIds = useMemo(() => ({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  });
+    expoClientId: process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  }), []);
+
+  const [request, response, promptAsync] = useAuthRequest(clientIds);
 
   const handleLogin = async (idToken: string) => {
     try {
@@ -62,5 +66,7 @@ export const useGoogleAuth = () => {
     await promptAsync();
   };
 
-  return { signIn, isLoading: isLoading || !request };
+  const isAvailable = !!(clientIds.iosClientId || clientIds.webClientId || clientIds.androidClientId || clientIds.expoClientId);
+
+  return { signIn, isLoading: isLoading || !request, isAvailable };
 };

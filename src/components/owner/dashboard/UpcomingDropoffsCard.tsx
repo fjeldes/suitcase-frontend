@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
@@ -15,6 +16,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export const UpcomingDropoffsCard = ({ count, nextTime, nextPerson, nextItem }: DropoffsProps) => {
+    const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
 
     const toggleExpand = () => {
@@ -31,8 +33,8 @@ export const UpcomingDropoffsCard = ({ count, nextTime, nextPerson, nextItem }: 
                         <MaterialCommunityIcons name="archive-arrow-down-outline" size={24} color="#166534" />
                     </View>
                     <View>
-                        <Text style={styles.title}>Upcoming Drop-offs</Text>
-                        <Text style={styles.subText}>{count} Arrivals today</Text>
+                        <Text style={styles.title}>{t('owner.upcoming_dropoffs')}</Text>
+                        <Text style={styles.subText}>{t('owner.arrivals_today', { count })}</Text>
                     </View>
                 </View>
                 <Ionicons name={expanded ? "chevron-up" : "chevron-down"} size={22} color="#64748B" />
@@ -41,11 +43,11 @@ export const UpcomingDropoffsCard = ({ count, nextTime, nextPerson, nextItem }: 
             {/* Contenido expandible */}
             {expanded && (
                 <View style={styles.nextDropoffBox}>
-                    <Text style={styles.nextLabel}>NEXT ARRIVAL</Text>
+                    <Text style={styles.nextLabel}>{t('owner.next_arrival')}</Text>
                     <Text style={styles.nextDetail}>
                         {nextTime
-                            ? `${nextTime} • ${nextPerson || 'Guest'} (${nextItem})`
-                            : 'No more arrivals today'}
+                            ? `${nextTime} • ${nextPerson || t('common.guest')} (${nextItem})`
+                            : t('owner.no_arrivals')}
                     </Text>
                 </View>
             )}

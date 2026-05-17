@@ -2,6 +2,7 @@ import { useCreateBooking } from '@/hooks/useCreateBooking'
 import { useStoreDetail } from '@/hooks/useStoreDetail'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
@@ -30,7 +31,8 @@ interface Props {
 
 export default function BookingDetail({ storeId }: Props) {
   const router = useRouter()
-
+  const { t } = useTranslation()
+ 
   // Hooks de datos, mutación y pago
   const { data: store, isLoading, error } = useStoreDetail(storeId)
   const { mutate: createBooking, isPending } = useCreateBooking()
@@ -63,6 +65,11 @@ export default function BookingDetail({ storeId }: Props) {
   const [showHours, setShowHours] = useState(false);
   const [showValueDeclare, setShowValueDeclare] = useState(false);
   const [declaredValue, setDeclaredValue] = useState(0);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState('');
+  const [promoApplied, setPromoApplied] = useState(false);
 
   // Determinar si la tienda está abierta ahora
   const isStoreOpen = useMemo(() => {
@@ -96,7 +103,7 @@ export default function BookingDetail({ storeId }: Props) {
     if (newValue < 0) return
     const limit = store?.availability?.[type] ?? 0
     if (newValue > limit) {
-      Toast.show({ type: 'error', text1: 'No Space Available', text2: `Sorry, this location only has ${limit} ${type} slots left.` })
+      Toast.show({ type: 'error', text1: t('booking.no_space'), text2: t('booking.no_space_desc', { limit, type }) })
       return
     }
     setBags({ ...bags, [type]: newValue })
@@ -106,7 +113,7 @@ export default function BookingDetail({ storeId }: Props) {
     if (isPending || totalPrice === 0) return
 
     if (startDate >= endDate) {
-      Toast.show({ type: 'error', text1: 'Invalid Dates', text2: 'Pick-up time must be after Drop-off time.' });
+      Toast.show({ type: 'error', text1: t('booking.invalid_dates'), text2: t('booking.pickup_after_dropoff') });
       return;
     }
 
@@ -116,6 +123,7 @@ export default function BookingDetail({ storeId }: Props) {
       endDate: endDate.toISOString(),
       items: bags,
       declaredValue: declaredValue > 0 ? declaredValue : undefined,
+      promoCode: promoApplied ? promoCode.trim().toUpperCase() : undefined,
     })
   }
 
@@ -127,7 +135,7 @@ export default function BookingDetail({ storeId }: Props) {
   };
 
   if (isLoading) return <View style={styles.center}><ActivityIndicator size="large" color="#0A0E5E" /></View>
-  if (error) return <View style={styles.center}><Text style={styles.errorText}>Error loading store details</Text></View>
+  if (error) return <View style={styles.center}><Text style={styles.errorText}>{t('booking.error_loading')}</Text></View>
 
 
   return (
@@ -138,21 +146,21 @@ export default function BookingDetail({ storeId }: Props) {
           <Image source={{ uri: store?.imageUrl || 'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?q=80&w=1000&auto=format&fit=crop' }} style={styles.bannerImage} />
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button"><Ionicons name="chevron-back" size={28} color="#0A0E5E" /></TouchableOpacity>
           <View style={styles.headerInfoCard}>
-            <Text style={styles.storeName}>{store?.name || 'Loading...'}</Text>
-            <Text style={styles.subInfo}><Ionicons name="navigate" size={14} color="#0A0E5E" /> {store?.address?.split(',')[0]} • {isStoreOpen ? 'Open Now' : 'Closed'}</Text>
+            <Text style={styles.storeName}>{store?.name || t('common.loading')}</Text>
+            <Text style={styles.subInfo}><Ionicons name="navigate" size={14} color="#0A0E5E" /> {store?.address?.split(',')[0]} • {isStoreOpen ? t('booking.open_now') : t('booking.closed')}</Text>
           </View>
         </View>
 
         {/* HORARIOS */}
         <View style={styles.sectionCard}>
           <TouchableOpacity style={styles.sectionHeader} onPress={() => setShowHours(!showHours)} accessibilityLabel={showHours ? 'Hide opening hours' : 'Show opening hours'} accessibilityRole="button">
-            <Ionicons name="time" size={20} color="#0A0E5E" /><Text style={styles.sectionTitle}> Opening Hours</Text>
+            <Ionicons name="time" size={20} color="#0A0E5E" /><Text style={styles.sectionTitle}> {t('booking.opening_hours')}</Text>
             <Ionicons name={showHours ? "chevron-up" : "chevron-down"} size={20} color="#CBD5E0" style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
           {showHours && (
             <View style={styles.hoursList}>
               {store?.workingHours?.map((item: any) => (
-                <View key={item.day} style={styles.hourRow}><Text style={styles.dayText}>{item.label}</Text><Text style={[styles.timeText, item.isClosed && styles.closedText]}>{item.isClosed ? 'Closed' : `${item.open} - ${item.close}`}</Text></View>
+                <View key={item.day} style={styles.hourRow}><Text style={styles.dayText}>{item.label}</Text><Text style={[styles.timeText, item.isClosed && styles.closedText]}>{item.isClosed ? t('booking.closed') : `${item.open} - ${item.close}`}</Text></View>
               ))}
             </View>
           )}
@@ -160,11 +168,11 @@ export default function BookingDetail({ storeId }: Props) {
 
         {/* CONFIGURATION */}
         <View style={styles.whiteSection}>
-          <Text style={styles.configMainTitle}>Configure Storage</Text>
+          <Text style={styles.configMainTitle}>{t('booking.configure_storage')}</Text>
 
           <View style={styles.dateTimeRow}>
             <DateInput
-              label="DROP-OFF"
+              label={t('booking.drop_off')}
               value={startDate}
               onChange={(date) => {
                 setStartDate(date);
@@ -174,7 +182,7 @@ export default function BookingDetail({ storeId }: Props) {
               icon="calendar"
             />
             <DateInput
-              label="PICK-UP"
+              label={t('booking.pick_up')}
               value={endDate}
               onChange={(date) => setEndDate(date)}
               minimumDate={startDate}
@@ -182,13 +190,13 @@ export default function BookingDetail({ storeId }: Props) {
             />
           </View>
 
-          <Text style={styles.luggageLabel}>LUGGAGE ITEMS</Text>
+          <Text style={styles.luggageLabel}>{t('booking.luggage_items')}</Text>
 
           {/* REVIEWS SECTION */}
           <View style={styles.reviewsContainer}>
             <View style={styles.sectionHeader}>
               <Ionicons name="chatbubbles" size={20} color="#0A0E5E" />
-              <Text style={styles.sectionTitle}> What travelers say</Text>
+              <Text style={styles.sectionTitle}> {t('booking.what_travelers_say')}</Text>
             </View>
 
             {isLoadingReviews ? (
@@ -196,7 +204,7 @@ export default function BookingDetail({ storeId }: Props) {
             ) : reviews.length === 0 ? (
               <View style={styles.emptyReviewsContainer}>
                 <Ionicons name="chatbubble-ellipses-outline" size={40} color="#CBD5E0" />
-                <Text style={styles.emptyReviews}>No reviews yet. Be the first!</Text>
+                <Text style={styles.emptyReviews}>{t('booking.no_reviews_yet')}</Text>
               </View>
             ) : (
               reviews.map((rev: any) => (
@@ -233,10 +241,10 @@ export default function BookingDetail({ storeId }: Props) {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.itemName}>
                     {type === 'small'
-                      ? 'Small / Backpack'
+                      ? t('booking.item_small')
                       : type === 'medium'
-                        ? 'Medium Suitcase'
-                        : 'Large / Overweight'}
+                        ? t('booking.item_medium')
+                        : t('booking.item_large')}
                   </Text>
                   <View style={styles.priceRow}>
                     <Text style={styles.itemPrice}>${store?.pricePerDay?.[type] || 0}/day</Text>
@@ -246,7 +254,7 @@ export default function BookingDetail({ storeId }: Props) {
                       <Text
                         style={[styles.availabilityText, remaining === 0 && styles.soldOutText]}
                       >
-                        {remaining > 0 ? `${remaining} left` : 'Sold out'}
+                        {remaining > 0 ? t('booking.remaining', { remaining }) : t('booking.sold_out')}
                       </Text>
                     </View>
                   </View>
@@ -286,9 +294,9 @@ export default function BookingDetail({ storeId }: Props) {
 
           <View style={styles.statsContainer}>
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={16} color="#FFD700" />
+                <Ionicons name="star" size={16} color="#FFD700" />
               <Text style={styles.ratingText}>
-                {averageRating || 'No rating'} ({reviews.length} Reviews)
+                {averageRating || t('common.no_rating')} ({reviews.length} {t('common.reviews')})
               </Text>
             </View>
           </View>
@@ -297,15 +305,13 @@ export default function BookingDetail({ storeId }: Props) {
           <TouchableOpacity style={styles.valueDeclareBtn} onPress={() => setShowValueDeclare(!showValueDeclare)} accessibilityLabel={showValueDeclare ? 'Hide value declaration' : 'Declare valuable items'} accessibilityRole="button">
             <Ionicons name={showValueDeclare ? 'shield-checkmark' : 'shield-outline'} size={20} color="#B45309" />
             <Text style={styles.valueDeclareBtnText}>
-              {showValueDeclare ? 'Declared value: $' + declaredValue : 'Declare valuable items?'}
+              {showValueDeclare ? t('booking.value_declared', { amount: declaredValue }) : t('booking.value_declare')}
             </Text>
             <Ionicons name={showValueDeclare ? 'chevron-up' : 'chevron-down'} size={18} color="#B45309" style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
           {showValueDeclare && (
             <View style={styles.valueDeclareCard}>
-              <Text style={styles.valueDeclareDesc}>
-                If your luggage contains items worth more than $500, declaring them provides extra coverage up to the declared amount.
-              </Text>
+              <Text style={styles.valueDeclareDesc}>{t('booking.value_declare_desc')}</Text>
               <View style={styles.valueInputRow}>
                 <Text style={styles.valueCurrency}>$</Text>
                 <TextInput
@@ -321,42 +327,97 @@ export default function BookingDetail({ storeId }: Props) {
             </View>
           )}
 
+          {/* PROMO CODE */}
+          {totalPrice > 0 && (
+            <View style={styles.promoSection}>
+              <View style={styles.promoInputRow}>
+                <TextInput
+                  style={styles.promoInput}
+                  placeholder={t('booking.promo_placeholder')}
+                  placeholderTextColor="#94A3B8"
+                  value={promoCode}
+                  onChangeText={(v) => { setPromoCode(v); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}
+                  autoCapitalize="characters"
+                  editable={!promoApplied}
+                />
+                {promoApplied ? (
+                  <TouchableOpacity style={styles.promoRemoveBtn} onPress={() => { setPromoCode(''); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}>
+                    <Ionicons name="close-circle" size={20} color="#E53E3E" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.promoApplyBtn, (!promoCode.trim() || promoLoading) && styles.promoApplyBtnDisabled]}
+                    onPress={async () => {
+                      if (!promoCode.trim()) return;
+                      setPromoLoading(true);
+                      setPromoError('');
+                      try {
+                        const { bookingService } = await import('@/services/bookingService');
+                        const result = await bookingService.validatePromo(promoCode.trim(), totalPrice);
+                        setPromoDiscount(result.discountAmount);
+                        setPromoApplied(true);
+                      } catch (e: any) {
+                        setPromoError(e?.response?.data?.message || t('booking.promo_invalid'));
+                      } finally {
+                        setPromoLoading(false);
+                      }
+                    }}
+                    disabled={!promoCode.trim() || promoLoading}
+                  >
+                    <Text style={styles.promoApplyText}>{promoLoading ? t('common.loading') : t('booking.promo_apply')}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              {promoError ? <Text style={styles.promoErrorText}>{promoError}</Text> : null}
+              {promoApplied && promoDiscount > 0 ? <Text style={styles.promoSuccessText}>{t('booking.promo_applied', { amount: promoDiscount.toLocaleString() })}</Text> : null}
+            </View>
+          )}
+
           {/* PRICE BREAKDOWN */}
           {totalPrice > 0 && (
             <View style={styles.breakdownCard}>
-              <Text style={styles.breakdownTitle}>Price Breakdown</Text>
+              <Text style={styles.breakdownTitle}>{t('booking.price_breakdown_title')}</Text>
               <View style={styles.breakdownDivider} />
               {(['small', 'medium', 'large'] as const).map((type) => {
                 const qty = bags[type]
                 if (qty === 0) return null
                 const price = store?.pricePerDay?.[type] || 0
                 const subtotal = qty * price * days
-                const name = type === 'small' ? 'Small / Backpack' : type === 'medium' ? 'Medium Suitcase' : 'Large / Overweight'
+                const name = type === 'small' ? t('booking.item_small') : type === 'medium' ? t('booking.item_medium') : t('booking.item_large')
                 return (
                   <View key={type} style={styles.breakdownRow}>
                     <Text style={styles.breakdownItem}>{qty}x {name}</Text>
-                    <Text style={styles.breakdownCalc}>${price}/day × {days} {days > 1 ? 'días' : 'día'}</Text>
+                    <Text style={styles.breakdownCalc}>${price}/day × {days} {days > 1 ? t('booking.days') : t('booking.day')}</Text>
                     <Text style={styles.breakdownTotal}>${subtotal.toLocaleString()}</Text>
                   </View>
                 )
               })}
               <View style={styles.breakdownDivider} />
+              {promoDiscount > 0 && (
+                <>
+                  <View style={styles.breakdownRow}>
+                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#22C55E' }}>{t('booking.promo_discount')}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#22C55E' }}>-${promoDiscount.toLocaleString()}</Text>
+                  </View>
+                  <View style={styles.breakdownDivider} />
+                </>
+              )}
               <View style={styles.breakdownFinalRow}>
-                <Text style={styles.breakdownFinalLabel}>Total ({days} {days > 1 ? 'días' : 'día'})</Text>
-                <Text style={styles.breakdownFinalValue}>${Math.round(totalPrice).toLocaleString()}</Text>
+                <Text style={styles.breakdownFinalLabel}>{t('booking.total_price')} ({days} {days > 1 ? t('booking.days') : t('booking.day')})</Text>
+                <Text style={styles.breakdownFinalValue}>${Math.round(Math.max(0, totalPrice - promoDiscount)).toLocaleString()}</Text>
               </View>
             </View>
           )}
 
           {/* PAYMENT METHOD */}
           <View style={styles.paymentSection}>
-            <Text style={styles.paymentSectionTitle}>PAYMENT METHOD</Text>
+            <Text style={styles.paymentSectionTitle}>{t('booking.payment_method')}</Text>
             {cardsError ? (
               <View style={styles.addCardPrompt}>
                 <Ionicons name="alert-circle-outline" size={24} color="#E53E3E" />
-                <Text style={[styles.addCardPromptText, { color: '#E53E3E' }]}>Error loading cards</Text>
-                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add a card instead" accessibilityRole="button">
-                  <Text style={styles.addCardBtnText}>Add a card instead</Text>
+                <Text style={[styles.addCardPromptText, { color: '#E53E3E' }]}>{t('booking.error_loading_cards')}</Text>
+                <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel={t('booking.add_card_instead')} accessibilityRole="button">
+                  <Text style={styles.addCardBtnText}>{t('booking.add_card_instead')}</Text>
                 </TouchableOpacity>
               </View>
             ) : loadingCards ? (
@@ -400,14 +461,14 @@ export default function BookingDetail({ storeId }: Props) {
                 />
                 <TouchableOpacity style={styles.addCardBtn} onPress={handleAddCard} accessibilityLabel="Add another card" accessibilityRole="button">
                   <Ionicons name="add-circle-outline" size={18} color="#0A0E5E" />
-                  <Text style={styles.addCardBtnText}>Add another card</Text>
+                  <Text style={styles.addCardBtnText}>{t('booking.add_another_card')}</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <TouchableOpacity style={styles.addCardPrompt} onPress={handleAddCard} accessibilityLabel="Add payment method" accessibilityRole="button">
                 <Ionicons name="card-outline" size={24} color="#0A0E5E" />
-                <Text style={styles.addCardPromptText}>Add Payment Method</Text>
-                <Text style={styles.addCardPromptSub}>Secure checkout with Stripe</Text>
+                <Text style={styles.addCardPromptText}>{t('booking.add_payment')}</Text>
+                <Text style={styles.addCardPromptSub}>{t('booking.secure_checkout')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -415,7 +476,7 @@ export default function BookingDetail({ storeId }: Props) {
           {/* TOTAL & CONFIRM */}
           <View style={styles.footer}>
             <View>
-              <Text style={styles.totalHoursLabel}>Total Price</Text>
+              <Text style={styles.totalHoursLabel}>{t('booking.total_price_label')}</Text>
               <Text style={styles.totalAmount}>${Math.round(totalPrice).toLocaleString()}</Text>
             </View>
             <TouchableOpacity
@@ -429,7 +490,7 @@ export default function BookingDetail({ storeId }: Props) {
                 <ActivityIndicator color="white" />
               ) : (
                 <>
-                  <Text style={styles.confirmButtonText}>Confirm </Text>
+                  <Text style={styles.confirmButtonText}>{t('booking.confirm_booking')} </Text>
                   <Ionicons name="arrow-forward" size={20} color="white" />
                 </>
               )}
@@ -757,6 +818,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94A3B8',
   },
+
+  // Promo Code
+  promoSection: { marginTop: 20 },
+  promoInputRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  promoInput: {
+    flex: 1,
+    backgroundColor: '#F8F9FB',
+    borderRadius: 14,
+    padding: 14,
+    fontSize: 15,
+    color: '#0A0E5E',
+    borderWidth: 1,
+    borderColor: '#EDF2F7',
+    textTransform: 'uppercase',
+  },
+  promoApplyBtn: {
+    backgroundColor: '#0A0E5E',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 14,
+  },
+  promoApplyBtnDisabled: { opacity: 0.5 },
+  promoApplyText: { color: 'white', fontWeight: '700', fontSize: 14 },
+  promoRemoveBtn: { padding: 10 },
+  promoErrorText: { color: '#E53E3E', fontSize: 12, marginTop: 6 },
+  promoSuccessText: { color: '#22C55E', fontSize: 12, marginTop: 6, fontWeight: '600' },
 
   // Hours Styles
   hoursList: { marginTop: 10, gap: 8 },

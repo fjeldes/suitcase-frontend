@@ -9,6 +9,7 @@ import { claimService, type ClaimType } from '@/services/claimService';
 import { uploadService } from '@/services/uploadService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React, { useMemo, useState } from 'react';
 import {
     ActivityIndicator,
@@ -25,6 +26,7 @@ import Toast from 'react-native-toast-message';
 
 export default function BookingDetailsScreen({ bookingId }: { bookingId?: string }) {
     const router = useRouter();
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const [showReview, setShowReview] = useState(false);
     const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -48,9 +50,9 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
     if (!booking) {
         return (
             <View style={s.center}>
-                <Text style={s.errorText}>No pudimos encontrar la reserva.</Text>
-                <TouchableOpacity onPress={() => router.back()} style={{ padding: 12 }} accessibilityLabel="Go back" accessibilityRole="button">
-                    <Text style={{ color: colors.iconColor, fontWeight: '600' }}>Volver</Text>
+                <Text style={s.errorText}>{t('booking.not_found')}</Text>
+                <TouchableOpacity onPress={() => router.back()} style={{ padding: 12 }} accessibilityLabel={t('booking.go_back')} accessibilityRole="button">
+                    <Text style={{ color: colors.iconColor, fontWeight: '600' }}>{t('booking.go_back')}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -80,7 +82,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                 <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
                     <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
                 </TouchableOpacity>
-                <Text style={s.navTitle}>Booking Details</Text>
+                <Text style={s.navTitle}>{t('booking.booking_details')}</Text>
                 <View style={{ width: 24 }} />
             </View>
 
@@ -97,7 +99,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                 </View>
 
                 <Text style={s.bookingId}>{booking.qrCode || `BK-${booking.id.slice(-6)}`}</Text>
-                <Text style={s.bookingDate}>Booked on {start.full}</Text>
+                <Text style={s.bookingDate}>{t('booking.booked_on', { date: start.full })}</Text>
 
                 <SurfaceCard variant="flat" padding={0} style={{ marginTop: 24 }}>
                     <Image
@@ -110,11 +112,11 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                         <View style={s.storeButtons}>
                             <TouchableOpacity style={s.storeBtn} accessibilityLabel="Open store location in maps" accessibilityRole="button">
                                 <MaterialCommunityIcons name="near-me" size={18} color={colors.iconColor} />
-                                <Text style={s.storeBtnText}>Maps</Text>
+                                <Text style={s.storeBtnText}>{t('booking.maps')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={s.storeBtn} accessibilityLabel="Contact store" accessibilityRole="button">
                                 <Ionicons name="call-outline" size={18} color={colors.iconColor} />
-                                <Text style={s.storeBtnText}>Contact</Text>
+                                <Text style={s.storeBtnText}>{t('booking.contact')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -126,7 +128,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                             <Ionicons name="log-in-outline" size={20} color="#92400E" />
                         </View>
                         <View>
-                            <Text style={s.timeLabel}>CHECK-IN</Text>
+                            <Text style={s.timeLabel}>{t('booking.check_in')}</Text>
                             <Text style={s.timeValue}>{start.full}</Text>
                             <Text style={s.timeHour}>{start.time}</Text>
                         </View>
@@ -136,7 +138,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                             <Ionicons name="log-out-outline" size={20} color="#475569" />
                         </View>
                         <View>
-                            <Text style={s.timeLabel}>CHECK-OUT</Text>
+                            <Text style={s.timeLabel}>{t('booking.check_out')}</Text>
                             <Text style={s.timeValue}>{end.full}</Text>
                             <Text style={s.timeHour}>{end.time}</Text>
                         </View>
@@ -155,7 +157,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
 
                 {(booking.surcharges || []).length > 0 && (
                     <SurfaceCard variant="flat" padding={12} style={{ marginTop: 16, backgroundColor: '#FFF5F5', borderColor: '#FECACA' }}>
-                        <Text style={{ fontSize: 11, fontWeight: '800', color: '#E53E3E', letterSpacing: 1, marginBottom: 8 }}>EXTRA CHARGES</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '800', color: '#E53E3E', letterSpacing: 1, marginBottom: 8 }}>{t('booking.extra_charges')}</Text>
                         {(booking.surcharges || []).map((s: any, i: number) => (
                             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
                                 <View style={{ flex: 1 }}>
@@ -173,8 +175,8 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                         <View style={s.reviewPromptLeft}>
                             <Ionicons name="star" size={24} color="#FBB142" />
                             <View style={{ flex: 1 }}>
-                                <Text style={s.reviewPromptTitle}>How was your experience?</Text>
-                                <Text style={s.reviewPromptSub}>Tap to rate {booking.location?.name}</Text>
+                                <Text style={s.reviewPromptTitle}>{t('booking.how_experience')}</Text>
+                                <Text style={s.reviewPromptSub}>{t('booking.tap_to_rate', { name: booking.location?.name })}</Text>
                             </View>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#FBB142" />
@@ -185,32 +187,32 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                     <SurfaceCard variant="flat" padding={16} style={{ marginTop: 24, backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <Ionicons name="checkmark-circle" size={20} color="#22C55E" />
-                            <Text style={{ fontSize: 14, fontWeight: '600', color: '#166534', flex: 1 }}>You reviewed this store. Thank you!</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '600', color: '#166534', flex: 1 }}>{t('booking.review_thanks')}</Text>
                         </View>
                     </SurfaceCard>
                 )}
 
                 <PrimaryButton variant="secondary" style={{ marginTop: 24 }} onPress={() => setShowClaim(true)} accessibilityLabel="Report an issue">
                     <Ionicons name="alert-circle-outline" size={20} color={colors.iconColor} />
-                    <Text style={{ fontWeight: '700', fontSize: 16 }}>Report an Issue</Text>
+                    <Text style={{ fontWeight: '700', fontSize: 16 }}>{t('booking.report_issue')}</Text>
                 </PrimaryButton>
 
                 <PrimaryButton style={{ marginTop: 12 }} accessibilityLabel="Contact support">
                     <Ionicons name="chatbubble-ellipses-outline" size={20} color="#FFF" />
-                    <Text style={s.primaryBtnText}>Contact Support</Text>
+                    <Text style={s.primaryBtnText}>{t('booking.contact_support')}</Text>
                 </PrimaryButton>
 
                 {booking.status === 'completed' && (
                     <PrimaryButton variant="secondary" style={{ marginTop: 12 }} accessibilityLabel="Get receipt">
                         <Ionicons name="document-text-outline" size={20} color={colors.iconColor} />
-                        <Text style={{ fontWeight: '700', fontSize: 16 }}>Get Receipt</Text>
+                        <Text style={{ fontWeight: '700', fontSize: 16 }}>{t('booking.get_receipt')}</Text>
                     </PrimaryButton>
                 )}
 
                 <SurfaceCard variant="flat" padding={16} style={{ marginTop: 24, backgroundColor: '#DBEAFE', borderColor: '#93C5FD', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <MaterialCommunityIcons name="shield-check" size={20} color={colors.iconColor} />
-                        <Text style={{ fontSize: 11, fontWeight: '800', color: colors.iconColor, letterSpacing: 0.5 }}>PROTECTED UP TO $2,500</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '800', color: colors.iconColor, letterSpacing: 0.5 }}>{t('booking.protected_up_to')}</Text>
                     </View>
                 </SurfaceCard>
             </View>
@@ -218,12 +220,12 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
             <ReviewModal isVisible={showReview} onClose={() => setShowReview(false)} booking={booking} onSuccess={() => setReviewSubmitted(true)} />
 
             <BottomSheetModal visible={showClaim} onClose={() => setShowClaim(false)}>
-                <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 4 }}>Report an Issue</Text>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary, marginBottom: 4 }}>{t('claim.title')}</Text>
                 <Text style={{ fontSize: 14, color: colors.textMuted, marginBottom: 20, lineHeight: 20 }}>
-                    Describe what happened and add photos as evidence. We'll review and get back to you.
+                    {t('claim.desc')}
                 </Text>
 
-                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Issue Type</Text>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>{t('claim.issue_type')}</Text>
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
                     {(['damage', 'loss', 'theft', 'other'] as ClaimType[]).map((t) => (
                         <TouchableOpacity key={t} onPress={() => setClaimType(t)}
@@ -238,12 +240,12 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                     ))}
                 </View>
 
-                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Subject</Text>
-                <TextInput style={s.claimInput} placeholder="e.g. Damaged suitcase handle" placeholderTextColor={colors.iconMuted}
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>{t('claim.subject')}</Text>
+                <TextInput style={s.claimInput} placeholder={t('claim.placeholder_subject')} placeholderTextColor={colors.iconMuted}
                     value={claimSubject} onChangeText={setClaimSubject} />
 
-                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>Description</Text>
-                <TextInput style={[s.claimInput, { height: 100, textAlignVertical: 'top' }]} placeholder="Describe what happened in detail..."
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textLabel, marginBottom: 6 }}>{t('claim.description')}</Text>
+                <TextInput style={[s.claimInput, { height: 100, textAlignVertical: 'top' }]} placeholder={t('claim.placeholder_desc')}
                     placeholderTextColor={colors.iconMuted} multiline value={claimDesc} onChangeText={setClaimDesc} />
 
                 {claimPhotos.length > 0 && (
@@ -262,7 +264,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
 
                 <TouchableOpacity style={s.claimPhotoBtn} onPress={async () => {
                     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-                    if (status !== 'granted') { Toast.show({ type: 'error', text1: 'Permission needed', text2: 'Camera access is required.' }); return; }
+                    if (status !== 'granted') { Toast.show({ type: 'error', text1: t('claim.permission_needed'), text2: t('claim.camera_required') }); return; }
                     const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [4, 3], quality: 0.7 });
                     if (!result.canceled && result.assets[0]) {
                         const url = await uploadService.uploadImage(result.assets[0].uri, 'claims');
@@ -271,7 +273,7 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                 }} disabled={claimPhotos.length >= 4}>
                     <Ionicons name="camera-outline" size={20} color={colors.iconColor} />
                     <Text style={{ fontSize: 14, fontWeight: '600', color: colors.iconColor }}>
-                        {claimPhotos.length >= 4 ? 'Max 4 photos' : 'Add Photo'}
+                        {claimPhotos.length >= 4 ? t('claim.max_photos') : t('claim.add_photo')}
                     </Text>
                 </TouchableOpacity>
 
@@ -286,12 +288,12 @@ export default function BookingDetailsScreen({ bookingId }: { bookingId?: string
                             });
                             setShowClaim(false);
                             setClaimSubject(''); setClaimDesc(''); setClaimType('damage'); setClaimPhotos([]);
-                            Toast.show({ type: 'success', text1: 'Report Submitted', text2: 'We have received your report and will review it shortly.' });
+                            Toast.show({ type: 'success', text1: t('claim.toast_success'), text2: t('claim.toast_success_desc') });
                         } catch (e: any) {
-                            Toast.show({ type: 'error', text1: 'Error', text2: e?.response?.data?.message || 'Could not submit report' });
+                            Toast.show({ type: 'error', text1: t('common.error'), text2: e?.response?.data?.message || t('claim.toast_error_desc') });
                         } finally { setSubmittingClaim(false); }
                     }}>
-                    <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>Submit Report</Text>
+                    <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>{t('claim.submit')}</Text>
                 </PrimaryButton>
             </BottomSheetModal>
         </ScrollView>

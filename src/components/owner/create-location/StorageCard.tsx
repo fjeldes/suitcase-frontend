@@ -1,5 +1,6 @@
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -22,6 +23,7 @@ export const StorageCard = ({
   onPriceChange, 
   onCapacityChange 
 }: Props) => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
@@ -35,7 +37,7 @@ export const StorageCard = ({
 
       <View style={styles.row}>
         <View style={styles.fieldColumn}>
-          <Text style={styles.fieldHeader}>PRICE / DAY</Text>
+          <Text style={styles.fieldHeader}>{t('storage_card.price_per_day')}</Text>
           <View style={styles.inputWrapper}>
             <Text style={styles.currency}>$</Text>
             <TextInput
@@ -52,7 +54,7 @@ export const StorageCard = ({
         <View style={styles.separator} />
 
         <View style={styles.fieldColumn}>
-          <Text style={styles.fieldHeader}>CAPACITY</Text>
+          <Text style={styles.fieldHeader}>{t('storage_card.capacity_header')}</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}

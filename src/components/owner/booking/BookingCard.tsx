@@ -3,6 +3,7 @@ import { BookingData } from '@/types/bookings/BookingData';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   Image,
@@ -15,6 +16,7 @@ import {
 
 // --- COMPONENTE ---
 export const BookingCard = ({ booking }: { booking: BookingData }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   // 1. Lógica de Negocio y Formateo
   const customer = booking.user.profile;
@@ -27,39 +29,39 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
   // 2. Configuración de Estados (Mapeo de UI)
   const statusConfig = {
     confirmed: {
-      label: 'To Check-in',
+      label: t('booking.status_confirmed'),
       color: '#E8F8F1',
       text: '#27AE60',
       dot: '#2ECC71',
-      action: 'Confirm Drop-off'
+      action: t('booking.action_confirm_dropoff')
     },
     in_storage: {
-      label: 'In Storage',
+      label: t('booking.status_in_storage'),
       color: '#FFF7ED',
       text: '#C2410C',
       dot: '#F97316',
-      action: 'Confirm Pick-up'
+      action: t('booking.action_confirm_pickup')
     },
     completed: {
-      label: 'Completed',
+      label: t('booking.status_completed'),
       color: '#F3F4F6',
       text: '#6B7280',
       dot: '#9CA3AF',
-      action: 'View Details'
+      action: t('booking.action_view_details')
     },
     pending: {
-      label: 'Pending',
+      label: t('booking.status_pending'),
       color: '#FEF2F2',
       text: '#B91C1C',
       dot: '#EF4444',
-      action: 'Review'
+      action: t('booking.action_review')
     },
     cancelled: {
-      label: 'Cancelled',
+      label: t('booking.status_cancelled'),
       color: '#F3F4F6',
       text: '#9CA3AF',
       dot: '#D1D5DB',
-      action: 'Archived'
+      action: t('booking.action_archived')
     }
   };
 
@@ -97,12 +99,12 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
       {/* INFO ROW: ID, Inventory, Pickup */}
       <View style={styles.infoRow}>
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>BOOKING ID</Text>
+          <Text style={styles.infoLabel}>{t('booking.id_label')}</Text>
           <Text style={styles.infoValue}>#{booking.id.split('-')[0].toUpperCase()}</Text>
         </View>
 
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>INVENTORY</Text>
+          <Text style={styles.infoLabel}>{t('booking.inventory_label')}</Text>
           <View style={styles.valueWithIcon}>
             <MaterialCommunityIcons name="briefcase-outline" size={14} color="#4B5563" />
             <Text style={styles.infoValue}> {inventorySummary}</Text>
@@ -110,7 +112,7 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
         </View>
 
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>PICKUP</Text>
+          <Text style={styles.infoLabel}>{t('booking.pickup_label')}</Text>
           <Text style={styles.infoValue}>{pickupTime}</Text>
         </View>
       </View>
@@ -119,7 +121,7 @@ export const BookingCard = ({ booking }: { booking: BookingData }) => {
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.viewQrBtn} activeOpacity={0.7} onPress={booking.status === 'confirmed' ? handleScanQR : () => null}>
           <Ionicons name="qr-code-outline" size={18} color="#0A0E5E" />
-          <Text style={styles.viewQrText}>{booking.status === 'confirmed' ? 'Scan QR' : 'Ver Detalles'} </Text>
+          <Text style={styles.viewQrText}>{booking.status === 'confirmed' ? t('booking.action_scan_qr') : t('booking.action_view_details')} </Text>
         </TouchableOpacity>
       </View>
     </View>

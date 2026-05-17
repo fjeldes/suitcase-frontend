@@ -6,13 +6,13 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
-import * as Notifications from 'expo-notifications'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreenNative from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NetworkBanner } from '@/components/ui/NetworkBanner'
 import { initSentry } from '@/services/sentry'
@@ -28,15 +28,6 @@ import { SplashScreen } from '@/screens/auth/SplashScreen'
 import { useAuthStore } from '@/store/useAuthStore'
 import 'react-native-reanimated'
 import Toast from 'react-native-toast-message'
-
-Notifications.setNotificationHandler({
-  handleNotification: async () =>
-    ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    } as Notifications.NotificationBehavior), // Casting explícito
-})
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -60,6 +51,7 @@ export const unstable_settings = {
 // --- COMPONENTE DE LÓGICA ---
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
+  const insets = useSafeAreaInsets()
   const router = useRouter()
   const [appIsReady, setAppIsReady] = useState(false)
   const splashHidden = React.useRef(false);
@@ -87,29 +79,38 @@ function RootLayoutNav() {
 
   // 2. Función para obtener y registrar el Token
   async function configurePushNotifications() {
-    // Nota: En emuladores de Android con Google Play Services funciona,
-    // pero Device.isDevice suele ser false. Puedes comentar esta validación para pruebas.
     if (!Device.isDevice && process.env.NODE_ENV !== 'development') return
 
-    const { status: existingStatus } = await Notifications.getPermissionsAsync()
-    let finalStatus = existingStatus
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync()
-      finalStatus = status
-    }
-
-    if (finalStatus !== 'granted') return
-
     try {
+      const Notifications = await import('expo-notifications')
+
+      Notifications.default.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+        }),
+      })
+
+      const { status: existingStatus } = await Notifications.default.getPermissionsAsync()
+      let finalStatus = existingStatus
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.default.requestPermissionsAsync()
+        finalStatus = status
+      }
+
+      if (finalStatus !== 'granted') return
+
       const projectId =
-        Constants.expoConfig?.extra?.eas?.projectId || Constants.easConfig?.projectId // Fallback dependiendo de la versión
+        Constants.expoConfig?.extra?.eas?.projectId || Constants.easConfig?.projectId
 
       if (!projectId) {
         console.error('Error: No se encontró el Project ID en app.json')
         return
       }
-      const tokenData = await Notifications.getExpoPushTokenAsync({ projectId })
+
+      const tokenData = await Notifications.default.getExpoPushTokenAsync({ projectId })
 
       registerPushToken({
         token: tokenData.data,
@@ -196,14 +197,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
-        <Stack.Screen name="(owner)" options={{ animation: 'fade' }} />
-        <Stack.Screen name="(client)" options={{ animation: 'fade' }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="accept-staff" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <View style={Platform.OS === 'android' ? { flex: 1, paddingTop: insets.top } : { flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="(owner)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="(client)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="accept-staff" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </View>
       <StatusBar style="auto" />
     </ThemeProvider>
   )

@@ -2,6 +2,7 @@ import { ROUTES } from '@/constants/routes';
 import { useMyLocations } from '@/hooks/useDashboard';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +17,7 @@ import {
 } from 'react-native';
 
 export default function MyStoresScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: stores, isLoading, refetch } = useMyLocations();
 
@@ -36,7 +38,7 @@ export default function MyStoresScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#1A1F71" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Storage Partners</Text>
+        <Text style={styles.headerTitle}>{t('createLocation.storage_partners')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => router.push(ROUTES.OWNER.CREATE_LOCATION)}
@@ -53,10 +55,8 @@ export default function MyStoresScreen() {
         }
       >
         <View style={styles.content}>
-          <Text style={styles.mainTitle}>My Stores</Text>
-          <Text style={styles.subtitle}>
-            Manage your active storage hubs and network nodes.
-          </Text>
+          <Text style={styles.mainTitle}>{t('profile.my_stores')}</Text>
+          <Text style={styles.subtitle}>{t('createLocation.manage_stores')}</Text>
 
           {isLoading && !stores && (
             <View style={{ paddingVertical: 40 }}>
@@ -66,7 +66,7 @@ export default function MyStoresScreen() {
 
           {!isLoading && stores?.length === 0 && (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No storage units registered yet.</Text>
+              <Text style={styles.emptyText}>{t('createLocation.no_stores')}</Text>
             </View>
           )}
 
@@ -107,7 +107,7 @@ export default function MyStoresScreen() {
 
           <View style={styles.dividerContainer}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>ADD NEW STORE</Text>
+            <Text style={styles.dividerText}>{t('createLocation.add_new_store')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -118,8 +118,8 @@ export default function MyStoresScreen() {
             <View style={styles.iconContainer}>
               <Ionicons name="business" size={24} color="#1A1F71" />
             </View>
-            <Text style={styles.registerTitle}>Register New Location</Text>
-            <Text style={styles.registerSubtitle}>Setup takes less than 2 minutes</Text>
+            <Text style={styles.registerTitle}>{t('createLocation.register_new')}</Text>
+            <Text style={styles.registerSubtitle}>{t('createLocation.setup_time')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

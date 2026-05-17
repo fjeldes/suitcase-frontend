@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import React, { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -31,6 +32,7 @@ type LoginForm = z.infer<typeof loginSchema>
 export const LoginScreen = () => {
   const router = useRouter()
   const { isDark, colors } = useTheme()
+  const { t } = useTranslation()
   const [showPassword, setShowPassword] = React.useState(false)
   const loginMutation = useLoginMutation()
 
@@ -64,12 +66,12 @@ export const LoginScreen = () => {
                 resizeMode="contain"
               />
             </View>
-            <Text style={s.title}>Welcome Back</Text>
-            <Text style={s.subtitle}>Please enter your details to access your dashboard.</Text>
+            <Text style={s.title}>{t('auth.login_title')}</Text>
+            <Text style={s.subtitle}>{t('auth.login_subtitle')}</Text>
           </View>
 
           <View style={s.form}>
-            <Text style={s.label}>Email Address</Text>
+            <Text style={s.label}>{t('auth.email')}</Text>
             <Controller
               control={control}
               name="email"
@@ -83,7 +85,7 @@ export const LoginScreen = () => {
                   />
                   <TextInput
                     style={s.input}
-                    placeholder="name@company.com"
+                    placeholder={t('auth.email_placeholder')}
                     placeholderTextColor={colors.iconMuted}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -99,9 +101,9 @@ export const LoginScreen = () => {
             {errors.email && <Text style={s.errorText}>{errors.email.message}</Text>}
 
             <View style={s.labelRow}>
-              <Text style={s.label}>Password</Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} accessibilityLabel="Forgot password" accessibilityRole="button">
-                <Text style={s.forgotPassword}>Forgot password?</Text>
+              <Text style={s.label}>{t('auth.password')}</Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} accessibilityLabel={t('auth.forgot_password')} accessibilityRole="button">
+                <Text style={s.forgotPassword}>{t('auth.forgot_password')}</Text>
               </TouchableOpacity>
             </View>
             <Controller
@@ -117,7 +119,7 @@ export const LoginScreen = () => {
                   />
                   <TextInput
                     style={s.input}
-                    placeholder="••••••••"
+                    placeholder={t('auth.password_placeholder')}
                     placeholderTextColor={colors.iconMuted}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -149,7 +151,7 @@ export const LoginScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={s.loginBtnText}>Login</Text>
+                  <Text style={s.loginBtnText}>{t('auth.sign_in')}</Text>
                   <Ionicons name="arrow-forward" size={20} color="#fff" />
                 </>
               )}
@@ -158,16 +160,16 @@ export const LoginScreen = () => {
 
           <View style={s.dividerContainer}>
             <View style={s.dividerLine} />
-            <Text style={s.dividerText}>or</Text>
+            <Text style={s.dividerText}>{t('common.or')}</Text>
             <View style={s.dividerLine} />
           </View>
 
           <GoogleButton />
 
           <View style={s.footer}>
-            <Text style={s.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => router.push(ROUTES.AUTH.SIGNUP)} accessibilityLabel="Sign up" accessibilityRole="button">
-              <Text style={s.signUpLink}>Sign up</Text>
+            <Text style={s.footerText}>{t('auth.no_account')} </Text>
+            <TouchableOpacity onPress={() => router.push(ROUTES.AUTH.SIGNUP)} accessibilityLabel={t('auth.sign_up')} accessibilityRole="button">
+              <Text style={s.signUpLink}>{t('auth.sign_up')}</Text>
             </TouchableOpacity>
           </View>
         </View>
