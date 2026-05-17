@@ -27,6 +27,9 @@
   "past": "Pasadas",
   "no_bookings": "No se encontraron reservas {{status}}",
   "search_places": "Busca lugares o direcciones...",
+  "explore": {
+    "book_space": "Reservar Ahora"
+  },
   "onboarding": {
     "slide1_title": "Encuentra una Tienda",
     "slide1_desc": "Busca tiendas verificadas cerca de ti. Revisa precios, capacidad y horarios en tiempo real.",

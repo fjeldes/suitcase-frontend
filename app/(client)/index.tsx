@@ -243,27 +243,36 @@ export default function ExploreScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.storeName}>{selectedStore.name}</Text>
               <View style={styles.storeMeta}>
-                <Ionicons name="star" size={14} color="#FBB142" />
-                <Text style={styles.metaText}> 4.8</Text>
-                <Text style={styles.metaSeparator}> • </Text>
                 <Ionicons name="walk" size={14} color="#8898AA" />
-                <Text style={styles.metaText}> 200m</Text>
+                <Text style={styles.metaText}> {(selectedStore.distance * 1000).toFixed(0)}m</Text>
+                <Text style={styles.metaSeparator}> • </Text>
+                <Ionicons name="pricetag-outline" size={14} color="#8898AA" />
+                <Text style={styles.metaText}>${selectedStore.pricePerDay?.small || 0}-${selectedStore.pricePerDay?.large || 0}</Text>
               </View>
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceFrom}>FROM</Text>
-              <Text style={styles.priceValue}>${selectedStore.pricePerDay?.medium || '5'}</Text>
+              <Text style={styles.priceValue}>${selectedStore.pricePerDay?.medium || 0}</Text>
               <Text style={styles.priceDay}>/day</Text>
             </View>
           </View>
 
           <View style={styles.tagsContainer}>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>24/7 CCTV</Text>
-            </View>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>Insured</Text>
-            </View>
+            {selectedStore.availability?.small > 0 && (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>Small</Text>
+              </View>
+            )}
+            {selectedStore.availability?.medium > 0 && (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>Medium</Text>
+              </View>
+            )}
+            {selectedStore.availability?.large > 0 && (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>Large</Text>
+              </View>
+            )}
           </View>
 
           <TouchableOpacity
@@ -272,7 +281,7 @@ export default function ExploreScreen() {
               router.push(ROUTES.CLIENT.STORE_DETAIL(selectedStore.id))
             }}
           >
-            <Text style={styles.bookButtonText}>Book Space Now</Text>
+            <Text style={styles.bookButtonText}>{t('explore.book_space')}</Text>
           </TouchableOpacity>
         </View>
       )}
