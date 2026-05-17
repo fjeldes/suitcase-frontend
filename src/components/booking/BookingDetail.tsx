@@ -66,7 +66,6 @@ export default function BookingDetail({ storeId }: Props) {
   const [showValueDeclare, setShowValueDeclare] = useState(false);
   const [declaredValue, setDeclaredValue] = useState(0);
   const [promoCode, setPromoCode] = useState('');
-  const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
@@ -98,6 +97,14 @@ export default function BookingDetail({ storeId }: Props) {
     if (!store || !store.pricePerDay) return 0
     return (bags.small * store.pricePerDay.small + bags.medium * store.pricePerDay.medium + bags.large * store.pricePerDay.large) * days
   }, [bags, store, days])
+
+  const promoDiscount = useMemo(() => {
+    if (!promoApplied || !promoInfo) return 0;
+    if (promoInfo.discountType === 'percentage') {
+      return Math.round(totalPrice * (promoInfo.discountValue / 100));
+    }
+    return Math.min(promoInfo.discountValue, totalPrice);
+  }, [promoApplied, promoInfo, totalPrice]);
 
   const updateQuantity = (type: keyof typeof bags, delta: number) => {
     const newValue = bags[type] + delta
@@ -337,12 +344,12 @@ export default function BookingDetail({ storeId }: Props) {
                   placeholder={t('booking.promo_placeholder')}
                   placeholderTextColor="#94A3B8"
                   value={promoCode}
-                  onChangeText={(v) => { setPromoCode(v); setPromoApplied(false); setPromoDiscount(0); setPromoInfo(null); setPromoError(''); }}
+                  onChangeText={(v) => { setPromoCode(v); setPromoApplied(false); setPromoInfo(null); setPromoError(''); }}
                   autoCapitalize="characters"
                   editable={!promoApplied}
                 />
                 {promoApplied ? (
-                  <TouchableOpacity style={styles.promoRemoveBtn} onPress={() => { setPromoCode(''); setPromoApplied(false); setPromoDiscount(0); setPromoInfo(null); setPromoError(''); }}>
+                  <TouchableOpacity style={styles.promoRemoveBtn} onPress={() => { setPromoCode(''); setPromoApplied(false); setPromoInfo(null); setPromoError(''); }}>
                     <Ionicons name="close-circle" size={20} color="#E53E3E" />
                   </TouchableOpacity>
                 ) : (
@@ -355,7 +362,6 @@ export default function BookingDetail({ storeId }: Props) {
                       try {
                         const { bookingService } = await import('@/services/bookingService');
                         const result = await bookingService.validatePromo(promoCode.trim(), totalPrice);
-                        setPromoDiscount(result.discountAmount);
                         setPromoInfo(result.promo);
                         setPromoApplied(true);
                       } catch (e: any) {
