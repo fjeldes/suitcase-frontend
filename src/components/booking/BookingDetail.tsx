@@ -487,11 +487,11 @@ export default function BookingDetail({ storeId }: Props) {
           <View style={styles.footer}>
             <View>
               <Text style={styles.totalHoursLabel}>{t('booking.total_price_label')}</Text>
-              <Text style={styles.totalAmount}>${Math.round(totalPrice).toLocaleString()}</Text>
+              <Text style={styles.totalAmount}>${Math.round(Math.max(0, totalPrice - promoDiscount)).toLocaleString()}</Text>
             </View>
             <TouchableOpacity
               style={[styles.confirmButton, (totalPrice === 0 || isPending) && styles.disabledBtn]}
-              disabled={totalPrice === 0 || isPending}
+              disabled={Math.max(0, totalPrice - promoDiscount) === 0 || isPending}
               onPress={handleConfirm}
               accessibilityLabel="Confirm booking"
               accessibilityRole="button"
