@@ -84,19 +84,19 @@ function RootLayoutNav() {
     try {
       const Notifications = await import('expo-notifications')
 
-      Notifications.default.setNotificationHandler({
+      Notifications.setNotificationHandler({
         handleNotification: async () => ({
           shouldShowAlert: true,
           shouldPlaySound: true,
           shouldSetBadge: false,
-        }),
+        } as any),
       })
 
-      const { status: existingStatus } = await Notifications.default.getPermissionsAsync()
+      const { status: existingStatus } = await Notifications.getPermissionsAsync()
       let finalStatus = existingStatus
 
       if (existingStatus !== 'granted') {
-        const { status } = await Notifications.default.requestPermissionsAsync()
+        const { status } = await Notifications.requestPermissionsAsync()
         finalStatus = status
       }
 
@@ -110,7 +110,7 @@ function RootLayoutNav() {
         return
       }
 
-      const tokenData = await Notifications.default.getExpoPushTokenAsync({ projectId })
+      const tokenData = await Notifications.getExpoPushTokenAsync({ projectId })
 
       registerPushToken({
         token: tokenData.data,
