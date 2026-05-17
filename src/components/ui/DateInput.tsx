@@ -65,6 +65,7 @@ export const DateInput = ({
         onCancel={hidePicker}
         minimumDate={minimumDate}
         maximumDate={maximumDate}
+        minuteInterval={15}
       />
     </View>
   );

@@ -173,6 +173,7 @@
     "promo_applied": "Code applied! -${{amount}}",
     "promo_invalid": "Invalid or expired promo code",
     "promo_discount": "Discount",
+    "promo_off": "OFF",
     "payment_summary": "Payment Summary",
     "iva_included": "IVA (19%) included",
     "custody_days": "{{days}} Days of custody",

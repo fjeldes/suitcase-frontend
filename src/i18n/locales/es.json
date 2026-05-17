@@ -173,6 +173,7 @@
     "promo_applied": "¡Código aplicado! -${{amount}}",
     "promo_invalid": "Código promocional inválido o expirado",
     "promo_discount": "Descuento",
+    "promo_off": "DTO",
     "payment_summary": "Resumen de Pago",
     "iva_included": "IVA (19%) incluido",
     "custody_days": "{{days}} Días de custodia",

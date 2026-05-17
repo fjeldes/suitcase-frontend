@@ -4,7 +4,7 @@
     "slug": "kipgo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/android-icon-foreground.png",
+    "icon": "./src/assets/images/login-logo.png",
     "scheme": "luggageapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

@@ -70,6 +70,7 @@ export default function BookingDetail({ storeId }: Props) {
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
+  const [promoInfo, setPromoInfo] = useState<{ discountType: string; discountValue: number } | null>(null);
 
   // Determinar si la tienda está abierta ahora
   const isStoreOpen = useMemo(() => {
@@ -336,12 +337,12 @@ export default function BookingDetail({ storeId }: Props) {
                   placeholder={t('booking.promo_placeholder')}
                   placeholderTextColor="#94A3B8"
                   value={promoCode}
-                  onChangeText={(v) => { setPromoCode(v); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}
+                  onChangeText={(v) => { setPromoCode(v); setPromoApplied(false); setPromoDiscount(0); setPromoInfo(null); setPromoError(''); }}
                   autoCapitalize="characters"
                   editable={!promoApplied}
                 />
                 {promoApplied ? (
-                  <TouchableOpacity style={styles.promoRemoveBtn} onPress={() => { setPromoCode(''); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}>
+                  <TouchableOpacity style={styles.promoRemoveBtn} onPress={() => { setPromoCode(''); setPromoApplied(false); setPromoDiscount(0); setPromoInfo(null); setPromoError(''); }}>
                     <Ionicons name="close-circle" size={20} color="#E53E3E" />
                   </TouchableOpacity>
                 ) : (
@@ -355,6 +356,7 @@ export default function BookingDetail({ storeId }: Props) {
                         const { bookingService } = await import('@/services/bookingService');
                         const result = await bookingService.validatePromo(promoCode.trim(), totalPrice);
                         setPromoDiscount(result.discountAmount);
+                        setPromoInfo(result.promo);
                         setPromoApplied(true);
                       } catch (e: any) {
                         setPromoError(e?.response?.data?.message || t('booking.promo_invalid'));
@@ -369,7 +371,13 @@ export default function BookingDetail({ storeId }: Props) {
                 )}
               </View>
               {promoError ? <Text style={styles.promoErrorText}>{promoError}</Text> : null}
-              {promoApplied && promoDiscount > 0 ? <Text style={styles.promoSuccessText}>{t('booking.promo_applied', { amount: promoDiscount.toLocaleString() })}</Text> : null}
+              {promoApplied && promoDiscount > 0 ? (
+                <Text style={styles.promoSuccessText}>
+                  {promoInfo?.discountType === 'percentage'
+                    ? `${promoInfo.discountValue}% ${t('booking.promo_off')}`
+                    : t('booking.promo_applied', { amount: promoDiscount.toLocaleString() })}
+                </Text>
+              ) : null}
             </View>
           )}
 
@@ -396,7 +404,9 @@ export default function BookingDetail({ storeId }: Props) {
               {promoDiscount > 0 && (
                 <>
                   <View style={styles.breakdownRow}>
-                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#22C55E' }}>{t('booking.promo_discount')}</Text>
+                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#22C55E' }}>
+                      {promoInfo?.discountType === 'percentage' ? `${promoInfo.discountValue}% ${t('booking.promo_off')}` : t('booking.promo_discount')}
+                    </Text>
                     <Text style={{ fontSize: 14, fontWeight: '700', color: '#22C55E' }}>-${promoDiscount.toLocaleString()}</Text>
                   </View>
                   <View style={styles.breakdownDivider} />
