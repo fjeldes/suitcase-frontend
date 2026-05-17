@@ -243,6 +243,13 @@ export default function ExploreScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.storeName}>{selectedStore.name}</Text>
               <View style={styles.storeMeta}>
+                {selectedStore.averageRating ? (
+                  <>
+                    <Ionicons name="star" size={14} color="#FBB142" />
+                    <Text style={styles.metaText}> {selectedStore.averageRating}</Text>
+                    <Text style={styles.metaSeparator}> • </Text>
+                  </>
+                ) : null}
                 <Ionicons name="walk" size={14} color="#8898AA" />
                 <Text style={styles.metaText}> {(selectedStore.distance * 1000).toFixed(0)}m</Text>
                 <Text style={styles.metaSeparator}> • </Text>
@@ -252,7 +259,7 @@ export default function ExploreScreen() {
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceFrom}>FROM</Text>
-              <Text style={styles.priceValue}>${selectedStore.pricePerDay?.medium || 0}</Text>
+              <Text style={styles.priceValue}>${selectedStore.pricePerDay?.small || 0}</Text>
               <Text style={styles.priceDay}>/day</Text>
             </View>
           </View>
