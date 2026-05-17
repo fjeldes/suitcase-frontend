@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Animated,
@@ -17,15 +17,18 @@ import MapView, { Marker, Region } from 'react-native-maps'
 import { ROUTES } from '@/constants/routes'
 import { useNearbyStores } from '@/hooks/useNearbyStores'
 import { useUserLocation } from '@/hooks/useUserLocation'
+import { useTheme } from '@/hooks/useTheme'
 import { useLocationStore } from '@/store/useLocationStore'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 
 export default function ExploreScreen() {
   const { t } = useTranslation()
+  const { colors, isDark } = useTheme()
   const mapRef = useRef<MapView>(null)
   const router = useRouter()
   const [selectedStore, setSelectedStore] = useState<any>(null)
+  const s = useMemo(() => createStyles(colors), [colors])
 
   // --- Lógica de Animación ---
   const bottomAnim = useRef(new Animated.Value(110)).current
@@ -118,13 +121,13 @@ export default function ExploreScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       <StatusBar style="auto" />
 
       <MapView
         ref={mapRef}
         // provider={PROVIDER_GOOGLE}
-        style={styles.map}
+        style={s.map}
         showsUserLocation={true}
         showsMyLocationButton={false}
         initialRegion={{
@@ -152,8 +155,8 @@ export default function ExploreScreen() {
           >
             <View
               style={[
-                styles.markerContainer,
-                selectedStore?.id === store.id ? styles.markerActive : styles.markerInactive,
+                s.markerContainer,
+                selectedStore?.id === store.id ? s.markerActive : s.markerInactive,
               ]}
             >
               <Ionicons
@@ -167,22 +170,22 @@ export default function ExploreScreen() {
       </MapView>
 
       {/* Botón de Ubicación */}
-      <Animated.View style={[styles.locationButton, { bottom: bottomAnim }]}>
+      <Animated.View style={[s.locationButton, { bottom: bottomAnim }]}>
         <TouchableOpacity
           onPress={handleCenterMap}
           disabled={locationLoading}
-          style={styles.touchableArea}
+          style={s.touchableArea}
         >
           {locationLoading ? (
-            <ActivityIndicator size="small" color="#0A0E5E" />
+            <ActivityIndicator size="small" color={colors.iconColor} />
           ) : (
-            <Ionicons name="locate" size={26} color="#0A0E5E" />
+            <Ionicons name="locate" size={26} color={colors.iconColor} />
           )}
         </TouchableOpacity>
       </Animated.View>
 
       {/* Barra de Búsqueda de Google Places */}
-      <View style={styles.searchContainer}>
+      <View style={s.searchContainer}>
         <GooglePlacesAutocomplete
           placeholder={t('search_places')}
           fetchDetails={true}
@@ -195,7 +198,7 @@ export default function ExploreScreen() {
             components: 'country:cl', // Restringe a Chile para mayor precisión
           }}
           renderLeftButton={() => (
-            <Ionicons name="search" size={20} color="#8898AA" style={styles.searchIconInside} />
+            <Ionicons name="search" size={20} color={colors.iconMuted} style={s.searchIconInside} />
           )}
           styles={{
             container: { flex: 0 },
@@ -238,57 +241,57 @@ export default function ExploreScreen() {
 
       {/* Card de Detalle - Renderizado Condicional */}
       {selectedStore && (
-        <View style={styles.detailCard}>
-          <View style={styles.cardHeader}>
+        <View style={s.detailCard}>
+          <View style={s.cardHeader}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.storeName}>{selectedStore.name}</Text>
-              <View style={styles.storeMeta}>
+              <Text style={s.storeName}>{selectedStore.name}</Text>
+              <View style={s.storeMeta}>
                 {selectedStore.averageRating ? (
                   <>
                     <Ionicons name="star" size={14} color="#FBB142" />
-                    <Text style={styles.metaText}> {selectedStore.averageRating}</Text>
-                    <Text style={styles.metaSeparator}> • </Text>
+                    <Text style={s.metaText}> {selectedStore.averageRating}</Text>
+                    <Text style={s.metaSeparator}> • </Text>
                   </>
                 ) : null}
-                <Ionicons name="walk" size={14} color="#8898AA" />
-                <Text style={styles.metaText}> {(selectedStore.distance * 1000).toFixed(0)}m</Text>
-                <Text style={styles.metaSeparator}> • </Text>
-                <Ionicons name="pricetag-outline" size={14} color="#8898AA" />
-                <Text style={styles.metaText}>${selectedStore.pricePerDay?.small || 0}-${selectedStore.pricePerDay?.large || 0}</Text>
+                <Ionicons name="walk" size={14} color={colors.textMuted} />
+                <Text style={s.metaText}> {(selectedStore.distance * 1000).toFixed(0)}m</Text>
+                <Text style={s.metaSeparator}> • </Text>
+                <Ionicons name="pricetag-outline" size={14} color={colors.textMuted} />
+                <Text style={s.metaText}>${selectedStore.pricePerDay?.small || 0}-${selectedStore.pricePerDay?.large || 0}</Text>
               </View>
             </View>
-            <View style={styles.priceContainer}>
-              <Text style={styles.priceFrom}>FROM</Text>
-              <Text style={styles.priceValue}>${selectedStore.pricePerDay?.small || 0}</Text>
-              <Text style={styles.priceDay}>/day</Text>
+            <View style={s.priceContainer}>
+              <Text style={s.priceFrom}>FROM</Text>
+              <Text style={s.priceValue}>${selectedStore.pricePerDay?.small || 0}</Text>
+              <Text style={s.priceDay}>/day</Text>
             </View>
           </View>
 
-          <View style={styles.tagsContainer}>
+          <View style={s.tagsContainer}>
             {selectedStore.availability?.small > 0 && (
-              <View style={styles.tag}>
-                <Text style={styles.tagText}>Small</Text>
+              <View style={s.tag}>
+                <Text style={s.tagText}>Small</Text>
               </View>
             )}
             {selectedStore.availability?.medium > 0 && (
-              <View style={styles.tag}>
-                <Text style={styles.tagText}>Medium</Text>
+              <View style={s.tag}>
+                <Text style={s.tagText}>Medium</Text>
               </View>
             )}
             {selectedStore.availability?.large > 0 && (
-              <View style={styles.tag}>
-                <Text style={styles.tagText}>Large</Text>
+              <View style={s.tag}>
+                <Text style={s.tagText}>Large</Text>
               </View>
             )}
           </View>
 
           <TouchableOpacity
-            style={styles.bookButton}
+            style={s.bookButton}
             onPress={() => {
               router.push(ROUTES.CLIENT.STORE_DETAIL(selectedStore.id))
             }}
           >
-            <Text style={styles.bookButtonText}>{t('explore.book_space')}</Text>
+            <Text style={s.bookButtonText}>{t('explore.book_space')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -296,19 +299,19 @@ export default function ExploreScreen() {
   )
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
   locationButton: {
     position: 'absolute',
     right: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 30,
     elevation: 10,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    zIndex: 20, // Por encima de la card
+    zIndex: 20,
     width: 56,
     height: 56,
   },
@@ -325,7 +328,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'white',
+    borderColor: colors.surfaceCard,
   },
   markerActive: { backgroundColor: '#F36B21' },
   markerInactive: { backgroundColor: '#35489C' },
@@ -334,10 +337,10 @@ const styles = StyleSheet.create({
     top: Platform.OS === 'ios' ? 60 : 40,
     width: '100%',
     paddingHorizontal: 20,
-    zIndex: 30, // Por encima de todo
+    zIndex: 30,
   },
   searchBar: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 30,
@@ -350,47 +353,46 @@ const styles = StyleSheet.create({
   searchIconInside: { marginLeft: 5, marginRight: 5 },
   detailCard: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 120 : 100, // Ajustado para que flote sobre el Tab Bar
+    bottom: Platform.OS === 'ios' ? 120 : 100,
     left: 20,
     right: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 25,
     padding: 20,
     elevation: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    zIndex: 15, // Por debajo del botón de localización pero sobre el mapa
+    zIndex: 15,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
-  storeName: { fontSize: 18, fontWeight: '700', color: '#0A0E5E' },
+  storeName: { fontSize: 18, fontWeight: '700', color: colors.textPrimary },
   storeMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  metaText: { color: '#8898AA', fontSize: 14 },
-  metaSeparator: { color: '#8898AA', marginHorizontal: 5 },
+  metaText: { color: colors.textMuted, fontSize: 14 },
+  metaSeparator: { color: colors.textMuted, marginHorizontal: 5 },
   priceContainer: {
     alignItems: 'center',
-    backgroundColor: '#F6F9FC',
+    backgroundColor: colors.surfaceLight,
     padding: 8,
     borderRadius: 12,
   },
-  priceFrom: { fontSize: 10, color: '#8898AA' },
-  priceValue: { fontSize: 20, color: '#0A0E5E', fontWeight: '700' },
-  priceDay: { fontSize: 10, color: '#0A0E5E' },
+  priceFrom: { fontSize: 10, color: colors.textMuted },
+  priceValue: { fontSize: 20, color: colors.textPrimary, fontWeight: '700' },
+  priceDay: { fontSize: 10, color: colors.textPrimary },
   tagsContainer: { flexDirection: 'row', gap: 8, marginBottom: 15 },
-  tag: { backgroundColor: '#F6F9FC', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15 },
-  tagText: { color: '#0A0E5E', fontSize: 12, fontWeight: '500' },
+  tag: { backgroundColor: colors.surfaceLight, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15 },
+  tagText: { color: colors.textPrimary, fontSize: 12, fontWeight: '500' },
   bookButton: {
-    backgroundColor: '#0A0E5E',
+    backgroundColor: colors.primary,
     borderRadius: 15,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  bookButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  bookButtonText: { color: colors.textInverse, fontSize: 16, fontWeight: '600' },
   
-  // Estilos de Sugerencias
   suggestionsContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
     borderRadius: 20,
     marginTop: 10,
     paddingVertical: 10,
@@ -407,16 +409,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: colors.border,
   },
   suggestionTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0A0E5E',
+    color: colors.textPrimary,
   },
   suggestionSubtitle: {
     fontSize: 12,
-    color: '#8898AA',
+    color: colors.textMuted,
     marginTop: 2,
   },
 })
