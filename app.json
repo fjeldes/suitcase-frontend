@@ -4,7 +4,7 @@
     "slug": "kipgo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/react-logo.png",
+    "icon": "./src/assets/images/android-icon-foreground.png",
     "scheme": "luggageapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -35,8 +35,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./src/assets/images/logo.png",
-          "imageWidth": 180,
+          "image": "./src/assets/images/login-logo.png",
+          "imageWidth": 240,
           "resizeMode": "contain",
           "backgroundColor": "#000666",
           "dark": {

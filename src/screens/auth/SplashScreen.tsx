@@ -2,15 +2,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, StatusBar, StyleSheet, Text, View } from 'react-native';
 
-// Asumimos que la imagen del escudo naranja está en tus assets
-const ShieldIcon = require('@/assets/images/login-logo.png'); 
+const KipGoLogo = require('@/assets/images/login-logo.png');
 
 export const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
-      {/* Fondo degradado imitando las burbujas oscuras */}
       <LinearGradient
         colors={['#010B4D', '#040F66', '#010940']}
         style={styles.gradient}
@@ -19,22 +17,19 @@ export const SplashScreen = () => {
       />
 
       <View style={styles.content}>
-        {/* Contenedor del Icono con efecto de vidrio (glassmorphism) */}
         <View style={styles.iconGlassContainer}>
-          <Image source={ShieldIcon} style={styles.shieldIcon} />
+          <Image source={KipGoLogo} style={styles.logoImage} />
         </View>
 
-        {/* Textos Principales */}
         <Text style={styles.mainTitle}>
-          Secure<Text style={styles.boldText}>Custodian</Text>
+          Kip<Text style={styles.boldText}>Go</Text>
         </Text>
         
         <Text style={styles.subTitle}>
-          Your luggage, safe anywhere
+          Travel light, store anywhere
         </Text>
       </View>
 
-      {/* Indicador de carga inferior (la barrita naranja) */}
       <View style={styles.loaderContainer}>
         <View style={styles.loaderBar} />
         <View style={styles.loaderBg} />
@@ -73,8 +68,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
-  shieldIcon: {
-    width: 50,
+  logoImage: {
+    width: 120,
     height: 60,
     resizeMode: 'contain',
   },
