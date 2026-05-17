@@ -2,7 +2,7 @@ import { ROUTES } from '@/constants/routes';
 import { bookingService, CreateBookingPayload } from '@/services/bookingService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { Alert } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export function useCreateBooking() {
   const queryClient = useQueryClient();
@@ -23,7 +23,7 @@ export function useCreateBooking() {
     onError: (error: any) => {
       console.error("Error creating booking:", error);
       const message = error.response?.data?.message || "Something went wrong";
-      Alert.alert("Error", message);
+      Toast.show({ type: 'error', text1: 'Error', text2: message });
     }
   });
 }

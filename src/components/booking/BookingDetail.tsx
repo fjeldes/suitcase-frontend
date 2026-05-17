@@ -117,6 +117,14 @@ export default function BookingDetail({ storeId }: Props) {
     setBags({ ...bags, [type]: newValue })
   }
 
+  const toLocalISO = (date: Date) => {
+    const pad = (n: number) => n.toString().padStart(2, '0')
+    const offset = -date.getTimezoneOffset()
+    const sign = offset >= 0 ? '+' : '-'
+    const abs = Math.abs(offset)
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
+  }
+
   const handleConfirm = async () => {
     if (isPending || totalPrice === 0) return
 
@@ -127,8 +135,8 @@ export default function BookingDetail({ storeId }: Props) {
 
     createBooking({
       locationId: Array.isArray(storeId) ? storeId[0] : storeId,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: toLocalISO(startDate),
+      endDate: toLocalISO(endDate),
       items: bags,
       declaredValue: declaredValue > 0 ? declaredValue : undefined,
       promoCode: promoApplied ? promoCode.trim().toUpperCase() : undefined,
