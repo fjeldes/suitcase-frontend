@@ -94,7 +94,7 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.replace('/(client)/bookings')}>
           <Ionicons name="arrow-back" size={24} color="#1A1F71" />
         </TouchableOpacity>
         <View>

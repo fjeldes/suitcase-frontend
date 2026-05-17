@@ -24,7 +24,7 @@ export const LuggageItem = ({ size, quantity, pricePerDay, days }: LuggageItemPr
     <View style={styles.itemRow}>
       <View style={styles.iconBox}>
         <MaterialCommunityIcons 
-          name={size === 'large' ? "bag-checked" : "bag-personal"} 
+          name={size === 'large' ? "briefcase" : "bag-personal"} 
           size={24} 
           color="#1A1F71" 
         />

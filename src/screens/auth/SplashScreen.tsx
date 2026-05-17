@@ -1,16 +1,20 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useColorScheme } from 'react-native';
 import React from 'react';
 import { Image, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 const KipGoLogo = require('@/assets/images/login-logo.png');
+const KipGoLogoWhite = require('@/assets/images/light-icon.png');
 
 export const SplashScreen = () => {
+  const isDark = useColorScheme() === 'dark';
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <LinearGradient
-        colors={['#010B4D', '#040F66', '#010940']}
+        colors={isDark ? ['#0a0a1a', '#000666', '#0a0a1a'] : ['#010B4D', '#040F66', '#010940']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -18,7 +22,7 @@ export const SplashScreen = () => {
 
       <View style={styles.content}>
         <View style={styles.iconGlassContainer}>
-          <Image source={KipGoLogo} style={styles.logoImage} />
+          <Image source={isDark ? KipGoLogoWhite : KipGoLogo} style={styles.logoImage} />
         </View>
 
         <Text style={styles.mainTitle}>
@@ -41,6 +45,9 @@ export const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerDark: {
+    backgroundColor: '#000',
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,

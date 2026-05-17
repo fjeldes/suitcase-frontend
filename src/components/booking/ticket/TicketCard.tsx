@@ -6,11 +6,11 @@ export const TicketCard = ({ qrValue, bookingId }: { qrValue: string, bookingId:
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.qrContainer}>
-          <View style={styles.greenHeader}><Text style={styles.headerText}>Booking work</Text></View>
+          <View style={styles.greenHeader}><Text style={styles.headerText}>KipGo</Text></View>
           <View style={styles.qrPadding}>
             <QRCode value={qrValue} size={150} />
           </View>
-          <Text style={styles.footerText}>Safe storage work</Text>
+          <Text style={styles.footerText}>KipGo Secure Storage</Text>
         </View>
         
         <Text style={styles.label}>BOOKING ID</Text>

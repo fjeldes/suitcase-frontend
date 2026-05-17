@@ -15,9 +15,9 @@ export function useCreateBooking() {
 
       const bookingId = data?.id;
       if (bookingId) {
-        router.push(ROUTES.CLIENT.BOOKING_DETAIL(bookingId));
+        router.replace(ROUTES.CLIENT.BOOKING_DETAIL(bookingId));
       } else {
-        router.push(ROUTES.CLIENT.BOOKINGS);
+        router.replace(ROUTES.CLIENT.BOOKINGS);
       }
     },
     onError: (error: any) => {
