@@ -41,9 +41,7 @@ export const BookingSummary = ({
         return sum + (qty as number) * price * days;
     }, 0);
     const travelerFee = Math.round(ownerPrice * 0.15);
-    const subtotal = ownerPrice + travelerFee;
-    const vatAmount = Math.round(subtotal * 0.19 / 1.19);
-    const totalToPay = subtotal;
+    const totalToPay = ownerPrice + travelerFee;
 
     const formatter = new Intl.NumberFormat('es-CL', {
         style: 'currency',
@@ -69,12 +67,8 @@ export const BookingSummary = ({
 
             <View style={styles.divider} />
             <View style={styles.paymentRow}>
-                <Text style={styles.payLabel}>{t('booking.fee_traveler')} (15%)</Text>
+                <Text style={styles.payLabel}>{t('booking.fee_taxes_label')}</Text>
                 <Text style={styles.payValue}>+${travelerFee.toLocaleString()}</Text>
-            </View>
-            <View style={styles.paymentRow}>
-                <Text style={styles.payLabel}>{t('booking.vat_label')} (19%)</Text>
-                <Text style={styles.payValue}>${vatAmount.toLocaleString()}</Text>
             </View>
 
             <View style={styles.divider} />
@@ -86,10 +80,7 @@ export const BookingSummary = ({
                 </View>
                 <Text style={styles.totalValue}>{formatter.format(totalToPay)}</Text>
             </View>
-                );
-            })}
 
-            {/* Si tenemos el recibo, mostramos el desglose de impuestos de forma sutil */}
             {receipt && (
                 <View style={styles.taxContainer}>
                     <View style={styles.divider} />

@@ -418,18 +418,12 @@ export default function BookingDetail({ storeId }: Props) {
               {(() => {
                 const baseTotal = Math.max(0, totalPrice - promoDiscount);
                 const travelerFee = Math.round(baseTotal * 0.15);
-                const subtotal = baseTotal + travelerFee;
-                const vatAmount = Math.round(subtotal * 0.19 / 1.19);
-                const totalToPay = subtotal;
+                const totalToPay = baseTotal + travelerFee;
                 return (
                   <>
                     <View style={styles.breakdownRow}>
-                      <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#1a1c1c' }}>{t('booking.fee_traveler')} (15%)</Text>
+                      <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#1a1c1c' }}>{t('booking.fee_taxes_label')}</Text>
                       <Text style={{ fontSize: 13, color: '#767683' }}>+${travelerFee.toLocaleString()}</Text>
-                    </View>
-                    <View style={styles.breakdownRow}>
-                      <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#1a1c1c' }}>{t('booking.vat_label')} (19%)</Text>
-                      <Text style={{ fontSize: 13, color: '#767683' }}>${vatAmount.toLocaleString()}</Text>
                     </View>
                     {promoDiscount > 0 && (
                       <>
