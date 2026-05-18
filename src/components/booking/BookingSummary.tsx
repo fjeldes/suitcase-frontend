@@ -44,7 +44,6 @@ export const BookingSummary = ({
     const subtotal = ownerPrice + travelerFee;
     const vatAmount = Math.round(subtotal * 0.19 / 1.19);
     const totalToPay = subtotal;
-    const isNewPricing = Math.abs(totalPrice - totalToPay) < 100; // within $100 margin
 
     const formatter = new Intl.NumberFormat('es-CL', {
         style: 'currency',
@@ -68,28 +67,24 @@ export const BookingSummary = ({
                 );
             })}
 
-            {isNewPricing && (
-                <>
-                    <View style={styles.divider} />
-                    <View style={styles.paymentRow}>
-                        <Text style={styles.payLabel}>{t('booking.fee_traveler')} (15%)</Text>
-                        <Text style={styles.payValue}>+${travelerFee.toLocaleString()}</Text>
-                    </View>
-                    <View style={styles.paymentRow}>
-                        <Text style={styles.payLabel}>{t('booking.vat_label')} (19%)</Text>
-                        <Text style={styles.payValue}>${vatAmount.toLocaleString()}</Text>
-                    </View>
-                </>
-            )}
+            <View style={styles.divider} />
+            <View style={styles.paymentRow}>
+                <Text style={styles.payLabel}>{t('booking.fee_traveler')} (15%)</Text>
+                <Text style={styles.payValue}>+${travelerFee.toLocaleString()}</Text>
+            </View>
+            <View style={styles.paymentRow}>
+                <Text style={styles.payLabel}>{t('booking.vat_label')} (19%)</Text>
+                <Text style={styles.payValue}>${vatAmount.toLocaleString()}</Text>
+            </View>
 
             <View style={styles.divider} />
 
             <View style={styles.totalRow}>
                 <View>
-                    <Text style={styles.totalLabel}>{isNewPricing ? t('booking.total_to_pay') : t('booking.total_price')}</Text>
+                    <Text style={styles.totalLabel}>{t('booking.total_to_pay')}</Text>
                     <Text style={styles.daysLabel}>{days > 1 ? t('booking.custody_days', { days }) : t('booking.custody_day', { days })}</Text>
                 </View>
-                <Text style={styles.totalValue}>{formatter.format(isNewPricing ? totalToPay : totalPrice)}</Text>
+                <Text style={styles.totalValue}>{formatter.format(totalToPay)}</Text>
             </View>
                 );
             })}
