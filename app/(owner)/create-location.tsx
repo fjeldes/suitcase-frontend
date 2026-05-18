@@ -230,7 +230,7 @@ export default function CreateLocationScreen() {
           <View style={s.sectionHeader}>
             <Ionicons name="cash" size={20} color="#B45309" />
             <Text style={s.sectionTitle}>{t('createLocation.luggage_pricing')}</Text>
-            <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 'auto' }}>
+            <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)}>
               <View style={{ justifyContent: 'center', alignItems: 'center', width: 24, height: 24 }}>
                 <Ionicons name={showFeeInfo ? 'close-circle-outline' : 'information-circle-outline'} size={22} color={colors.textMuted} />
               </View>
