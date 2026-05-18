@@ -262,6 +262,13 @@ export default function BookingDetail({ storeId }: Props) {
                         ? t('booking.item_medium')
                         : t('booking.item_large')}
                   </Text>
+                  <Text style={styles.itemSubLabel}>
+                    {type === 'small'
+                      ? t('createLocation.small_sub')
+                      : type === 'medium'
+                        ? t('createLocation.medium_sub')
+                        : t('createLocation.large_sub')}
+                  </Text>
                   <View style={styles.priceRow}>
                     <Text style={styles.itemPrice}>${store?.pricePerDay?.[type] || 0}/day</Text>
                     <View
@@ -630,6 +637,7 @@ const styles = StyleSheet.create({
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   itemName: { fontSize: 16, fontWeight: 'bold', color: '#0A0E5E' },
   itemPrice: { fontSize: 13, color: '#8898AA' },
+  itemSubLabel: { fontSize: 11, color: '#94A3B8', marginTop: 2 },
   availabilityBadge: {
     backgroundColor: '#E8F5E9',
     paddingHorizontal: 8,
