@@ -183,7 +183,7 @@ export default function EditStoreScreen() {
                         <View style={styles.section}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
-                                <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12, justifyContent: 'center', alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12, justifyContent: 'center', alignItems: 'center', height: 24 }}>
                                     <Ionicons name={showFeeInfo ? 'close-circle-outline' : 'information-circle-outline'} size={22} color="#94A3B8" />
                                 </TouchableOpacity>
                             </View>
