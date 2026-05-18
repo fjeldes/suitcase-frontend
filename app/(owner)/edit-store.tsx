@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     headerTitle: { color: '#FFF', fontSize: 24, fontWeight: 'bold' },
     formContent: { paddingHorizontal: 24 },
     section: { marginBottom: 32 },
-    sectionTitle: { color: '#0A0E5E', fontSize: 18, fontWeight: '800', borderLeftWidth: 4, borderLeftColor: '#E63946', paddingLeft: 12, marginBottom: 20 },
+    sectionTitle: { color: '#0A0E5E', fontSize: 18, fontWeight: '800', borderLeftWidth: 4, borderLeftColor: '#E63946', paddingLeft: 12, lineHeight: 24 },
     label: { color: '#64748B', fontSize: 11, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
     input: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, fontSize: 15, color: '#1E293B', borderWidth: 1, borderColor: '#E2E8F0' },
 
