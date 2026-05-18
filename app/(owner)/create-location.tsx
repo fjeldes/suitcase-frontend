@@ -240,6 +240,7 @@ export default function CreateLocationScreen() {
               capacityValue={form.smallCapacity}
               onPriceChange={(v) => setForm({ ...form, smallPrice: v })}
               onCapacityChange={(v) => setForm({ ...form, smallCapacity: v })}
+              minPrice={3500}
             />
             <StorageCard
               icon="bag-suitcase"
@@ -249,6 +250,7 @@ export default function CreateLocationScreen() {
               capacityValue={form.mediumCapacity}
               onPriceChange={(v) => setForm({ ...form, mediumPrice: v })}
               onCapacityChange={(v) => setForm({ ...form, mediumCapacity: v })}
+              minPrice={5000}
             />
             <StorageCard
               icon="suitcase"
@@ -258,12 +260,19 @@ export default function CreateLocationScreen() {
               capacityValue={form.largeCapacity}
               onPriceChange={(v) => setForm({ ...form, largePrice: v })}
               onCapacityChange={(v) => setForm({ ...form, largeCapacity: v })}
+              minPrice={7000}
             />
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -10, marginBottom: 20, paddingHorizontal: 4 }}>
-            <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
-            <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }}>{t('createLocation.prices_info')}</Text>
+          <View style={{ marginTop: -10, marginBottom: 20, paddingHorizontal: 4, gap: 4 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
+              <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }}>{t('createLocation.prices_info')}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <Ionicons name="trending-down-outline" size={16} color="#22C55E" />
+              <Text style={{ fontSize: 11, color: '#22C55E', flex: 1 }}>{t('createLocation.owner_fee_info')}</Text>
+            </View>
           </View>
 
           <View style={s.sectionHeader}>

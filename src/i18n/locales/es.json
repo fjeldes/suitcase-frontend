@@ -437,7 +437,9 @@
   },
   "storage_card": {
     "price_per_day": "PRECIO / DÍA",
-    "capacity_header": "CAPACIDAD"
+    "capacity_header": "CAPACIDAD",
+    "you_receive": "Recibes",
+    "min_price": "Mín"
   },
   "createLocation": {
     "title": "Agregar Ubicación de Almacenamiento",
@@ -461,6 +463,7 @@
     "large": "Grande",
     "large_sub": "Maletas grandes, Baúl",
     "prices_info": "Los precios y la capacidad son estimados. Puedes actualizarlos en cualquier momento desde la configuración.",
+    "owner_fee_info": "Después del 18% de comisión KipGo, recibes el monto en verde.",
     "business_hours": "Horario de Atención",
     "closed": "CERRADO",
     "open": "ABIERTO",

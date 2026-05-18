@@ -437,7 +437,9 @@
   },
   "storage_card": {
     "price_per_day": "PRICE / DAY",
-    "capacity_header": "CAPACITY"
+    "capacity_header": "CAPACITY",
+    "you_receive": "You receive",
+    "min_price": "Min"
   },
   "createLocation": {
     "title": "Add Storage Location",
@@ -461,6 +463,7 @@
     "large": "Large",
     "large_sub": "Large Check-in Bags, Trunk",
     "prices_info": "Prices and capacity are estimates. You can update them anytime from your store settings.",
+    "owner_fee_info": "After 18% KipGo fee, you receive the amount shown in green.",
     "business_hours": "Business Hours",
     "closed": "CLOSED",
     "open": "OPEN",

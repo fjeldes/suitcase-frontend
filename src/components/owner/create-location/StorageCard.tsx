@@ -12,6 +12,7 @@ interface Props {
   capacityValue: string;
   onPriceChange: (val: string) => void;
   onCapacityChange: (val: string) => void;
+  minPrice?: number;
 }
 
 export const StorageCard = ({ 
@@ -21,7 +22,8 @@ export const StorageCard = ({
   priceValue, 
   capacityValue, 
   onPriceChange, 
-  onCapacityChange 
+  onCapacityChange,
+  minPrice,
 }: Props) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -49,6 +51,11 @@ export const StorageCard = ({
               placeholderTextColor={colors.iconMuted}
             />
           </View>
+          <Text style={styles.netPreview}>
+            {priceValue && parseInt(priceValue) > 0
+              ? `${t('storage_card.you_receive')}: $${Math.round(parseInt(priceValue) * 0.82).toLocaleString()}`
+              : `${t('storage_card.min_price')}: $${minPrice?.toLocaleString() || '0'}`}
+          </Text>
         </View>
 
         <View style={styles.separator} />
@@ -135,5 +142,12 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     color: colors.textPrimary, 
     textAlign: 'center',
     padding: 0
-  }
+  },
+  netPreview: {
+    fontSize: 10,
+    color: '#22C55E',
+    textAlign: 'center',
+    marginTop: 6,
+    fontWeight: '600',
+  },
 });
