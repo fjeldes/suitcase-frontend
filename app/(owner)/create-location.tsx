@@ -1,5 +1,4 @@
 import { StorageCard } from '@/components/owner/create-location/StorageCard'
-import { KipGoLogo } from '@/components/ui/KipGoLogo'
 import { ROUTES } from '@/constants/routes'
 import { locationService } from '@/services/locationServices'
 import { useLocationStore } from '@/store/useLocationStore'
@@ -9,6 +8,7 @@ import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -18,7 +18,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { uploadService } from '@/services/uploadService'
@@ -151,8 +150,7 @@ export default function CreateLocationScreen() {
         <TouchableOpacity onPress={handleBack} style={s.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.iconColor} />
         </TouchableOpacity>
-        <KipGoLogo width={100} height={30} />
-        <View style={s.avatarPlaceholder} />
+        <Image source={require('@/assets/images/login-logo.png')} style={{ width: 100, height: 48, resizeMode: 'contain' }} />
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -364,7 +362,6 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
   headerTitle: { fontSize: 14, fontWeight: 'bold', color: colors.textPrimary, letterSpacing: 1 },
-  avatarPlaceholder: { width: 35, height: 35, borderRadius: 18, backgroundColor: colors.border },
   scroll: { padding: 20 },
   mainTitle: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 10 },
   description: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 25 },

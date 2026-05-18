@@ -72,6 +72,7 @@ export const StorageCard = ({
               placeholderTextColor={colors.iconMuted}
             />
           </View>
+          <View style={styles.netSpacer} />
         </View>
       </View>
     </View>
@@ -149,5 +150,10 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     textAlign: 'center',
     marginTop: 6,
     fontWeight: '600',
+    height: 14,
+  },
+  netSpacer: {
+    height: 14,
+    marginTop: 6,
   },
 });
