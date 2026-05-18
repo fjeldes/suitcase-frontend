@@ -199,6 +199,11 @@ export default function EditStoreScreen() {
                                                     });
                                                 }}
                                             />
+                                            {form.pricePerDay?.[size] > 0 && (
+                                                <Text style={styles.netPreview}>
+                                                    {t('storage_card.you_receive')}: ${Math.round((form.pricePerDay?.[size] ?? 0) * 0.82).toLocaleString()}
+                                                </Text>
+                                            )}
                                         </View>
                                         <View style={{ flex: 1 }}>
                                             <Text style={styles.miniLabel}>{t('createLocation.max_units')}</Text>
@@ -272,6 +277,7 @@ const styles = StyleSheet.create({
     priceRow: { flexDirection: 'row' },
     miniLabel: { fontSize: 10, color: '#94A3B8', marginBottom: 6, fontWeight: '600' },
     cardInput: { borderBottomWidth: 1, borderBottomColor: '#E2E8F0', fontSize: 18, fontWeight: '700', color: '#1E293B', paddingVertical: 6 },
+    netPreview: { fontSize: 10, color: '#22C55E', fontWeight: '600', marginTop: 4 },
     saveButton: { backgroundColor: '#1A1F71', flexDirection: 'row', padding: 20, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 40, elevation: 4 },
     saveButtonText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' }
 });
