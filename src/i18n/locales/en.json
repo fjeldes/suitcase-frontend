@@ -467,7 +467,7 @@
     "prices_info": "Prices and capacity are estimates. You can update them anytime from your store settings.",
     "owner_fee_info": "After 18% KipGo fee, you receive the amount shown in green.",
     "fee_explain_title": "How fees work",
-    "fee_explain_body": "You set the price you want to earn. When a traveler books, we add a 15% service fee and VAT on top. You receive your full price minus an 18% KipGo commission. The green amount shows what actually reaches you.",
+    "fee_explain_owner": "KipGo charges an 18% commission on the price you set. The green amount shows what you actually receive after this deduction.",
     "business_hours": "Business Hours",
     "closed": "CLOSED",
     "open": "OPEN",

@@ -467,7 +467,7 @@
     "prices_info": "Los precios y la capacidad son estimados. Puedes actualizarlos en cualquier momento desde la configuración.",
     "owner_fee_info": "Después del 18% de comisión KipGo, recibes el monto en verde.",
     "fee_explain_title": "Cómo funcionan las comisiones",
-    "fee_explain_body": "Tú pones el precio que quieres ganar. Cuando un viajero reserva, agregamos una tarifa de servicio del 15% y el IVA al total. Tú recibes tu precio completo menos una comisión del 18% de KipGo. El monto en verde muestra lo que realmente recibes.",
+    "fee_explain_owner": "KipGo cobra una comisión del 18% sobre el precio que publicas. El monto en verde muestra lo que realmente recibes después de esta deducción.",
     "business_hours": "Horario de Atención",
     "closed": "CERRADO",
     "open": "ABIERTO",

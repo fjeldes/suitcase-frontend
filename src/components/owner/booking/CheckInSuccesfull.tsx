@@ -61,16 +61,13 @@ export const CheckInSuccess = ({ booking, onBackToBookings }: CheckInSuccessProp
           
           <View style={styles.itemRow}>
             <View style={styles.itemIconBox}>
-              <MaterialCommunityIcons name="bag-checked" size={24} color="#0A0E5E" />
+              <MaterialCommunityIcons name="briefcase" size={24} color="#0A0E5E" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.itemTitle}>Items Verified</Text>
+                <Text style={styles.itemSub}>Your luggage has been securely verified.</Text>
+              </View>
             </View>
-            <View>
-              <Text style={styles.itemName}>2 Large Suitcases</Text>
-              <Text style={styles.itemType}>Standard Storage</Text>
-            </View>
-          </View>
-
-          <View style={styles.itemRow}>
-            <View style={styles.itemIconBox}>
+            <View style={styles.itemRow}>
               <MaterialCommunityIcons name="bag-personal" size={24} color="#0A0E5E" />
             </View>
             <View>

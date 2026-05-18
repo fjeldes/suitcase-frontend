@@ -179,7 +179,7 @@ export default function BookingValidated() {
               <View key={key} style={styles.itemBox}>
                 <View style={styles.itemIconContainer}>
                   <MaterialCommunityIcons
-                    name={key === 'large' ? 'bag-checked' : 'bag-personal'}
+                    name={key === 'large' ? 'briefcase' : 'bag-personal'}
                     size={24}
                     color="#0A0E5E"
                   />

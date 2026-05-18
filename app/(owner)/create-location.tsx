@@ -230,7 +230,7 @@ export default function CreateLocationScreen() {
           <View style={s.sectionHeader}>
             <Ionicons name="cash" size={20} color="#B45309" />
             <Text style={s.sectionTitle}>{t('createLocation.luggage_pricing')}</Text>
-            <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 'auto' }}>
+            <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 'auto', justifyContent: 'center', alignItems: 'center' }}>
               <Ionicons name={showFeeInfo ? 'close-circle-outline' : 'information-circle-outline'} size={22} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
@@ -238,7 +238,7 @@ export default function CreateLocationScreen() {
             <View style={{ backgroundColor: colors.surfaceLight, borderRadius: 16, padding: 16, marginBottom: 16, gap: 8 }}>
               <Text style={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }}>{t('createLocation.fee_explain_title')}</Text>
               <Text style={{ fontSize: 12, color: colors.textMuted, lineHeight: 18 }}>
-                {t('createLocation.fee_explain_body')}
+                {t('createLocation.fee_explain_owner')}
               </Text>
             </View>
           )}

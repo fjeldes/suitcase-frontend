@@ -3,7 +3,7 @@ import { useUpdateLocation } from '@/hooks/useUpdateLocation';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import {
@@ -25,8 +25,17 @@ export default function EditStoreScreen() {
     const router = useRouter();
     const { t } = useTranslation();
     const { colors } = useTheme();
+    const navigation = useNavigation();
     const { locationId } = useLocalSearchParams<{ locationId: string }>();
     const [showFeeInfo, setShowFeeInfo] = useState(false);
+
+    useEffect(() => {
+        const parent = navigation.getParent?.();
+        if (parent) {
+            parent.setOptions({ tabBarStyle: { display: 'none', height: 0, position: 'absolute', overflow: 'hidden', bottom: -200 } });
+            return () => parent.setOptions({ tabBarStyle: undefined });
+        }
+    }, [navigation]);
     const id = Array.isArray(locationId) ? locationId[0] : locationId;
 
     // Hooks de datos
@@ -174,14 +183,14 @@ export default function EditStoreScreen() {
                         <View style={styles.section}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
-                                <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12 }}>
+                                <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12, justifyContent: 'center', alignItems: 'center' }}>
                                     <Ionicons name={showFeeInfo ? 'close-circle-outline' : 'information-circle-outline'} size={22} color="#94A3B8" />
                                 </TouchableOpacity>
                             </View>
                             {showFeeInfo && (
                                 <View style={{ backgroundColor: '#F1F5F9', borderRadius: 16, padding: 16, marginBottom: 16, gap: 8 }}>
                                     <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E293B' }}>{t('createLocation.fee_explain_title')}</Text>
-                                    <Text style={{ fontSize: 12, color: '#64748B', lineHeight: 18 }}>{t('createLocation.fee_explain_body')}</Text>
+                                    <Text style={{ fontSize: 12, color: '#64748B', lineHeight: 18 }}>{t('createLocation.fee_explain_owner')}</Text>
                                 </View>
                             )}
                             {(['small', 'medium', 'large'] as const).map((size) => (
@@ -189,7 +198,7 @@ export default function EditStoreScreen() {
                                     <View style={styles.priceHeader}>
                                         <View style={styles.iconCircle}>
                                             <MaterialCommunityIcons
-                                                name={size === 'small' ? 'bag-personal' : size === 'medium' ? 'suitcase' : 'trunk'}
+                                                name={size === 'small' ? 'bag-personal' : size === 'medium' ? 'briefcase' : 'briefcase'}
                                                 size={18} color="#1A1F71"
                                             />
                                         </View>

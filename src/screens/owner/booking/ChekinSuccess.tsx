@@ -87,7 +87,7 @@ export const CheckInSuccess = () => {
                 <View key={key} style={styles.itemRow}>
                   <View style={styles.itemIconBox}>
                     <MaterialCommunityIcons
-                      name={key === 'large' ? 'bag-checked' : 'bag-personal'}
+                      name={key === 'large' ? 'briefcase' : 'bag-personal'}
                       size={24}
                       color="#0A0E5E"
                     />
