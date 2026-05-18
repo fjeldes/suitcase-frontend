@@ -26,6 +26,7 @@ export default function EditStoreScreen() {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { locationId } = useLocalSearchParams<{ locationId: string }>();
+    const [showFeeInfo, setShowFeeInfo] = useState(false);
     const id = Array.isArray(locationId) ? locationId[0] : locationId;
 
     // Hooks de datos
@@ -171,7 +172,18 @@ export default function EditStoreScreen() {
 
                         {/* Pricing & Capacity */}
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
+                                <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12 }}>
+                                    <Ionicons name={showFeeInfo ? 'close-circle-outline' : 'information-circle-outline'} size={22} color="#94A3B8" />
+                                </TouchableOpacity>
+                            </View>
+                            {showFeeInfo && (
+                                <View style={{ backgroundColor: '#F1F5F9', borderRadius: 16, padding: 16, marginBottom: 16, gap: 8 }}>
+                                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E293B' }}>{t('createLocation.fee_explain_title')}</Text>
+                                    <Text style={{ fontSize: 12, color: '#64748B', lineHeight: 18 }}>{t('createLocation.fee_explain_body')}</Text>
+                                </View>
+                            )}
                             {(['small', 'medium', 'large'] as const).map((size) => (
                                 <View key={size} style={styles.priceCard}>
                                     <View style={styles.priceHeader}>
