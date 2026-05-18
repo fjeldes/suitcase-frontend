@@ -181,7 +181,7 @@ export default function EditStoreScreen() {
 
                         {/* Pricing & Capacity */}
                         <View style={styles.section}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
                                 <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
                                 <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12 }}>
                                     <View style={{ justifyContent: 'center', alignItems: 'center', width: 24, height: 24 }}>

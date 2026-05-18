@@ -368,7 +368,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   scroll: { padding: 20 },
   mainTitle: { fontSize: 32, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 10 },
   description: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 25 },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 15 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 20 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.textPrimary, lineHeight: 24 },
   inputLabel: { fontSize: 14, fontWeight: '600', color: colors.textLabel, marginBottom: 8 },
   textField: {
