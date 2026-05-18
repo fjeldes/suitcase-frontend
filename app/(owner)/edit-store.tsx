@@ -150,6 +150,7 @@ export default function EditStoreScreen() {
                         {/* Basic Info */}
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>{t('createLocation.basic_info')}</Text>
+                            <View style={{ height: 20 }} />
 
                             <Text style={styles.label}>{t('createLocation.location_name')}</Text>
                             <TextInput
@@ -163,7 +164,7 @@ export default function EditStoreScreen() {
 
                         {/* Pricing & Capacity */}
                         <View style={styles.section}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.sectionTitle}>{t('createLocation.pricing_capacity')}</Text>
                                 <TouchableOpacity onPress={() => setShowFeeInfo(!showFeeInfo)} style={{ marginLeft: 12 }}>
                                     <View style={{ justifyContent: 'center', alignItems: 'center', width: 24, height: 24 }}>
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
     headerTitle: { color: '#FFF', fontSize: 24, fontWeight: 'bold' },
     formContent: { paddingHorizontal: 24 },
     section: { marginBottom: 32 },
-    sectionTitle: { color: '#0A0E5E', fontSize: 18, fontWeight: '800', borderLeftWidth: 4, borderLeftColor: '#E63946', paddingLeft: 12, lineHeight: 24 },
+    sectionTitle: { color: '#0A0E5E', fontSize: 18, fontWeight: '800', borderLeftWidth: 4, borderLeftColor: '#E63946', paddingLeft: 12, lineHeight: 24, marginBottom: 20 },
     label: { color: '#64748B', fontSize: 11, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
     input: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, fontSize: 15, color: '#1E293B', borderWidth: 1, borderColor: '#E2E8F0' },
 
