@@ -177,6 +177,14 @@ export default function BookingDetail({ bookingId }: { bookingId?: string }) {
           )
         ))}
 
+        {booking.promoCode && (
+          <View style={s.promoBadge}>
+            <Ionicons name="pricetag-outline" size={16} color="#22C55E" />
+            <Text style={s.promoBadgeText}>Código "{booking.promoCode}" aplicado</Text>
+            <Text style={s.promoBadgeAmount}>-${Number(booking.discountAmount || 0).toLocaleString()}</Text>
+          </View>
+        )}
+
         <BookingSummary
           items={booking.items}
           pricePerDay={booking.location.pricePerDay}
@@ -306,4 +314,15 @@ const createStyles = (colors: any) => StyleSheet.create({
   surchargeLabel: { fontSize: 13, fontWeight: '600', color: '#1A202C' },
   surchargeDate: { fontSize: 11, color: '#94A3B8', marginTop: 2 },
   surchargeAmount: { fontSize: 16, fontWeight: '800', color: '#E53E3E' },
+  promoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+    gap: 8,
+  },
+  promoBadgeText: { fontSize: 13, fontWeight: '600', color: '#166534', flex: 1 },
+  promoBadgeAmount: { fontSize: 14, fontWeight: '800', color: '#22C55E' },
 });
