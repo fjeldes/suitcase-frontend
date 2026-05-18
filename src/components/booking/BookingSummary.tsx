@@ -35,6 +35,17 @@ export const BookingSummary = ({
 }: BookingSummaryProps) => {
     const { t } = useTranslation();
     const activeItems = Object.entries(items).filter(([_, qty]) => qty > 0);
+
+    const ownerPrice = activeItems.reduce((sum, [size, qty]) => {
+        const price = pricePerDay[size as keyof typeof pricePerDay] || 0;
+        return sum + (qty as number) * price * days;
+    }, 0);
+    const travelerFee = Math.round(ownerPrice * 0.15);
+    const subtotal = ownerPrice + travelerFee;
+    const vatAmount = Math.round(subtotal * 0.19 / 1.19);
+    const totalToPay = subtotal;
+    const isNewPricing = Math.abs(totalPrice - totalToPay) < 100; // within $100 margin
+
     const formatter = new Intl.NumberFormat('es-CL', {
         style: 'currency',
         currency: currency,
@@ -46,16 +57,40 @@ export const BookingSummary = ({
 
             {activeItems.map(([size, qty]) => {
                 const price = pricePerDay[size as keyof typeof pricePerDay] || 0;
-                // Subtotal por tipo de item por la cantidad de días
-                const subtotal = qty * price * days;
 
                 return (
                     <View key={size} style={styles.paymentRow}>
                         <Text style={styles.payLabel}>
                             {qty}x {size.charAt(0).toUpperCase() + size.slice(1)} ({days} {days > 1 ? t('booking.days') : t('booking.day')})
                         </Text>
-                        <Text style={styles.payValue}>${subtotal.toLocaleString()}</Text>
+                        <Text style={styles.payValue}>${(qty * price * days).toLocaleString()}</Text>
                     </View>
+                );
+            })}
+
+            {isNewPricing && (
+                <>
+                    <View style={styles.divider} />
+                    <View style={styles.paymentRow}>
+                        <Text style={styles.payLabel}>{t('booking.fee_traveler')} (15%)</Text>
+                        <Text style={styles.payValue}>+${travelerFee.toLocaleString()}</Text>
+                    </View>
+                    <View style={styles.paymentRow}>
+                        <Text style={styles.payLabel}>{t('booking.vat_label')} (19%)</Text>
+                        <Text style={styles.payValue}>${vatAmount.toLocaleString()}</Text>
+                    </View>
+                </>
+            )}
+
+            <View style={styles.divider} />
+
+            <View style={styles.totalRow}>
+                <View>
+                    <Text style={styles.totalLabel}>{isNewPricing ? t('booking.total_to_pay') : t('booking.total_price')}</Text>
+                    <Text style={styles.daysLabel}>{days > 1 ? t('booking.custody_days', { days }) : t('booking.custody_day', { days })}</Text>
+                </View>
+                <Text style={styles.totalValue}>{formatter.format(isNewPricing ? totalToPay : totalPrice)}</Text>
+            </View>
                 );
             })}
 
