@@ -415,21 +415,40 @@ export default function BookingDetail({ storeId }: Props) {
                 )
               })}
               <View style={styles.breakdownDivider} />
-              {promoDiscount > 0 && (
-                <>
-                  <View style={styles.breakdownRow}>
-                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#22C55E' }}>
-                      {promoInfo?.discountType === 'percentage' ? `${promoInfo.discountValue}% ${t('booking.promo_off')}` : t('booking.promo_discount')}
-                    </Text>
-                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#22C55E' }}>-${promoDiscount.toLocaleString()}</Text>
-                  </View>
-                  <View style={styles.breakdownDivider} />
-                </>
-              )}
-              <View style={styles.breakdownFinalRow}>
-                <Text style={styles.breakdownFinalLabel}>{t('booking.total_price')} ({days} {days > 1 ? t('booking.days') : t('booking.day')})</Text>
-                <Text style={styles.breakdownFinalValue}>${Math.round(Math.max(0, totalPrice - promoDiscount)).toLocaleString()}</Text>
-              </View>
+              {(() => {
+                const baseTotal = Math.max(0, totalPrice - promoDiscount);
+                const travelerFee = Math.round(baseTotal * 0.15);
+                const subtotal = baseTotal + travelerFee;
+                const vatAmount = Math.round(subtotal * 0.19 / 1.19);
+                const totalToPay = subtotal;
+                return (
+                  <>
+                    <View style={styles.breakdownRow}>
+                      <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#1a1c1c' }}>{t('booking.fee_traveler')} (15%)</Text>
+                      <Text style={{ fontSize: 13, color: '#767683' }}>+${travelerFee.toLocaleString()}</Text>
+                    </View>
+                    <View style={styles.breakdownRow}>
+                      <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#1a1c1c' }}>{t('booking.vat_label')} (19%)</Text>
+                      <Text style={{ fontSize: 13, color: '#767683' }}>${vatAmount.toLocaleString()}</Text>
+                    </View>
+                    {promoDiscount > 0 && (
+                      <>
+                        <View style={styles.breakdownRow}>
+                          <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#22C55E' }}>
+                            {promoInfo?.discountType === 'percentage' ? `${promoInfo.discountValue}% ${t('booking.promo_off')}` : t('booking.promo_discount')}
+                          </Text>
+                          <Text style={{ fontSize: 14, fontWeight: '700', color: '#22C55E' }}>-${promoDiscount.toLocaleString()}</Text>
+                        </View>
+                        <View style={styles.breakdownDivider} />
+                      </>
+                    )}
+                    <View style={styles.breakdownFinalRow}>
+                      <Text style={styles.breakdownFinalLabel}>{t('booking.total_to_pay')}</Text>
+                      <Text style={styles.breakdownFinalValue}>${Math.round(totalToPay).toLocaleString()}</Text>
+                    </View>
+                  </>
+                );
+              })()}
             </View>
           )}
 
@@ -500,8 +519,13 @@ export default function BookingDetail({ storeId }: Props) {
           {/* TOTAL & CONFIRM */}
           <View style={styles.footer}>
             <View>
-              <Text style={styles.totalHoursLabel}>{t('booking.total_price_label')}</Text>
-              <Text style={styles.totalAmount}>${Math.round(Math.max(0, totalPrice - promoDiscount)).toLocaleString()}</Text>
+              <Text style={styles.totalHoursLabel}>{t('booking.total_to_pay')}</Text>
+              <Text style={styles.totalAmount}>
+                ${(() => {
+                  const base = Math.max(0, totalPrice - promoDiscount);
+                  return Math.round(base + Math.round(base * 0.15)).toLocaleString();
+                })()}
+              </Text>
             </View>
             <TouchableOpacity
               style={[styles.confirmButton, (totalPrice === 0 || isPending) && styles.disabledBtn]}
