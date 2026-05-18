@@ -83,7 +83,10 @@ export const ProfileScreen = () => {
 
   const handleChangePassword = async () => {
     if (!currentPw || !newPw) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.error_fields_required') }); return }
-    if (newPw.length < 6) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_min') }); return }
+    if (newPw.length < 8) { Toast.show({ type: 'error', text1: t('common.error'), text2: 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número' }); return }
+    if (!/[A-Z]/.test(newPw)) { Toast.show({ type: 'error', text1: t('common.error'), text2: 'Debe contener una mayúscula' }); return }
+    if (!/[a-z]/.test(newPw)) { Toast.show({ type: 'error', text1: t('common.error'), text2: 'Debe contener una minúscula' }); return }
+    if (!/[0-9]/.test(newPw)) { Toast.show({ type: 'error', text1: t('common.error'), text2: 'Debe contener un número' }); return }
     if (newPw !== confirmPw) { Toast.show({ type: 'error', text1: t('common.error'), text2: t('settings.password_mismatch') }); return }
     setChangingPw(true)
     try {
