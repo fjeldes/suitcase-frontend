@@ -159,24 +159,6 @@ export default function EditStoreScreen() {
                                 placeholder={t('createLocation.edit_name_placeholder')}
                             />
 
-                            <Text style={[styles.label, { marginTop: 20 }]}>{t('createLocation.currency')}</Text>
-                            <View style={styles.currencySelector}>
-                                {['CLP', 'USD', 'EUR'].map((curr) => (
-                                    <TouchableOpacity
-                                        key={curr}
-                                        style={[
-                                            styles.currencyOption,
-                                            form.currency === curr && styles.currencyOptionActive
-                                        ]}
-                                        onPress={() => setForm({ ...form, currency: curr })}
-                                    >
-                                        <Text style={[
-                                            styles.currencyText,
-                                            form.currency === curr && styles.currencyTextActive
-                                        ]}>{curr}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
                         </View>
 
                         {/* Pricing & Capacity */}
@@ -285,13 +267,6 @@ const styles = StyleSheet.create({
     sectionTitle: { color: '#0A0E5E', fontSize: 18, fontWeight: '800', borderLeftWidth: 4, borderLeftColor: '#E63946', paddingLeft: 12, lineHeight: 24 },
     label: { color: '#64748B', fontSize: 11, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
     input: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, fontSize: 15, color: '#1E293B', borderWidth: 1, borderColor: '#E2E8F0' },
-
-    // Estilos del Selector de Moneda
-    currencySelector: { flexDirection: 'row', backgroundColor: '#F1F5F9', borderRadius: 14, padding: 4 },
-    currencyOption: { flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 10 },
-    currencyOptionActive: { backgroundColor: '#FFF', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
-    currencyText: { color: '#94A3B8', fontSize: 13, fontWeight: '700' },
-    currencyTextActive: { color: '#1A1F71' },
 
     priceCard: { backgroundColor: '#FFF', borderRadius: 20, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: '#E2E8F0' },
     priceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
